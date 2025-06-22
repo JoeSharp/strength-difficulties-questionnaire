@@ -1,0 +1,1 @@
+select * from ingested_file;
