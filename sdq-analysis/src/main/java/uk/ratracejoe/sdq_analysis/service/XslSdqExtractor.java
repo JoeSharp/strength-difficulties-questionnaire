@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import static org.slf4j.LoggerFactory.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class XslSdqExtractor {
@@ -64,6 +64,7 @@ public class XslSdqExtractor {
                 .mapToObj(i -> getStatementResponse(sheet, Statement.values()[i], i + startRow))
                 .toList();
     }
+
     private SdqPeriod parseSdqPeriod(Sheet sheet) {
         Integer periodIndex = Integer.parseInt(
                 sheet.getSheetName()

@@ -37,6 +37,7 @@ public enum Statement {
     public boolean isTruePositive() {
         return isTruePositive;
     }
+
     public Category category() {
         return this.category;
     }
