@@ -3,11 +3,8 @@ package uk.ratracejoe.sdq_analysis.rest;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uk.ratracejoe.sdq_analysis.dto.SdqPeriod;
 import uk.ratracejoe.sdq_analysis.dto.UploadFile;
@@ -30,6 +27,14 @@ public class UploadFileController {
     public List<UploadFile> getAll() throws SdqException {
         return fileRepository
                 .getAll();
+    }
+
+    @GetMapping("/{uuid}")
+    public ResponseEntity<UploadFile> getByUUID(@PathVariable("uuid") UUID uuid) throws SdqException {
+        return fileRepository
+                .getByUUID(uuid)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping

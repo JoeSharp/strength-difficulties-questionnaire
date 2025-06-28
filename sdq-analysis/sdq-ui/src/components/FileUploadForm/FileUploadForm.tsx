@@ -1,9 +1,14 @@
 import React from "react";
-import useUploadFileApi from "../../api/useUploadFileApi";
+import useApiContext from '../../context/ApiContext';
 import JsonDisplay from "../JsonDisplay";
 
 function FileUploadForm() {
-	const {onSubmitFile, lastSubmission} = useUploadFileApi();
+	const {
+		uploadFileApi: {
+			onSubmitFile, 
+			lastSubmission
+		} 
+	}= useApiContext();
 
 	const onClickSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback((e) => {
 		e.preventDefault();

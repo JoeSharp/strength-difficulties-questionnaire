@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,18 +33,30 @@ public class UploadFileRepository {
         });
     }
 
+    public Optional<UploadFile> getByUUID(UUID uuid) throws SdqException {
+        return handle("getByUUID", UploadFileTable.selectByUUID(), stmt -> {
+            stmt.setString(1, uuid.toString());
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) return Optional.empty();
+            return Optional.of(getFromResultSet(rs));
+        });
+    }
+
     public List<UploadFile> getAll() throws SdqException {
         return handle("getAll", UploadFileTable.selectAllSQL(), stmt -> {
             List<UploadFile> files = new ArrayList<>();
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                String uuid = rs.getString("uuid");
-                String filename = rs.getString("filename");
-                UploadFile uploadFile = new UploadFile(UUID.fromString(uuid), filename);
-                files.add(uploadFile);
+                files.add(getFromResultSet(rs));
             }
             return files;
         });
+    }
+
+    private UploadFile getFromResultSet(ResultSet rs) throws SQLException {
+        String uuid = rs.getString("uuid");
+        String filename = rs.getString("filename");
+        return new UploadFile(UUID.fromString(uuid), filename);
     }
 
     private <R> R handle(String operation, String sql, SqlFunction<R> fn) throws SdqException {

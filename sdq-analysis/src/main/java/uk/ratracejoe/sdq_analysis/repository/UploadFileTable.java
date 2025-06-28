@@ -14,6 +14,11 @@ public interface UploadFileTable {
         return String.format("INSERT INTO %s (%s, %s) VALUES (?, ?)", TABLE_NAME, FIELD_UUID, FIELD_FILENAME);
     }
 
+    static String selectByUUID() {
+        return String.format("SELECT %s, %s FROM %s WHERE %s=?",
+                FIELD_UUID, FIELD_FILENAME, TABLE_NAME, FIELD_UUID);
+    }
+
     static String selectAllSQL() {
         return String.format("SELECT %s, %s FROM %s",
                 FIELD_UUID, FIELD_FILENAME, TABLE_NAME);
