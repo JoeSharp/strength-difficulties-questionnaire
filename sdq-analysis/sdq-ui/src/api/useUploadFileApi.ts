@@ -7,13 +7,22 @@ export interface IUploadFile {
     filename: string
 }
 
+export interface ISdqScore {
+    uuid: string,
+    period: number,
+    assessor: string,
+    scores: Map<string, number>
+}
+
 export interface UploadFileApi {
+    scores: ISdqScore[];
     files: IUploadFile[];
     lastSubmission: object;
     onSubmitFile: (data: FormData) => void;
 }
 
 function useUploadFileApi(): UploadFileApi {
+    const [scores, setScores] = React.useState<ISdqScore[]>([]);
     const [files, setFiles] = React.useState<IUploadFile[]>([]);
     const { addMessage } = useApplicationMessageContext();
     const { beginJob, endJob } = useInProgressContext();
@@ -38,9 +47,33 @@ function useUploadFileApi(): UploadFileApi {
             })
     }, []);
 
-    React.useEffect(() => {
+    const onFetchScores = React.useCallback(() => {
+        const jobId = beginJob("Fetching scores");
+        fetch('/api/upload/scores')
+            .then(response => {
+                if (!response.ok) {
+                    addMessage('danger', response.status, "Failed to fetch scores: " + response.statusText);
+                    throw new Error('Network response was not ok');
+                }
+
+                return response.json();
+            })
+            .then(r => {
+                setScores(r);
+            })
+            .finally(() => {
+                endJob(jobId);
+            })
+    }, []);
+
+    const onFetchBoth = React.useCallback(() => {
         onFetchFiles();
-    }, [onFetchFiles]);
+        onFetchScores();
+    }, [onFetchFiles, onFetchScores]);
+
+    React.useEffect(() => {
+        onFetchBoth();
+    }, [onFetchBoth]);
 
     const onSubmitFile = React.useCallback((formData: FormData) => {
         const jobId = beginJob("Submitting File");
@@ -60,13 +93,14 @@ function useUploadFileApi(): UploadFileApi {
             })
             .finally(() => {
                 endJob(jobId);
-                onFetchFiles();
+                onFetchBoth();
             })
-    }, [beginJob, endJob, addMessage, onFetchFiles])
+    }, [beginJob, endJob, addMessage, onFetchBoth])
 
 
     return {
         files,
+        scores,
         lastSubmission,
         onSubmitFile
     }

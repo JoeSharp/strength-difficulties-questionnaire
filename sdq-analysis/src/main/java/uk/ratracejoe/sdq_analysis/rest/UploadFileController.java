@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uk.ratracejoe.sdq_analysis.dto.SdqPeriod;
+import uk.ratracejoe.sdq_analysis.dto.SdqScores;
 import uk.ratracejoe.sdq_analysis.dto.UploadFile;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 import uk.ratracejoe.sdq_analysis.repository.SdqResponseRepository;
@@ -29,6 +30,11 @@ public class UploadFileController {
     public List<UploadFile> getAll() throws SdqException {
         return fileRepository
                 .getAll();
+    }
+
+    @GetMapping("/scores")
+    public List<SdqScores> getScores() throws SdqException {
+        return sdqResponseRepository.getScores();
     }
 
     @GetMapping("/{uuid}")
