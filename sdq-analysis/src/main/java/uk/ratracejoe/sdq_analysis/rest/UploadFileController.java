@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.ratracejoe.sdq_analysis.dto.SdqPeriod;
 import uk.ratracejoe.sdq_analysis.dto.UploadFile;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
+import uk.ratracejoe.sdq_analysis.repository.SdqResponseRepository;
 import uk.ratracejoe.sdq_analysis.repository.UploadFileRepository;
 import uk.ratracejoe.sdq_analysis.service.XslSdqExtractor;
 
@@ -21,6 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UploadFileController {
     private final UploadFileRepository fileRepository;
+    private final SdqResponseRepository sdqResponseRepository;
     private final XslSdqExtractor xslSdqExtractor;
 
     @GetMapping
@@ -43,7 +45,9 @@ public class UploadFileController {
             UploadFile uploadFile = new UploadFile(UUID.randomUUID(), file.getOriginalFilename());
             fileRepository.saveFile(uploadFile);
             Workbook workbook = new XSSFWorkbook(file.getInputStream());
-            return xslSdqExtractor.parse(workbook);
+            List<SdqPeriod> periods = xslSdqExtractor.parse(workbook);
+            sdqResponseRepository.recordResponse(uploadFile, periods);
+            return periods;
         } catch (IOException e) {
             throw new SdqException("Could not parse workbook");
         }

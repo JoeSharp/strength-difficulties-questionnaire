@@ -15,12 +15,11 @@ public interface UploadFileTable {
     }
 
     static String selectByUUID() {
-        return String.format("SELECT %s, %s FROM %s WHERE %s=?",
-                FIELD_UUID, FIELD_FILENAME, TABLE_NAME, FIELD_UUID);
+        return String.format("SELECT * FROM %s WHERE %s=?",
+                TABLE_NAME, FIELD_UUID);
     }
 
     static String selectAllSQL() {
-        return String.format("SELECT %s, %s FROM %s",
-                FIELD_UUID, FIELD_FILENAME, TABLE_NAME);
+        return String.format("SELECT * FROM %s", TABLE_NAME);
     }
 }

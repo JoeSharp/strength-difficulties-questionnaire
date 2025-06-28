@@ -8,14 +8,14 @@ import uk.ratracejoe.sdq_analysis.dto.UploadFile;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static uk.ratracejoe.sdq_analysis.repository.AbstractRepository.handle;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class UploadFileRepository {
     private final DataSource dataSource;
 
     public void saveFile(UploadFile file) throws SdqException {
-        handle("saveFile", UploadFileTable.insertSQL(), stmt -> {
+        handle(dataSource, "saveFile", UploadFileTable.insertSQL(), stmt -> {
             stmt.setString(1, file.uuid().toString());
             stmt.setString(2, file.filename());
             int rowsUpdated = stmt.executeUpdate();
@@ -34,7 +34,7 @@ public class UploadFileRepository {
     }
 
     public Optional<UploadFile> getByUUID(UUID uuid) throws SdqException {
-        return handle("getByUUID", UploadFileTable.selectByUUID(), stmt -> {
+        return handle(dataSource, "getByUUID", UploadFileTable.selectByUUID(), stmt -> {
             stmt.setString(1, uuid.toString());
             ResultSet rs = stmt.executeQuery();
             if (!rs.next()) return Optional.empty();
@@ -43,7 +43,7 @@ public class UploadFileRepository {
     }
 
     public List<UploadFile> getAll() throws SdqException {
-        return handle("getAll", UploadFileTable.selectAllSQL(), stmt -> {
+        return handle(dataSource, "getAll", UploadFileTable.selectAllSQL(), stmt -> {
             List<UploadFile> files = new ArrayList<>();
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -59,21 +59,4 @@ public class UploadFileRepository {
         return new UploadFile(UUID.fromString(uuid), filename);
     }
 
-    private <R> R handle(String operation, String sql, SqlFunction<R> fn) throws SdqException {
-        try (Connection conn = dataSource.getConnection()) {
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                return fn.apply(stmt);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not execute {} on database {}",
-                    operation,
-                    e.getLocalizedMessage());
-            throw new SdqException(String.format("Could not execute %s on database", operation));
-        }
-
-    }
-
-    interface SqlFunction<R> {
-        R apply(PreparedStatement stmt) throws SQLException;
-    }
 }

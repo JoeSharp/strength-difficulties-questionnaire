@@ -30,6 +30,7 @@ public class DatabaseCreator {
                 LOGGER.info("Connected to SQLite.");
                 try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate(UploadFileTable.createTableSQL());
+                    stmt.executeUpdate(SdqResponseTable.createTableSQL());
                 }
                 LOGGER.info("Database created for SDQ");
             }
