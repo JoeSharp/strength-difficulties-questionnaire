@@ -26,14 +26,19 @@ public class SdqResponseRepository {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 UUID uuid = UUID.fromString(rs.getString(FIELD_FILE_UUID));
-                Integer period = rs.getInt(FIELD_PERIOD_INDEX);
+                int period = rs.getInt(FIELD_PERIOD_INDEX);
                 Assessor assessor = Assessor.valueOf(rs.getString(FIELD_ASSESSOR));
-                Map<Category, Integer> scores = new HashMap<>();
+                Map<Category, Integer> categoryScores = new HashMap<>();
                 for (Category c : Category.values()) {
                     Integer score = rs.getInt(c.name());
-                    scores.put(c, score);
+                    categoryScores.put(c, score);
                 }
-                sdqScores.add(new SdqScores(uuid, period, assessor, scores));
+                Map<Posture, Integer> postureScores = new HashMap<>();
+                for (Posture p : Posture.values()) {
+                    Integer score = rs.getInt(p.name());
+                    postureScores.put(p, score);
+                }
+                sdqScores.add(new SdqScores(uuid, period, assessor, categoryScores, postureScores));
             }
 
             return sdqScores;
@@ -51,7 +56,8 @@ public class SdqResponseRepository {
                             stmt.setString(3, key.name());
                             stmt.setString(4, response.statement().name());
                             stmt.setString(5, response.statement().category().name());
-                            stmt.setInt(6, response.score());
+                            stmt.setString(6, response.statement().category().posture().name());
+                            stmt.setInt(7, response.score());
                             int rowsUpdated = stmt.executeUpdate();
                             LOGGER.info("Inserted SDQ response to database, rows updated {}", rowsUpdated);
                         } catch (Exception e) {

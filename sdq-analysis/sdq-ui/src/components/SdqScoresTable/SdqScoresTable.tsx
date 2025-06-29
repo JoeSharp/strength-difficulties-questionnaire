@@ -8,6 +8,12 @@ const CATEGORIES: string[] = [
 	'Emotional'
 ];
 
+const POSTURES: string[] = [
+	'Internalising',
+	'Externalising',
+	'ProSocial'
+]
+
 function UploadFileTable() {
 	const {
 		uploadFileApi: {
@@ -24,6 +30,7 @@ function UploadFileTable() {
 					<th>Period</th>
 					<th>Assessor</th>
 					{CATEGORIES.map(c => (<th key={c}>{c}</th>))}
+					{POSTURES.map(p => (<th key={p}>{p}</th>))}
 				</tr>
 			</thead>
 			<tbody>
@@ -31,11 +38,8 @@ function UploadFileTable() {
 					<td>{score.uuid}</td>
 					<td>{score.period}</td>
 					<td>{score.assessor}</td>
-					<td>{score.scores['Conduct']}</td>
-					<td>{score.scores['Peer']}</td>
-					<td>{score.scores['HyperActivity']}</td>
-					<td>{score.scores['ProSocial']}</td>
-					<td>{score.scores['Emotional']}</td>
+					{CATEGORIES.map(c => (<td key={c}>{score.categoryScores[c]}</td>))}
+					{POSTURES.map(p => (<td key={p}>{score.postureScores[p]}</td>))}
 				</tr>)}
 			</tbody>
 		</table>

@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq_analysis.repository;
 
 import uk.ratracejoe.sdq_analysis.dto.Category;
+import uk.ratracejoe.sdq_analysis.dto.Posture;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -13,27 +14,30 @@ public interface SdqResponseTable {
     String FIELD_ASSESSOR = "assessor";
     String FIELD_STATEMENT = "statement";
     String FIELD_CATEGORY = "category";
+    String FIELD_POSTURE = "posture";
     String FIELD_SCORE = "score";
 
     static String createTableSQL() {
-        return String.format("CREATE TABLE IF NOT EXISTS %s (%s UUID, %s INT, %s TEXT, %s TEXT, %s TEXT, %s TEXT)",
+        return String.format("CREATE TABLE IF NOT EXISTS %s (%s UUID, %s INT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INT)",
                 TABLE_NAME,
                 FIELD_FILE_UUID,
                 FIELD_PERIOD_INDEX,
                 FIELD_ASSESSOR,
                 FIELD_STATEMENT,
                 FIELD_CATEGORY,
+                FIELD_POSTURE,
                 FIELD_SCORE);
     }
 
     static String insertSQL() {
-        return String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)",
+        return String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 TABLE_NAME,
                 FIELD_FILE_UUID,
                 FIELD_PERIOD_INDEX,
                 FIELD_ASSESSOR,
                 FIELD_STATEMENT,
                 FIELD_CATEGORY,
+                FIELD_POSTURE,
                 FIELD_SCORE);
     }
 
@@ -47,6 +51,11 @@ public interface SdqResponseTable {
                 .map(c -> String.format("  SUM(CASE WHEN category = '%s' THEN score ELSE 0 END) AS %s", c, c))
                 .collect(Collectors.joining(","));
         sb.append(categoryStr);
+        sb.append(",");
+        String postureStr = Arrays.stream(Posture.values())
+                .map(p -> String.format("  SUM(CASE WHEN posture = '%s' THEN score ELSE 0 END) AS %s", p, p))
+                .collect(Collectors.joining(","));
+        sb.append(postureStr);
         sb.append(" FROM ");
         sb.append(TABLE_NAME);
         sb.append(" GROUP BY ");

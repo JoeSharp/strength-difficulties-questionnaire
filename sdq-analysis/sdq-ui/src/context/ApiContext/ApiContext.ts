@@ -3,6 +3,7 @@ import type { IApi } from './useApi';
 
 const DEFAULT_CONTEXT: IApi = {
 	uploadFileApi: {
+		scores: [],
 		files: [],
 		lastSubmission: {},
 		onSubmitFile: () => console.error('default implementation')

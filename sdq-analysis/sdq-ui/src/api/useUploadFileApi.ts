@@ -11,7 +11,8 @@ export interface ISdqScore {
     uuid: string,
     period: number,
     assessor: string,
-    scores: Map<string, number>
+    categoryScores: Record<string, number>
+    postureScores: Record<string, number>
 }
 
 export interface UploadFileApi {
