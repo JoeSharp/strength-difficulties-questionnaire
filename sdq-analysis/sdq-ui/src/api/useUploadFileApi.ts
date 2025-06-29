@@ -13,6 +13,7 @@ export interface ISdqScore {
     assessor: string,
     categoryScores: Record<string, number>
     postureScores: Record<string, number>
+    total: number,
 }
 
 export interface UploadFileApi {

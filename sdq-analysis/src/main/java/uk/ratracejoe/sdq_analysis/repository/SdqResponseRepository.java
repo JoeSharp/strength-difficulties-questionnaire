@@ -38,7 +38,8 @@ public class SdqResponseRepository {
                     Integer score = rs.getInt(p.name());
                     postureScores.put(p, score);
                 }
-                sdqScores.add(new SdqScores(uuid, period, assessor, categoryScores, postureScores));
+                int total = rs.getInt(FIELD_TOTAL);
+                sdqScores.add(new SdqScores(uuid, period, assessor, categoryScores, postureScores, total));
             }
 
             return sdqScores;

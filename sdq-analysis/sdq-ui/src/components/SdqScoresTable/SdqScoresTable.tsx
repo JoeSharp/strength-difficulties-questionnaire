@@ -31,6 +31,7 @@ function UploadFileTable() {
 					<th>Assessor</th>
 					{CATEGORIES.map(c => (<th key={c}>{c}</th>))}
 					{POSTURES.map(p => (<th key={p}>{p}</th>))}
+					<th>Total Difficulties</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -40,6 +41,7 @@ function UploadFileTable() {
 					<td>{score.assessor}</td>
 					{CATEGORIES.map(c => (<td key={c}>{score.categoryScores[c]}</td>))}
 					{POSTURES.map(p => (<td key={p}>{score.postureScores[p]}</td>))}
+					<td>{score.total}</td>
 				</tr>)}
 			</tbody>
 		</table>

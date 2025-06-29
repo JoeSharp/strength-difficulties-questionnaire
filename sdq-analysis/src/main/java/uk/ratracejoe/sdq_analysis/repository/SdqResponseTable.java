@@ -16,6 +16,7 @@ public interface SdqResponseTable {
     String FIELD_CATEGORY = "category";
     String FIELD_POSTURE = "posture";
     String FIELD_SCORE = "score";
+    String FIELD_TOTAL = "total";
 
     static String createTableSQL() {
         return String.format("CREATE TABLE IF NOT EXISTS %s (%s UUID, %s INT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INT)",
@@ -56,6 +57,7 @@ public interface SdqResponseTable {
                 .map(p -> String.format("  SUM(CASE WHEN posture = '%s' THEN score ELSE 0 END) AS %s", p, p))
                 .collect(Collectors.joining(","));
         sb.append(postureStr);
+        sb.append(String.format(", SUM(score) AS %s ", FIELD_TOTAL));
         sb.append(" FROM ");
         sb.append(TABLE_NAME);
         sb.append(" GROUP BY ");
