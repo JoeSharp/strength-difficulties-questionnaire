@@ -4,7 +4,17 @@ import useApplicationMessageContext from "../context/ApplicationMessageContext";
 
 export interface IUploadFile {
     uuid: string,
-    filename: string
+    filename: string,
+    dateOfBirth: string,
+    gender: string,
+    ethnicity: string,
+    englishAdditionalLanguage: string,
+    disabilityStatus: string,
+    disabilityType: string,
+    careExperience: string,
+    interventionType: string,
+    aces: string,
+    fundingSource: string
 }
 
 export interface ISdqScore {
