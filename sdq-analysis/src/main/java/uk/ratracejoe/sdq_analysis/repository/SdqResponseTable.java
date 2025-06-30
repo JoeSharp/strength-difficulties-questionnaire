@@ -74,4 +74,8 @@ public interface SdqResponseTable {
     static String selectAllSQL() {
         return String.format("SELECT * FROM %s", TABLE_NAME);
     }
+
+    static String deleteAllSQL() {
+        return String.format("DELETE FROM %s", TABLE_NAME);
+    }
 }

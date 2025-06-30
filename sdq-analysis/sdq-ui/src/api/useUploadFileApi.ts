@@ -31,6 +31,7 @@ export interface UploadFileApi {
     files: IUploadFile[];
     lastSubmission: object;
     onSubmitFile: (data: FormData) => void;
+    onDeleteAll: () => void;
 }
 
 function useUploadFileApi(): UploadFileApi {
@@ -109,12 +110,32 @@ function useUploadFileApi(): UploadFileApi {
             })
     }, [beginJob, endJob, addMessage, onFetchBoth])
 
+    const onDeleteAll = React.useCallback(() => {
+        const jobId = beginJob("Submitting File");
+        fetch('/api/upload', {
+            method: 'DELETE'
+        }).then(response => {
+            if (!response.ok) {
+                addMessage('danger', response.status, "Failed to clear database: " + response.statusText);
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+            .then(r => {
+                addMessage('success', 200, ` ${r.files} files ${r.responses} responses`);
+            })
+            .finally(() => {
+                endJob(jobId);
+                onFetchBoth();
+            })
+    }, [beginJob, endJob, addMessage, onFetchBoth]);
 
     return {
         files,
         scores,
         lastSubmission,
-        onSubmitFile
+        onSubmitFile,
+        onDeleteAll
     }
 
 }

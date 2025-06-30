@@ -20,7 +20,7 @@ function FileUploadForm() {
 	return <><form method="POST" encType="multipart/form-data" onSubmit={onClickSubmit}>
 		<div className='form-control mb-3'>
 			<label>File</label>
-			<input type='file' name='file' />
+			<input type='file' multiple name='sdqFiles' />
 		</div>
 		<input className="btn btn-primary" type='submit' value='Upload' />
 	</form>

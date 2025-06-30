@@ -3,4 +3,4 @@ spring:
     name: sdq-analysis
 
 database:
-  file: ${DATABASE_FILE:sdq-analysis.db}
+  file: ${database-file:sdq-analysis.db}

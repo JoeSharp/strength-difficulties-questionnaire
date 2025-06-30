@@ -8,6 +8,7 @@ import uk.ratracejoe.sdq_analysis.dto.*;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -90,4 +91,10 @@ public class UploadFileRepository {
                 fundingSource);
     }
 
+    public int deleteAll() throws SdqException {
+        return handle(dataSource,
+                "deleteAll",
+                UploadFileTable.deleteAllSQL(),
+                PreparedStatement::executeUpdate);
+    }
 }

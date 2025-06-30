@@ -6,7 +6,8 @@ const DEFAULT_CONTEXT: IApi = {
 		scores: [],
 		files: [],
 		lastSubmission: {},
-		onSubmitFile: () => console.error('default implementation')
+		onSubmitFile: () => console.error('default implementation'),
+		onDeleteAll: () => console.error('default implementation')
 	}
 }
 

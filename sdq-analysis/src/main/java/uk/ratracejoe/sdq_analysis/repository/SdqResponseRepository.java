@@ -8,6 +8,7 @@ import uk.ratracejoe.sdq_analysis.dto.*;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
 
@@ -69,5 +70,12 @@ public class SdqResponseRepository {
 
             return 0;
         });
+    }
+
+    public int deleteAll() throws SdqException {
+        return handle(dataSource,
+                "deleteAll",
+                SdqResponseTable.deleteAllSQL(),
+                PreparedStatement::executeUpdate);
     }
 }
