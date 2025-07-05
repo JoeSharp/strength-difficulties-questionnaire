@@ -2,5 +2,5 @@ package uk.ratracejoe.sdq_analysis.dto;
 
 import java.util.List;
 
-public record ParsedFile(UploadFile uploadFile, List<SdqPeriod> sdqPeriods) {
+public record ParsedFile(ClientFile clientFile, List<SdqPeriod> sdqPeriods) {
 }

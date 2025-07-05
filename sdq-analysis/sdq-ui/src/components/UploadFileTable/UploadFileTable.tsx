@@ -16,12 +16,13 @@ function UploadFileTable() {
 					<th>Filename</th>
 					<th>DOB</th>
 					<th>Gender</th>
+					<th>Council</th>
 					<th>Ethnicity</th>
 					<th>EAL</th>
 					<th>Disability</th>
 					<th>Type</th>
 					<th>Care</th>
-					<th>Intervention</th>
+					<th>Intervention(s)</th>
 					<th>ACES</th>
 					<th>Funding</th>
 				</tr>
@@ -32,12 +33,13 @@ function UploadFileTable() {
 					<td>{file.filename}</td>
 					<td>{file.dateOfBirth}</td>
 					<td>{file.gender}</td>
+					<td>{file.council}</td>
 					<td>{file.ethnicity}</td>
 					<td>{file.englishAdditionalLanguage}</td>
 					<td>{file.disabilityStatus}</td>
 					<td>{file.disabilityType}</td>
 					<td>{file.careExperience}</td>
-					<td>{file.interventionType}</td>
+					<td>{file.interventionTypes}</td>
 					<td>{file.aces}</td>
 					<td>{file.fundingSource}</td>
 				</tr>)}

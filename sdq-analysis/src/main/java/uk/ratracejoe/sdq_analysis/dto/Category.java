@@ -1,5 +1,6 @@
 package uk.ratracejoe.sdq_analysis.dto;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -12,6 +13,7 @@ public enum Category {
 
     final Posture posture;
 
+    @JsonValue
     public Posture posture() {
         return posture;
     }

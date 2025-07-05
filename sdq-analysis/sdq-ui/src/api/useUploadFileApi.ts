@@ -7,6 +7,7 @@ export interface IUploadFile {
     filename: string,
     dateOfBirth: string,
     gender: string,
+    council: string,
     ethnicity: string,
     englishAdditionalLanguage: string,
     disabilityStatus: string,
