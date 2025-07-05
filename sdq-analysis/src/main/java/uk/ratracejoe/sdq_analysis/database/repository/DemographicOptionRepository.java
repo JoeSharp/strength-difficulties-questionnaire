@@ -15,12 +15,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static uk.ratracejoe.sdq_analysis.database.repository.RepositoryUtils.handle;
 import static uk.ratracejoe.sdq_analysis.database.tables.DemographicOptionTable.FIELD_DEMOGRAPHIC;
 import static uk.ratracejoe.sdq_analysis.database.tables.DemographicOptionTable.FIELD_OPTION_TEXT;
 
 @Service
 @RequiredArgsConstructor
-public class DemographicOptionRepository extends AbstractRepository {
+public class DemographicOptionRepository {
     private final DataSource dataSource;
 
     public Map<DemographicField, List<String>> getOptionsByField() throws SdqException {

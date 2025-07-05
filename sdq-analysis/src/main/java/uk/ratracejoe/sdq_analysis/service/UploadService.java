@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UploadService {
     private final ClientFileRepository fileRepository;
-    private final SdqResponseRepository sdqResponseRepository;
+    private final SdqResponseService sdqResponseService;
     private final XslxSdqExtractor xslSdqExtractor;
     private final XslxDemographicExtractor xslDemographicExtractor;
 
@@ -45,7 +45,7 @@ public class UploadService {
         );
         fileRepository.saveFile(clientFileEntity);
         List<SdqPeriod> periods = xslSdqExtractor.parse(workbook);
-        //sdqResponseRepository.recordResponse(clientFile, periods);
+        sdqResponseService.recordResponse(clientFile, periods);
         return new ParsedFile(clientFile, periods);
 
     }

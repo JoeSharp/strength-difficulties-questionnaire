@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/upload")
+@RequestMapping("/api/client")
 @RequiredArgsConstructor
 public class ClientFileController {
     private final ClientFileService fileService;
@@ -27,9 +27,9 @@ public class ClientFileController {
         return fileService.getAll();
     }
 
-    @GetMapping("/scores")
-    public List<SdqScoresSummary> getScores() {
-        return sdqResponseService.getScores();
+    @GetMapping("/scores/{uuid}")
+    public List<SdqScoresSummary> getScores(@PathVariable("uuid") UUID fileUuid) throws SdqException {
+        return sdqResponseService.getScores(fileUuid);
     }
 
     @GetMapping("/{uuid}")

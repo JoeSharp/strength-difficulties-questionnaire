@@ -25,7 +25,8 @@ public class UploadController {
         List<ParsedFile> results = new ArrayList<>();
         try {
             for (MultipartFile file : files) {
-                uploadService.ingestFile(file.getOriginalFilename(), file.getInputStream());
+                var parsed = uploadService.ingestFile(file.getOriginalFilename(), file.getInputStream());
+                results.add(parsed);
             }
         } catch (IOException e) {
             throw new SdqException("Could not parse workbook");

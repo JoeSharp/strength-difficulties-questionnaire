@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static uk.ratracejoe.sdq_analysis.database.repository.AbstractRepository.handle;
+import static uk.ratracejoe.sdq_analysis.database.repository.RepositoryUtils.handle;
 import static uk.ratracejoe.sdq_analysis.database.tables.ClientFileTable.*;
 
 @Service

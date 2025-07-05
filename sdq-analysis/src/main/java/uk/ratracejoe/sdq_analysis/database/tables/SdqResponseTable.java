@@ -59,6 +59,9 @@ public interface SdqResponseTable {
         sb.append(String.format(", SUM(score) AS %s ", FIELD_TOTAL));
         sb.append(" FROM ");
         sb.append(TABLE_NAME);
+        sb.append(" WHERE ");
+        sb.append(FIELD_FILE_UUID);
+        sb.append(" = ? ");
         sb.append(" GROUP BY ");
         sb.append(fieldList);
 

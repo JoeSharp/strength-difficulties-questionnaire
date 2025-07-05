@@ -9,8 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public abstract class AbstractRepository {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRepository.class);
+public abstract class RepositoryUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryUtils.class);
 
     public static <R> R handle(DataSource dataSource,
                                String operation,

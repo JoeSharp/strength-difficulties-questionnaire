@@ -17,7 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
 
-import static uk.ratracejoe.sdq_analysis.database.repository.AbstractRepository.handle;
+import static uk.ratracejoe.sdq_analysis.database.repository.RepositoryUtils.handle;
 import static uk.ratracejoe.sdq_analysis.database.tables.SdqResponseTable.*;
 
 @Service
@@ -26,8 +26,9 @@ public class SdqResponseRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(SdqResponseRepository.class);
     private final DataSource dataSource;
 
-    public List<SdqScoresPivot> getScores() throws SdqException {
+    public List<SdqScoresPivot> getScores(UUID fileUuid) throws SdqException {
         return handle(dataSource, "getScores", SdqResponseTable.selectScoresSQL(), stmt -> {
+            stmt.setString(1, fileUuid.toString());
             List<SdqScoresPivot> sdqScores = new ArrayList<>();
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -52,24 +53,23 @@ public class SdqResponseRepository {
         });
     }
 
-    public void recordResponse(List<SdqScoresEntity> scores) throws SdqException {
+    public void recordResponse(SdqScoresEntity score) throws SdqException {
         handle(dataSource, "recordSdq", SdqResponseTable.insertSQL(), stmt -> {
-            scores.forEach(score -> {
-                try {
-                    stmt.setString(1, score.fileUUID().toString());
-                    stmt.setInt(2, score.period());
-                    stmt.setString(3, score.assessor().name());
-                    stmt.setString(4, score.statement().name());
-                    stmt.setString(5, score.statement().category().name());
-                    stmt.setString(6, score.statement().category().posture().name());
-                    stmt.setInt(7, score.score());
-                    int rowsUpdated = stmt.executeUpdate();
-                    LOGGER.info("Inserted SDQ response to database, rows updated {}", rowsUpdated);
-                } catch (Exception e) {
-                    LOGGER.error("Could not save response", e);
-                }
-            });
-            return 0;
+            int rowsUpdated = 0;
+            try {
+                stmt.setString(1, score.fileUUID().toString());
+                stmt.setInt(2, score.period());
+                stmt.setString(3, score.assessor().name());
+                stmt.setString(4, score.statement().name());
+                stmt.setString(5, score.statement().category().name());
+                stmt.setString(6, score.statement().category().posture().name());
+                stmt.setInt(7, score.score());
+                rowsUpdated = stmt.executeUpdate();
+                LOGGER.info("Inserted SDQ response to database, rows updated {}", rowsUpdated);
+            } catch (Exception e) {
+                LOGGER.error("Could not save response", e);
+            }
+            return rowsUpdated;
         });
     }
 
