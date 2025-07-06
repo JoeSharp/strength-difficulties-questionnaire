@@ -20,10 +20,13 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ClientFileService {
+    private final DatabaseService dbService;
     private final ClientFileRepository fileRepository;
     private final InterventionTypeRepository interventionTypeRepository;
 
     public List<ClientFile> getAll() throws SdqException {
+        if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
+
         return fileRepository
                 .getAll()
                 .stream().map(this::toDTO)
@@ -51,6 +54,8 @@ public class ClientFileService {
     }
 
     public Optional<ClientFile> getByUUID(UUID uuid) throws SdqException {
+        if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
+
         return fileRepository.getByUUID(uuid)
                 .map(this::toDTO);
     }

@@ -18,6 +18,7 @@ public interface ClientFileTable {
     String FIELD_ACES = "aces";
     String FIELD_FUNDING_SOURCE = "fundingSource";
     List<String> FIELDS = List.of(
+            FIELD_UUID,
             FIELD_FILENAME,
             FIELD_DOB,
             FIELD_GENDER,
@@ -50,14 +51,15 @@ public interface ClientFileTable {
 
     static String insertSQL() {
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO " + TABLE_NAME);
+        sb.append("INSERT INTO " + TABLE_NAME + " (");
         String fieldNames = String.join(",", FIELDS);
-        sb.append(String.format("(%s, %s)", FIELD_UUID, fieldNames));
-        sb.append(" VALUES ");
+        sb.append(fieldNames);
+        sb.append(") VALUES (");
         String placeholders = FIELDS.stream()
                 .map(f -> "?")
                 .collect(Collectors.joining(", "));
-        sb.append(String.format("(?, %s)", placeholders));
+        sb.append(placeholders);
+        sb.append(")");
         return sb.toString();
     }
 

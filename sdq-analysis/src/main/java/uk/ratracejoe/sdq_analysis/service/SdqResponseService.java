@@ -12,14 +12,18 @@ import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class SdqResponseService {
+    private final DatabaseService dbService;
     private final SdqResponseRepository sdqResponseRepository;
 
     public List<SdqScoresSummary> getScores(UUID fileUuid) throws SdqException {
+        if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
+
         return sdqResponseRepository.getScores(fileUuid).stream()
                 .map(this::toDTO)
                 .toList();
@@ -36,6 +40,8 @@ public class SdqResponseService {
 
     public void recordResponse(ClientFile file,
                                List<SdqPeriod> periods) throws SdqException {
+        if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
+
         periods.forEach(period ->
                 period.responses().forEach((key, value) -> value.forEach(response -> {
                     SdqScoresEntity entity = new SdqScoresEntity(file.uuid(),

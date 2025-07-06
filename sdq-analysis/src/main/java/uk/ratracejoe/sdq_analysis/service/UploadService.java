@@ -18,11 +18,13 @@ import uk.ratracejoe.sdq_analysis.service.xslx.XslxSdqExtractor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UploadService {
+    private final DatabaseService dbService;
     private final InterventionTypeRepository interventionTypeRepository;
     private final ClientFileRepository fileRepository;
     private final SdqResponseService sdqResponseService;
@@ -30,6 +32,8 @@ public class UploadService {
     private final XslxDemographicExtractor xslDemographicExtractor;
 
     public ParsedFile ingestFile(String filename, InputStream file) throws IOException, SdqException {
+        if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
+
         Workbook workbook = new XSSFWorkbook(file);
         ClientFile clientFile = xslDemographicExtractor.parse(workbook, filename);
         ClientFileEntity clientFileEntity = new ClientFileEntity(

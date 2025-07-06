@@ -39,13 +39,14 @@ public class ClientFileRepository {
             stmt.setString(paramIndex++, file.filename());
             stmt.setDate(paramIndex++, dateOfBirth);
             stmt.setString(paramIndex++, file.gender());
+            stmt.setString(paramIndex++, file.council());
             stmt.setString(paramIndex++, file.ethnicity());
             stmt.setString(paramIndex++, file.englishAdditionalLanguage());
             stmt.setString(paramIndex++, file.disabilityStatus());
             stmt.setString(paramIndex++, file.disabilityType());
             stmt.setString(paramIndex++, file.careExperience());
-            stmt.setInt(11, file.aces());
-            stmt.setString(12, file.fundingSource());
+            stmt.setInt(paramIndex++, file.aces());
+            stmt.setString(paramIndex++, file.fundingSource());
             int rowsUpdated = stmt.executeUpdate();
             LOGGER.info("Inserted File to database, rows updated {}", rowsUpdated);
             return rowsUpdated;

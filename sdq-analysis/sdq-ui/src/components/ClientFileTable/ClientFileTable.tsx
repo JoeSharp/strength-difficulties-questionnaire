@@ -1,48 +1,68 @@
+import React from "react";
 import useApiContext from "../../context/ApiContext";
+
+import "./clientFileTable.css";
 
 function UploadFileTable() {
   const {
     clientFileApi: { files },
   } = useApiContext();
 
+  const [expanded, setExpanded] = React.useState<string | undefined>();
+
   return (
     <div>
       <h4>Uploaded Files</h4>
-      <table className="table table-striped">
+      <table className="table">
         <thead>
           <tr>
             <th>UUID</th>
             <th>Filename</th>
             <th>DOB</th>
-            <th>Gender</th>
-            <th>Council</th>
-            <th>Ethnicity</th>
-            <th>EAL</th>
-            <th>Disability</th>
-            <th>Type</th>
-            <th>Care</th>
-            <th>Intervention(s)</th>
-            <th>ACES</th>
-            <th>Funding</th>
           </tr>
         </thead>
         <tbody>
           {files.map((file) => (
-            <tr key={file.uuid}>
-              <td>{file.uuid}</td>
-              <td>{file.filename}</td>
-              <td>{file.dateOfBirth.toISOString().slice(0, 7)}</td>
-              <td>{file.gender}</td>
-              <td>{file.council}</td>
-              <td>{file.ethnicity}</td>
-              <td>{file.englishAdditionalLanguage}</td>
-              <td>{file.disabilityStatus}</td>
-              <td>{file.disabilityType}</td>
-              <td>{file.careExperience}</td>
-              <td>{file.interventionTypes.join(",")}</td>
-              <td>{file.aces}</td>
-              <td>{file.fundingSource}</td>
-            </tr>
+            <React.Fragment key={file.uuid}>
+              <tr
+                className="clickable"
+                onClick={() =>
+                  setExpanded((e) => (e === file.uuid ? undefined : file.uuid))
+                }
+              >
+                <td>{file.uuid}</td>
+                <td>{file.filename}</td>
+                <td>{file.dateOfBirth.toISOString().slice(0, 7)}</td>
+              </tr>
+              {expanded === file.uuid && (
+                <tr>
+                  <td colSpan={3}>
+                    <dl className="two-columns">
+                      <dt>Gender</dt>
+                      <dd>{file.gender}</dd>
+                      <dt>Council</dt>
+                      <dd>{file.council}</dd>
+                      <dt>Ethnicity</dt>
+                      <dd>{file.ethnicity}</dd>
+                      <dt>EAL</dt>
+                      <dd>{file.englishAdditionalLanguage}</dd>
+                      <dt>Disability</dt>
+                      <dd>
+                        {file.disabilityStatus} - {file.disabilityType}
+                      </dd>
+                      <dt>Care Experience</dt>
+                      <dd>{file.careExperience}</dd>
+                      <dt>Intervention Types</dt>
+                      <dd>{file.interventionTypes.join(",")}</dd>
+                      <dt>ACES</dt>
+                      <dd>{file.aces}</dd>
+                      <dt>Funding Source</dt>
+                      <dd>{file.fundingSource}</dd>
+                    </dl>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

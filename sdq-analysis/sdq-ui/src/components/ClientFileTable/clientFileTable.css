@@ -1,0 +1,12 @@
+.two-columns {
+    column-count: 3;
+    column-gap: 2rem;
+}
+
+tr.clickable {
+    cursor: pointer;
+}
+
+tr.clickable:hover {
+    background-color: #938989;
+}
