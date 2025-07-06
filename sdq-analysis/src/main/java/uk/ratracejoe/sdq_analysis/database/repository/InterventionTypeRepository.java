@@ -30,7 +30,7 @@ public class InterventionTypeRepository {
     }
 
     public List<InterventionTypeEntity> getByFile(UUID fileUuid) throws SdqException {
-        return handle(dataSource, "getAllDemographicOptions", DemographicOptionTable.getAll(), stmt -> {
+        return handle(dataSource, "getInterventionTypeByFile", InterventionTypeTable.getByFile(), stmt -> {
             List<InterventionTypeEntity> results = new ArrayList<>();
             stmt.setString(1, fileUuid.toString());
             ResultSet rs = stmt.executeQuery();

@@ -11,6 +11,7 @@ import uk.ratracejoe.sdq_analysis.database.repository.ClientFileRepository;
 import uk.ratracejoe.sdq_analysis.database.repository.SdqResponseRepository;
 import uk.ratracejoe.sdq_analysis.database.tables.ClientFileTable;
 import uk.ratracejoe.sdq_analysis.database.tables.DemographicOptionTable;
+import uk.ratracejoe.sdq_analysis.database.tables.InterventionTypeTable;
 import uk.ratracejoe.sdq_analysis.database.tables.SdqResponseTable;
 import uk.ratracejoe.sdq_analysis.dto.DatabaseStructure;
 import uk.ratracejoe.sdq_analysis.dto.DeleteAllResponse;
@@ -61,6 +62,7 @@ public class DatabaseService {
                     stmt.executeUpdate(DemographicOptionTable.createTableSQL());
                     stmt.executeUpdate(ClientFileTable.createTableSQL());
                     stmt.executeUpdate(SdqResponseTable.createTableSQL());
+                    stmt.executeUpdate(InterventionTypeTable.createTableSQL());
                 }
                 createDemographicOptions(conn, databaseStructure);
                 LOGGER.info("Database created for SDQ");

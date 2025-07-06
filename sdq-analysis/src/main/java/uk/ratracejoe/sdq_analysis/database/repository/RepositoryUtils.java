@@ -6,8 +6,13 @@ import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public abstract class RepositoryUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryUtils.class);
@@ -21,11 +26,17 @@ public abstract class RepositoryUtils {
                 return fn.apply(stmt);
             }
         } catch (SQLException e) {
-            LOGGER.error("Could not execute {} on database {}",
+            LOGGER.error(String.format("Could not execute %s on database %s",
                     operation,
-                    e.getLocalizedMessage());
+                    e.getLocalizedMessage()), e);
             throw new SdqException(String.format("Could not execute %s on database", operation));
         }
+    }
+
+    public static Instant toInstant(Date sqlDate) {
+        LocalDate localDate = sqlDate.toLocalDate();
+        ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault());
+        return zonedDateTime.toInstant();
     }
 
     public interface SqlFunction<R> {

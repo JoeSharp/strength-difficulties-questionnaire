@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static uk.ratracejoe.sdq_analysis.database.repository.RepositoryUtils.handle;
+import static uk.ratracejoe.sdq_analysis.database.repository.RepositoryUtils.toInstant;
 import static uk.ratracejoe.sdq_analysis.database.tables.ClientFileTable.*;
 
 @Service
@@ -85,7 +86,7 @@ public class ClientFileRepository {
         Integer aces = rs.getInt(FIELD_ACES);
         String fundingSource = String.valueOf(rs.getString(FIELD_FUNDING_SOURCE));
         return new ClientFileEntity(UUID.fromString(uuid), filename,
-                dob.toInstant(),
+                toInstant(dob),
                 gender,
                 council,
                 ethnicity,

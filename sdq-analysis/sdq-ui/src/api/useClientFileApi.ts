@@ -25,6 +25,13 @@ export const EMPTY_FILE_API: ClientFileApi = {
 
 const BASE_CLIENT_URL = "/api/client";
 
+function parseFile(file: ClientFile): ClientFile {
+  return {
+    ...file,
+    dateOfBirth: new Date(file.dateOfBirth),
+  };
+}
+
 function useClientFileApi(): ClientFileApi {
   const [scores, setScores] = React.useState<SdqScoresSummary[]>([]);
   const [files, setFiles] = React.useState<ClientFile[]>([]);
@@ -48,7 +55,7 @@ function useClientFileApi(): ClientFileApi {
         return response.json();
       })
       .then((r) => {
-        setFiles(r);
+        setFiles(r.map(parseFile));
       })
       .finally(() => {
         endJob(jobId);
@@ -71,7 +78,7 @@ function useClientFileApi(): ClientFileApi {
         return response.json();
       })
       .then((r) => {
-        setFile(r);
+        setFile(parseFile(r));
       })
       .finally(() => {
         endJob(jobId);

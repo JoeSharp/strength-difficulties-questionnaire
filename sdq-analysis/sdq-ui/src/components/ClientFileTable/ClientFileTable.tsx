@@ -1,6 +1,6 @@
 import useApiContext from "../../context/ApiContext";
 
-function ClientFileTable() {
+function UploadFileTable() {
   const {
     clientFileApi: { files },
   } = useApiContext();
@@ -31,7 +31,7 @@ function ClientFileTable() {
             <tr key={file.uuid}>
               <td>{file.uuid}</td>
               <td>{file.filename}</td>
-              <td>{file.dateOfBirth.toISOString()}</td>
+              <td>{file.dateOfBirth.toISOString().slice(0, 7)}</td>
               <td>{file.gender}</td>
               <td>{file.council}</td>
               <td>{file.ethnicity}</td>
@@ -50,4 +50,4 @@ function ClientFileTable() {
   );
 }
 
-export default ClientFileTable;
+export default UploadFileTable;

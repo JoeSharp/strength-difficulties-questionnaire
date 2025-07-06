@@ -5,7 +5,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq_analysis.database.entity.ClientFileEntity;
+import uk.ratracejoe.sdq_analysis.database.entity.InterventionTypeEntity;
 import uk.ratracejoe.sdq_analysis.database.repository.ClientFileRepository;
+import uk.ratracejoe.sdq_analysis.database.repository.InterventionTypeRepository;
 import uk.ratracejoe.sdq_analysis.database.repository.SdqResponseRepository;
 import uk.ratracejoe.sdq_analysis.dto.ClientFile;
 import uk.ratracejoe.sdq_analysis.dto.ParsedFile;
@@ -21,6 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UploadService {
+    private final InterventionTypeRepository interventionTypeRepository;
     private final ClientFileRepository fileRepository;
     private final SdqResponseService sdqResponseService;
     private final XslxSdqExtractor xslSdqExtractor;
@@ -44,6 +47,11 @@ public class UploadService {
                 clientFile.fundingSource()
         );
         fileRepository.saveFile(clientFileEntity);
+        clientFile.interventionTypes()
+                .stream()
+                .map(it -> new InterventionTypeEntity(clientFile.uuid(), it))
+                .forEach(interventionTypeRepository::save
+        );
         List<SdqPeriod> periods = xslSdqExtractor.parse(workbook);
         sdqResponseService.recordResponse(clientFile, periods);
         return new ParsedFile(clientFile, periods);
