@@ -2,9 +2,9 @@ import React from "react";
 import useApiContext from "../../context/ApiContext";
 import JsonDisplay from "../JsonDisplay";
 
-function FileUploadForm() {
+function ManageDatabaseForm() {
   const {
-    uploadApi: { onSubmitFile, lastFile },
+    databaseApi: { createDatabase, exists, structure },
   } = useApiContext();
 
   const onClickSubmit: React.FormEventHandler<HTMLFormElement> =
@@ -13,9 +13,9 @@ function FileUploadForm() {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
-        onSubmitFile(formData);
+        createDatabase(formData);
       },
-      [onSubmitFile]
+      [createDatabase]
     );
 
   return (
@@ -27,18 +27,19 @@ function FileUploadForm() {
       >
         <div className="form-control mb-3">
           <label>File</label>
-          <input type="file" multiple name="sdqFiles" />
+          <input type="file" multiple name="sdqFile" />
         </div>
         <input className="btn btn-primary" type="submit" value="Upload" />
       </form>
       <div className="mb-3"></div>
+      <p>Database {exists ? "exists" : "does not exist"}</p>
       <JsonDisplay
-        id="lastSubmission"
-        title="Last Submission"
-        value={lastFile}
+        id="dbStructure"
+        title="Database Structure"
+        value={structure}
       />
     </>
   );
 }
 
-export default FileUploadForm;
+export default ManageDatabaseForm;

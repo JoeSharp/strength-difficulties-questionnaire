@@ -1,10 +1,13 @@
-import useUploadFileApi from '../../api/useUploadFileApi';
+import useClientFileApi from "../../api/useClientFileApi";
 
 function DeleteAllButton() {
+  const { onDeleteAll } = useClientFileApi();
 
-	const { onDeleteAll } = useUploadFileApi();
-
-	return <button className='btn btn-danger' onClick={onDeleteAll}>Delete All</button>
+  return (
+    <button className="btn btn-danger" onClick={onDeleteAll}>
+      Delete All
+    </button>
+  );
 }
 
 export default DeleteAllButton;

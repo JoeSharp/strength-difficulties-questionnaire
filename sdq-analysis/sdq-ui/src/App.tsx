@@ -1,23 +1,32 @@
-import ApplicationMessages from './components/ApplicationMessages';
-import FileUploadForm from './components/FileUploadForm';
-import InProgressSpinner from './components/InProgressSpinner';
-import UploadFileTable from './components/UploadFileTable';
-import SdqScoresTable from './components/SdqScoresTable';
-import DeleteAllButton from './components/DeleteAllButton';
+import ApplicationMessages from "./components/ApplicationMessages";
+import FileUploadForm from "./components/FileUploadForm";
+import InProgressSpinner from "./components/InProgressSpinner";
+import ClientFileTable from "./components/ClientFileTable";
+import SdqScoresTable from "./components/SdqScoresTable";
+import DeleteAllButton from "./components/DeleteAllButton";
+import ManageDatabaseForm from "./components/ManageDatabaseForm";
+import useApiContext from "./context/ApiContext";
 
 function App() {
-
+  const {
+    databaseApi: { exists },
+  } = useApiContext();
   return (
-    <div className='container'>
+    <div className="container">
       <h1>Strength & Difficulties Analysis</h1>
-      <ApplicationMessages />
-      <InProgressSpinner />
-      <DeleteAllButton />
-      <FileUploadForm />
-      <UploadFileTable />
-      <SdqScoresTable />
+      {!exists && <ManageDatabaseForm />}
+      {exists && (
+        <>
+          <ApplicationMessages />
+          <InProgressSpinner />
+          <DeleteAllButton />
+          <FileUploadForm />
+          <ClientFileTable />
+          <SdqScoresTable />
+        </>
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
