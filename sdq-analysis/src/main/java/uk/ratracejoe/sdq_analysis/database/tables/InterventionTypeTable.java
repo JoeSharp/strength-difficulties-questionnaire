@@ -12,7 +12,7 @@ public interface InterventionTypeTable {
                 FIELD_INTERVENTION_TYPE);
     }
 
-    static String getByFile() {
+    static String getByFileSQL() {
         return String.format("SELECT %s FROM %s WHERE %s = ?",
                 FIELD_INTERVENTION_TYPE,
                 TABLE_NAME,

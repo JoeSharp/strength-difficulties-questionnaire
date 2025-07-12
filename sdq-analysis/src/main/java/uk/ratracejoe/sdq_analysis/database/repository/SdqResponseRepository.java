@@ -27,7 +27,7 @@ public class SdqResponseRepository {
     private final DataSource dataSource;
 
     public List<SdqScoresPivot> getScores(UUID fileUuid) throws SdqException {
-        return handle(dataSource, "getScores", SdqResponseTable.selectScoresSQL(), stmt -> {
+        return handle(dataSource, "getScores", SdqResponseTable.selectScoresPivotSQL(), stmt -> {
             stmt.setString(1, fileUuid.toString());
             List<SdqScoresPivot> sdqScores = new ArrayList<>();
             ResultSet rs = stmt.executeQuery();

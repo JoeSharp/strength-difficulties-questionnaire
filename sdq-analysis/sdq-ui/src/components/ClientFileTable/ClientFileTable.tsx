@@ -24,6 +24,7 @@ function UploadFileTable() {
         <tbody>
           {files.map((file) => (
             <tr
+              key={file.uuid}
               className="clickable"
               onClick={() => navigate(`/client/${file.uuid}`)}
             >

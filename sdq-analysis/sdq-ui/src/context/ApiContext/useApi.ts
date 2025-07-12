@@ -24,6 +24,7 @@ function useApi(): IApi {
   const referenceApi = useReferenceApi();
 
   const refresh = React.useCallback(() => {
+    clientFileApi.refresh();
     referenceApi.refresh();
     databaseApi.refresh();
   }, [referenceApi.refresh, databaseApi.refresh]);

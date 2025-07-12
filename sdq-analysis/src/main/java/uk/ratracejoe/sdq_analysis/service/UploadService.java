@@ -9,12 +9,10 @@ import uk.ratracejoe.sdq_analysis.database.entity.InterventionTypeEntity;
 import uk.ratracejoe.sdq_analysis.database.repository.ClientFileRepository;
 import uk.ratracejoe.sdq_analysis.database.repository.InterventionTypeRepository;
 import uk.ratracejoe.sdq_analysis.database.repository.SdqResponseRepository;
-import uk.ratracejoe.sdq_analysis.dto.ClientFile;
-import uk.ratracejoe.sdq_analysis.dto.DatabaseStructure;
-import uk.ratracejoe.sdq_analysis.dto.ParsedFile;
-import uk.ratracejoe.sdq_analysis.dto.SdqPeriod;
+import uk.ratracejoe.sdq_analysis.dto.*;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 import uk.ratracejoe.sdq_analysis.service.xslx.XslxDemographicExtractor;
+import uk.ratracejoe.sdq_analysis.service.xslx.XslxGboExtractor;
 import uk.ratracejoe.sdq_analysis.service.xslx.XslxSdqExtractor;
 import uk.ratracejoe.sdq_analysis.service.xslx.XslxStructureExtractor;
 
@@ -22,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,9 @@ public class UploadService {
     private final InterventionTypeRepository interventionTypeRepository;
     private final ClientFileRepository fileRepository;
     private final SdqResponseService sdqResponseService;
+    private final GboService gboService;
     private final XslxSdqExtractor xslSdqExtractor;
+    private final XslxGboExtractor xslxGboExtractor;
     private final XslxStructureExtractor structureExtractor;
     private final XslxDemographicExtractor xslDemographicExtractor;
 
@@ -64,9 +65,11 @@ public class UploadService {
                 .map(it -> new InterventionTypeEntity(clientFile.uuid(), it))
                 .forEach(interventionTypeRepository::save
         );
-        List<SdqPeriod> periods = xslSdqExtractor.parse(workbook);
-        sdqResponseService.recordResponse(clientFile, periods);
-        return new ParsedFile(clientFile, periods);
+        List<SdqPeriod> sdqs = xslSdqExtractor.parse(workbook);
+        sdqResponseService.recordResponse(clientFile, sdqs);
+        Map<Assessor, List<GboPeriod>> gbos = xslxGboExtractor.parse(workbook);
+        gboService.recordResponse(clientFile, gbos);
 
+        return new ParsedFile(clientFile, sdqs, gbos);
     }
 }

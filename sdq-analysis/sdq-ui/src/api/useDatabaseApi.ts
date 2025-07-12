@@ -1,6 +1,7 @@
 import React from "react";
 import useAppNotificationContext from "../context/AppNotificationContext";
 import useInProgressContext from "../context/InProgressContext";
+import { useNavigate } from "react-router-dom";
 
 export interface DatabaseApi {
   exists: boolean;
@@ -17,6 +18,7 @@ export const EMPTY_DATABASE_API: DatabaseApi = {
 const BASE_URL = "/api/database";
 
 function useDatabaseApi(): DatabaseApi {
+  const navigate = useNavigate();
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
   const [exists, setExists] = React.useState<boolean>(false);
@@ -46,11 +48,12 @@ function useDatabaseApi(): DatabaseApi {
         }
         addMessage("success", response.status, "Database deleted succesfully");
         setExists(false);
+        navigate("/");
       })
       .finally(() => {
         endJob(jobId);
       });
-  }, [endJob, beginJob, addMessage]);
+  }, [endJob, beginJob, addMessage, navigate]);
 
   return {
     exists,

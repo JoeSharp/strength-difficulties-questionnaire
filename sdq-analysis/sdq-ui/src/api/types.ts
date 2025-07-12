@@ -58,6 +58,14 @@ export interface SdqScoresSummary {
   total: number;
 }
 
+export interface GboSummary {
+  uuid: string;
+  assessor: string;
+  periodIndex: number;
+  periodDate: Date;
+  scores: Record<number, number>;
+}
+
 export type Assessor = "Parent1" | "Parent2" | "School" | "Child";
 
 export type Statement =

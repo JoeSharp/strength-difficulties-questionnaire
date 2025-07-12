@@ -6,7 +6,7 @@ import uk.ratracejoe.sdq_analysis.dto.Statement;
 import java.util.UUID;
 
 public record SdqScoresEntity(UUID fileUUID,
-                              int period,
+                              Integer period,
                               Assessor assessor,
                               Statement statement,
                               Integer score) {

@@ -4,23 +4,30 @@ import useAppNotificationContext from "../context/AppNotificationContext";
 import {
   EMPTY_CLIENT_FILE,
   type ClientFile,
+  type GboSummary,
   type SdqScoresSummary,
 } from "./types";
 
 export interface ClientFileApi {
+  gbo: GboSummary[];
   scores: SdqScoresSummary[];
   files: ClientFile[];
   file: ClientFile;
+  refresh: () => void;
   getFileByUuid: (uuid: string) => void;
   getScoresByUuid: (uuid: string) => void;
+  getGboByUuid: (uuid: string) => void;
 }
 
 export const EMPTY_FILE_API: ClientFileApi = {
+  gbo: [],
   scores: [],
   files: [],
   file: EMPTY_CLIENT_FILE,
+  refresh: () => console.error("default implementation"),
   getFileByUuid: () => console.error("default implementation"),
   getScoresByUuid: () => console.error("default implementation"),
+  getGboByUuid: () => console.error("default implementation"),
 };
 
 const BASE_CLIENT_URL = "/api/client";
@@ -33,6 +40,7 @@ function parseFile(file: ClientFile): ClientFile {
 }
 
 function useClientFileApi(): ClientFileApi {
+  const [gbo, setGbo] = React.useState<GboSummary[]>([]);
   const [scores, setScores] = React.useState<SdqScoresSummary[]>([]);
   const [files, setFiles] = React.useState<ClientFile[]>([]);
   const { addMessage } = useAppNotificationContext();
@@ -108,6 +116,29 @@ function useClientFileApi(): ClientFileApi {
       });
   }, []);
 
+  const getGboByUuid = React.useCallback((uuid: string) => {
+    const jobId = beginJob("Fetching gbo");
+    fetch(`${BASE_CLIENT_URL}/gbo/${uuid}`)
+      .then((response) => {
+        if (!response.ok) {
+          addMessage(
+            "danger",
+            response.status,
+            "Failed to fetch gbo: " + response.statusText
+          );
+          throw new Error("Network response was not ok");
+        }
+
+        return response.json();
+      })
+      .then((r) => {
+        setGbo(r);
+      })
+      .finally(() => {
+        endJob(jobId);
+      });
+  }, []);
+
   React.useEffect(() => {
     fetchFiles();
   }, [fetchFiles]);
@@ -116,8 +147,11 @@ function useClientFileApi(): ClientFileApi {
     files,
     file,
     scores,
+    gbo,
+    refresh: fetchFiles,
     getFileByUuid,
     getScoresByUuid,
+    getGboByUuid,
   };
 }
 

@@ -9,10 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.ratracejoe.sdq_analysis.config.DbConfig;
 import uk.ratracejoe.sdq_analysis.database.repository.ClientFileRepository;
 import uk.ratracejoe.sdq_analysis.database.repository.SdqResponseRepository;
-import uk.ratracejoe.sdq_analysis.database.tables.ClientFileTable;
-import uk.ratracejoe.sdq_analysis.database.tables.DemographicOptionTable;
-import uk.ratracejoe.sdq_analysis.database.tables.InterventionTypeTable;
-import uk.ratracejoe.sdq_analysis.database.tables.SdqResponseTable;
+import uk.ratracejoe.sdq_analysis.database.tables.*;
 import uk.ratracejoe.sdq_analysis.dto.DatabaseStructure;
 import uk.ratracejoe.sdq_analysis.dto.DeleteAllResponse;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
@@ -49,6 +46,7 @@ public class DatabaseService {
                     stmt.executeUpdate(ClientFileTable.createTableSQL());
                     stmt.executeUpdate(SdqResponseTable.createTableSQL());
                     stmt.executeUpdate(InterventionTypeTable.createTableSQL());
+                    stmt.executeUpdate(GoalBasedOutcomeTable.createTableSQL());
                 }
                 createDemographicOptions(conn, databaseStructure);
                 LOGGER.info("Database created for SDQ");

@@ -41,7 +41,7 @@ public interface SdqResponseTable {
                 FIELD_SCORE);
     }
 
-    static String selectScoresSQL() {
+    static String selectScoresPivotSQL() {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT ");
         String fieldList = String.join(",", FIELD_FILE_UUID, FIELD_PERIOD_INDEX, FIELD_ASSESSOR);

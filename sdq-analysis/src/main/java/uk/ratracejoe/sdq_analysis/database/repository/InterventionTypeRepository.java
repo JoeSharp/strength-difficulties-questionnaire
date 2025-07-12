@@ -3,7 +3,6 @@ package uk.ratracejoe.sdq_analysis.database.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq_analysis.database.entity.InterventionTypeEntity;
-import uk.ratracejoe.sdq_analysis.database.tables.DemographicOptionTable;
 import uk.ratracejoe.sdq_analysis.database.tables.InterventionTypeTable;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
@@ -30,7 +29,7 @@ public class InterventionTypeRepository {
     }
 
     public List<InterventionTypeEntity> getByFile(UUID fileUuid) throws SdqException {
-        return handle(dataSource, "getInterventionTypeByFile", InterventionTypeTable.getByFile(), stmt -> {
+        return handle(dataSource, "getInterventionTypeByFile", InterventionTypeTable.getByFileSQL(), stmt -> {
             List<InterventionTypeEntity> results = new ArrayList<>();
             stmt.setString(1, fileUuid.toString());
             ResultSet rs = stmt.executeQuery();
