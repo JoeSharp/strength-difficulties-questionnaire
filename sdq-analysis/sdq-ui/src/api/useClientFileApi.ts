@@ -1,6 +1,6 @@
 import React from "react";
 import useInProgressContext from "../context/InProgressContext";
-import useApplicationMessageContext from "../context/ApplicationMessageContext";
+import useAppNotificationContext from "../context/AppNotificationContext";
 import {
   EMPTY_CLIENT_FILE,
   type ClientFile,
@@ -35,7 +35,7 @@ function parseFile(file: ClientFile): ClientFile {
 function useClientFileApi(): ClientFileApi {
   const [scores, setScores] = React.useState<SdqScoresSummary[]>([]);
   const [files, setFiles] = React.useState<ClientFile[]>([]);
-  const { addMessage } = useApplicationMessageContext();
+  const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
   const [file, setFile] = React.useState<ClientFile>(EMPTY_CLIENT_FILE);
 

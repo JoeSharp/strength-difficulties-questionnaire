@@ -1,27 +1,27 @@
 import React from "react";
 import useInProgressContext from "../context/InProgressContext";
-import useApplicationMessageContext from "../context/ApplicationMessageContext";
+import useAppNotificationContext from "../context/AppNotificationContext";
 import { EMPTY_PARSED_FILE, type ParsedFile } from "./types";
 
 export interface UploadApi {
   lastFile: ParsedFile;
-  onSubmitFile: (data: FormData) => void;
+  onSubmitFile: (data: FormData) => Promise<void>;
 }
 
 export const EMPTY_UPLOAD_API: UploadApi = {
   lastFile: EMPTY_PARSED_FILE,
-  onSubmitFile: () => console.error("default implementation"),
+  onSubmitFile: () => Promise.reject("default implementation"),
 };
 
 function useUploadApi(): UploadApi {
   const [lastFile, setLastFile] = React.useState<ParsedFile>(EMPTY_PARSED_FILE);
-  const { addMessage } = useApplicationMessageContext();
+  const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
 
   const onSubmitFile = React.useCallback(
     (formData: FormData) => {
       const jobId = beginJob("Submitting File");
-      fetch("/api/upload", {
+      return fetch("/api/upload", {
         method: "POST",
         body: formData,
       })

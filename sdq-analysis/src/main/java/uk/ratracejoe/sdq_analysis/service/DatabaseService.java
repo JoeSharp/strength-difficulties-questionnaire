@@ -33,9 +33,6 @@ import java.sql.Statement;
 public class DatabaseService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseService.class);
 
-    private final XslxStructureExtractor structureExtractor;
-    private final ClientFileRepository fileRepository;
-    private final SdqResponseRepository sdqResponseRepository;
     private final DataSource dataSource;
     private final DbConfig dbConfig;
 
@@ -43,18 +40,7 @@ public class DatabaseService {
         return Files.exists(Path.of(dbConfig.getDatabaseFile()));
     }
 
-    public DatabaseStructure createDatabase(InputStream file) throws SdqException, IOException {
-        Workbook workbook = new XSSFWorkbook(file);
-
-        var demographics = structureExtractor.extractDemographicOptions(workbook);
-        DatabaseStructure structure = new DatabaseStructure(demographics);
-
-        createDatabase(structure);
-
-        return structure;
-    }
-
-    private void createDatabase(DatabaseStructure databaseStructure) {
+    public void createDatabase(DatabaseStructure databaseStructure) {
         try (Connection conn = dataSource.getConnection()) {
             if (conn != null) {
                 LOGGER.info("Connected to SQLite.");
@@ -85,16 +71,10 @@ public class DatabaseService {
         }));
     }
 
-    public DeleteAllResponse clearDatabase() throws SdqException {
-        int filesDeleted = fileRepository.deleteAll();
-        int responsesDeleted = sdqResponseRepository.deleteAll();
-        return new DeleteAllResponse(filesDeleted, responsesDeleted);
-    }
-
     public void deleteDatabase() {
         try {
             Files.delete(Path.of(dbConfig.getDatabaseFile()));
-            LOGGER.info("Deleted existing test database " + dbConfig.getDatabaseFile());
+            LOGGER.info("Deleted existing test database {}", dbConfig.getDatabaseFile());
         } catch (Exception e) {
             LOGGER.info("Couldn't delete database, but that may be fine");
         }

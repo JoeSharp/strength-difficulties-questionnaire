@@ -4,6 +4,7 @@ import JsonDisplay from "../JsonDisplay";
 
 function FileUploadForm() {
   const {
+    refresh,
     uploadApi: { onSubmitFile, lastFile },
   } = useApiContext();
 
@@ -13,9 +14,9 @@ function FileUploadForm() {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
-        onSubmitFile(formData);
+        onSubmitFile(formData).then(() => refresh());
       },
-      [onSubmitFile]
+      [onSubmitFile, refresh]
     );
 
   return (
@@ -25,16 +26,25 @@ function FileUploadForm() {
         encType="multipart/form-data"
         onSubmit={onClickSubmit}
       >
-        <div className="form-control mb-3">
+        <div className="mb-3">
           <label>File</label>
-          <input type="file" multiple name="sdqFiles" />
+          <input
+            className="form-control"
+            type="file"
+            multiple
+            name="sdqFiles"
+          />
         </div>
-        <input className="btn btn-primary" type="submit" value="Upload" />
+        <input
+          className="btn btn-primary"
+          type="submit"
+          value="Upload File(s)"
+        />
       </form>
       <div className="mb-3"></div>
       <JsonDisplay
         id="lastSubmission"
-        title="Last Submission"
+        title="Debug - Last Submission"
         value={lastFile}
       />
     </>

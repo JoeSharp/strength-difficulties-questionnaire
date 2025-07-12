@@ -10,11 +10,13 @@ import uk.ratracejoe.sdq_analysis.database.repository.ClientFileRepository;
 import uk.ratracejoe.sdq_analysis.database.repository.InterventionTypeRepository;
 import uk.ratracejoe.sdq_analysis.database.repository.SdqResponseRepository;
 import uk.ratracejoe.sdq_analysis.dto.ClientFile;
+import uk.ratracejoe.sdq_analysis.dto.DatabaseStructure;
 import uk.ratracejoe.sdq_analysis.dto.ParsedFile;
 import uk.ratracejoe.sdq_analysis.dto.SdqPeriod;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 import uk.ratracejoe.sdq_analysis.service.xslx.XslxDemographicExtractor;
 import uk.ratracejoe.sdq_analysis.service.xslx.XslxSdqExtractor;
+import uk.ratracejoe.sdq_analysis.service.xslx.XslxStructureExtractor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,12 +31,18 @@ public class UploadService {
     private final ClientFileRepository fileRepository;
     private final SdqResponseService sdqResponseService;
     private final XslxSdqExtractor xslSdqExtractor;
+    private final XslxStructureExtractor structureExtractor;
     private final XslxDemographicExtractor xslDemographicExtractor;
 
     public ParsedFile ingestFile(String filename, InputStream file) throws IOException, SdqException {
-        if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
 
         Workbook workbook = new XSSFWorkbook(file);
+        if (!dbService.databaseExists()) {
+            var demographics = structureExtractor.extractDemographicOptions(workbook);
+            DatabaseStructure structure = new DatabaseStructure(demographics);
+            dbService.createDatabase(structure);
+        }
+
         ClientFile clientFile = xslDemographicExtractor.parse(workbook, filename);
         ClientFileEntity clientFileEntity = new ClientFileEntity(
                 clientFile.uuid(),

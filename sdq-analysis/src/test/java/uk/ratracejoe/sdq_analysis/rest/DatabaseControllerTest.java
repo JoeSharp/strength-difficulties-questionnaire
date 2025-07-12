@@ -28,18 +28,4 @@ class DatabaseControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
-
-    @Test
-    void databaseCreationRegistersCorrectly() throws IOException {
-        // Given
-        var request = getWorkbookPost("sdqFile");
-
-        // When
-        var createResponse = restTemplate.postForEntity(REST_URL_DATABASE, request, DatabaseStructure.class);
-        var existsResponse = restTemplate.getForEntity(REST_URL_DATABASE, Void.class);
-
-        // Then
-        assertThat(createResponse).isNotNull();
-        assertThat(existsResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-    }
 }

@@ -14,11 +14,8 @@ export type DemographicField =
 export type DemographicReference = {
   [key in keyof DemographicField]?: string[];
 };
-const EMPTY_DEMOGRAPHIC_REFERENCE: DemographicReference = {};
 
-export interface DatabaseStructure {
-  demographics: DemographicReference;
-}
+const EMPTY_DEMOGRAPHIC_REFERENCE: DemographicReference = {};
 
 export interface ClientFile {
   uuid: string;

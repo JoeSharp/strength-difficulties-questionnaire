@@ -6,6 +6,7 @@ import { EMPTY_UPLOAD_API } from "../../api/useUploadApi";
 import { EMPTY_REFERENCE_API } from "../../api/useReferenceApi";
 
 const DEFAULT_CONTEXT: IApi = {
+  refresh: () => console.error("default implementation"),
   clientFileApi: EMPTY_FILE_API,
   databaseApi: EMPTY_DATABASE_API,
   uploadApi: EMPTY_UPLOAD_API,

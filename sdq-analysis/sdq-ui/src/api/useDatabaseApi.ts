@@ -1,68 +1,37 @@
 import React from "react";
-import useApplicationMessageContext from "../context/ApplicationMessageContext";
+import useAppNotificationContext from "../context/AppNotificationContext";
 import useInProgressContext from "../context/InProgressContext";
-import type { DatabaseStructure } from "./types";
-
-export const EMPTY_STRUCTURE: DatabaseStructure = {
-  demographics: {},
-};
 
 export interface DatabaseApi {
   exists: boolean;
-  structure: DatabaseStructure;
-  createDatabase: (formData: FormData) => void;
-  clearDatabase: () => void;
+  refresh: () => void;
+  deleteDatabase: () => void;
 }
 
 export const EMPTY_DATABASE_API: DatabaseApi = {
   exists: false,
-  structure: EMPTY_STRUCTURE,
-  createDatabase: () => console.error("default implementation"),
-  clearDatabase: () => console.error("default implementation"),
+  refresh: () => console.error("default implementation"),
+  deleteDatabase: () => console.error("default implementation"),
 };
 
 const BASE_URL = "/api/database";
 
 function useDatabaseApi(): DatabaseApi {
-  const { addMessage } = useApplicationMessageContext();
+  const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
   const [exists, setExists] = React.useState<boolean>(false);
-  const [structure, setStructure] =
-    React.useState<DatabaseStructure>(EMPTY_STRUCTURE);
 
-  // Determine if database currently exists
-  React.useEffect(() => {
+  const refresh = React.useCallback(() => {
     fetch(BASE_URL).then((response) => {
       setExists(response.ok);
     });
   }, []);
 
-  const createDatabase = React.useCallback((formData: FormData) => {
-    const jobId = beginJob("Creating database");
-    fetch(BASE_URL, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          addMessage(
-            "danger",
-            response.status,
-            "Failed to create database: " + response.statusText
-          );
-          throw new Error("Network response was not ok");
-        }
-        addMessage("success", response.status, "Database created succesfully");
-        return response.json();
-      })
-      .then((s) => setStructure(s))
-      .finally(() => {
-        endJob(jobId);
-      });
-  }, []);
+  // Determine if database currently exists
+  React.useEffect(refresh, []);
 
-  const clearDatabase = React.useCallback(() => {
-    const jobId = beginJob("Clearing Database");
+  const deleteDatabase = React.useCallback(() => {
+    const jobId = beginJob("Deleting Database");
     fetch(BASE_URL, {
       method: "DELETE",
     })
@@ -71,22 +40,22 @@ function useDatabaseApi(): DatabaseApi {
           addMessage(
             "danger",
             response.status,
-            "Failed to clear database: " + response.statusText
+            "Failed to delete database: " + response.statusText
           );
           throw new Error("Network response was not ok");
         }
-        addMessage("success", response.status, "Database cleared succesfully");
+        addMessage("success", response.status, "Database deleted succesfully");
+        setExists(false);
       })
       .finally(() => {
         endJob(jobId);
       });
-  }, []);
+  }, [endJob, beginJob, addMessage]);
 
   return {
     exists,
-    structure,
-    createDatabase,
-    clearDatabase,
+    refresh,
+    deleteDatabase,
   };
 }
 

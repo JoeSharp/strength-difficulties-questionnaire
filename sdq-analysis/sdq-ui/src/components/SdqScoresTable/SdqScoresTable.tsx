@@ -1,4 +1,4 @@
-import useApiContext from "../../context/ApiContext";
+import type { SdqScoresSummary } from "../../api/types";
 
 const CATEGORIES: string[] = [
   "Conduct",
@@ -10,11 +10,11 @@ const CATEGORIES: string[] = [
 
 const POSTURES: string[] = ["Internalising", "Externalising", "ProSocial"];
 
-function ClientFileTable() {
-  const {
-    clientFileApi: { scores },
-  } = useApiContext();
+interface Props {
+  scores: SdqScoresSummary[];
+}
 
+function SdqScoresTable({ scores }: Props) {
   return (
     <div>
       <h4>SDQ Scores</h4>
@@ -54,4 +54,4 @@ function ClientFileTable() {
   );
 }
 
-export default ClientFileTable;
+export default SdqScoresTable;

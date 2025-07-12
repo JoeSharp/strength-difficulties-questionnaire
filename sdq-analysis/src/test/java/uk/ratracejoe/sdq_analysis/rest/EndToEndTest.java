@@ -34,11 +34,6 @@ class EndToEndTest {
     void completeLifecycle() throws IOException {
         int NUMBER_ASSESSORS = 4;
         int NUMBER_PERIODS = 9;
-        var createDbRequest = getWorkbookPost("sdqFile" );
-        var createResponse = restTemplate.postForEntity(REST_URL_DATABASE,
-                createDbRequest,
-                DatabaseStructure.class);
-        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         var ingestFileRequest = getWorkbookPost("sdqFiles");
         var ingestResponse = restTemplate.exchange(REST_URL_UPLOAD, HttpMethod.POST, ingestFileRequest,

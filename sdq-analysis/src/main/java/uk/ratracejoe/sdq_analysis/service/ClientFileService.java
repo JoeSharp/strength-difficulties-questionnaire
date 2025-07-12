@@ -25,7 +25,7 @@ public class ClientFileService {
     private final InterventionTypeRepository interventionTypeRepository;
 
     public List<ClientFile> getAll() throws SdqException {
-        if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
+        if (!dbService.databaseExists()) return Collections.emptyList();
 
         return fileRepository
                 .getAll()
@@ -54,7 +54,7 @@ public class ClientFileService {
     }
 
     public Optional<ClientFile> getByUUID(UUID uuid) throws SdqException {
-        if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
+        if (!dbService.databaseExists()) return Optional.empty();
 
         return fileRepository.getByUUID(uuid)
                 .map(this::toDTO);

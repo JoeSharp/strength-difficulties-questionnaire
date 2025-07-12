@@ -1,3 +1,5 @@
+import React from "react";
+
 import type { DatabaseApi } from "../../api/useDatabaseApi";
 import useDatabaseApi from "../../api/useDatabaseApi";
 import type { ClientFileApi } from "../../api/useClientFileApi";
@@ -8,6 +10,7 @@ import type { ReferenceApi } from "../../api/useReferenceApi";
 import useReferenceApi from "../../api/useReferenceApi";
 
 export interface IApi {
+  refresh: () => void;
   clientFileApi: ClientFileApi;
   databaseApi: DatabaseApi;
   uploadApi: UploadApi;
@@ -20,7 +23,13 @@ function useApi(): IApi {
   const uploadApi = useUploadApi();
   const referenceApi = useReferenceApi();
 
+  const refresh = React.useCallback(() => {
+    referenceApi.refresh();
+    databaseApi.refresh();
+  }, [referenceApi.refresh, databaseApi.refresh]);
+
   return {
+    refresh,
     clientFileApi,
     databaseApi,
     uploadApi,
