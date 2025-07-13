@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq_analysis.database.entity.ClientFileEntity;
 import uk.ratracejoe.sdq_analysis.database.entity.InterventionTypeEntity;
-import uk.ratracejoe.sdq_analysis.database.entity.SdqScoresPivot;
 import uk.ratracejoe.sdq_analysis.database.repository.ClientFileRepository;
 import uk.ratracejoe.sdq_analysis.database.repository.InterventionTypeRepository;
-import uk.ratracejoe.sdq_analysis.database.repository.SdqResponseRepository;
 import uk.ratracejoe.sdq_analysis.dto.ClientFile;
-import uk.ratracejoe.sdq_analysis.dto.SdqScoresSummary;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
 import java.util.Collections;

@@ -1,23 +1,14 @@
 package uk.ratracejoe.sdq_analysis.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.ratracejoe.sdq_analysis.config.DbConfig;
-import uk.ratracejoe.sdq_analysis.database.repository.ClientFileRepository;
-import uk.ratracejoe.sdq_analysis.database.repository.SdqResponseRepository;
 import uk.ratracejoe.sdq_analysis.database.tables.*;
 import uk.ratracejoe.sdq_analysis.dto.DatabaseStructure;
-import uk.ratracejoe.sdq_analysis.dto.DeleteAllResponse;
-import uk.ratracejoe.sdq_analysis.exception.SdqException;
-import uk.ratracejoe.sdq_analysis.service.xslx.XslxStructureExtractor;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -44,7 +35,7 @@ public class DatabaseService {
                 try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate(DemographicOptionTable.createTableSQL());
                     stmt.executeUpdate(ClientFileTable.createTableSQL());
-                    stmt.executeUpdate(SdqResponseTable.createTableSQL());
+                    stmt.executeUpdate(SdqTable.createTableSQL());
                     stmt.executeUpdate(InterventionTypeTable.createTableSQL());
                     stmt.executeUpdate(GoalBasedOutcomeTable.createTableSQL());
                 }

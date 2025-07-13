@@ -6,7 +6,7 @@ import uk.ratracejoe.sdq_analysis.dto.Posture;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public interface SdqResponseTable {
+public interface SdqTable {
     String TABLE_NAME = "sdq";
     String FIELD_FILE_UUID = "uuid";
     String FIELD_PERIOD_INDEX = "period";
@@ -48,12 +48,12 @@ public interface SdqResponseTable {
         sb.append(fieldList);
         sb.append(",");
         String categoryStr = Arrays.stream(Category.values())
-                .map(c -> String.format("  SUM(CASE WHEN category = '%s' THEN score ELSE 0 END) AS %s", c, c))
+                .map(c -> String.format("  SUM(CASE WHEN %s = '%s' THEN %s ELSE 0 END) AS %s", FIELD_CATEGORY, c, FIELD_SCORE, c))
                 .collect(Collectors.joining(","));
         sb.append(categoryStr);
         sb.append(",");
         String postureStr = Arrays.stream(Posture.values())
-                .map(p -> String.format("  SUM(CASE WHEN posture = '%s' THEN score ELSE 0 END) AS %s", p, p))
+                .map(p -> String.format("  SUM(CASE WHEN %s = '%s' THEN %s ELSE 0 END) AS %s", FIELD_POSTURE, p, FIELD_SCORE, p))
                 .collect(Collectors.joining(","));
         sb.append(postureStr);
         sb.append(String.format(", SUM(score) AS %s ", FIELD_TOTAL));

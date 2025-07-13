@@ -3,14 +3,18 @@ import useInProgressContext from "../context/InProgressContext";
 import useAppNotificationContext from "../context/AppNotificationContext";
 import {
   EMPTY_CLIENT_FILE,
+  EMPTY_GBQ as EMPTY_GBO,
+  EMPTY_SDQ,
+  type Assessor,
   type ClientFile,
   type GboSummary,
-  type SdqScoresSummary,
+  type GboSummaryByAssessor,
+  type SdqSummaryByAssessor,
 } from "./types";
 
 export interface ClientFileApi {
-  gbo: GboSummary[];
-  scores: SdqScoresSummary[];
+  gbo: GboSummaryByAssessor;
+  scores: SdqSummaryByAssessor;
   files: ClientFile[];
   file: ClientFile;
   refresh: () => void;
@@ -20,8 +24,8 @@ export interface ClientFileApi {
 }
 
 export const EMPTY_FILE_API: ClientFileApi = {
-  gbo: [],
-  scores: [],
+  gbo: EMPTY_GBO,
+  scores: EMPTY_SDQ,
   files: [],
   file: EMPTY_CLIENT_FILE,
   refresh: () => console.error("default implementation"),
@@ -38,10 +42,24 @@ function parseFile(file: ClientFile): ClientFile {
     dateOfBirth: new Date(file.dateOfBirth),
   };
 }
+function parseGbo(gbo: GboSummary): GboSummary {
+  return {
+    ...gbo,
+    periodDate: new Date(gbo.periodDate),
+  };
+}
+
+function parseGboSummary(
+  gboSummary: GboSummaryByAssessor
+): GboSummaryByAssessor {
+  return Object.entries(gboSummary)
+    .map(([assessor, gbos]) => [assessor, gbos.map(parseGbo)])
+    .reduce((acc, [k, v]) => ({ ...acc, [k as Assessor]: v }), EMPTY_GBO);
+}
 
 function useClientFileApi(): ClientFileApi {
-  const [gbo, setGbo] = React.useState<GboSummary[]>([]);
-  const [scores, setScores] = React.useState<SdqScoresSummary[]>([]);
+  const [gbo, setGbo] = React.useState<GboSummaryByAssessor>(EMPTY_GBO);
+  const [scores, setScores] = React.useState<SdqSummaryByAssessor>(EMPTY_SDQ);
   const [files, setFiles] = React.useState<ClientFile[]>([]);
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
@@ -94,14 +112,14 @@ function useClientFileApi(): ClientFileApi {
   }, []);
 
   const getScoresByUuid = React.useCallback((uuid: string) => {
-    const jobId = beginJob("Fetching scores");
-    fetch(`${BASE_CLIENT_URL}/scores/${uuid}`)
+    const jobId = beginJob("Fetching SDQ");
+    fetch(`${BASE_CLIENT_URL}/sdq/${uuid}`)
       .then((response) => {
         if (!response.ok) {
           addMessage(
             "danger",
             response.status,
-            "Failed to fetch scores: " + response.statusText
+            "Failed to fetch SDQ: " + response.statusText
           );
           throw new Error("Network response was not ok");
         }
@@ -132,7 +150,7 @@ function useClientFileApi(): ClientFileApi {
         return response.json();
       })
       .then((r) => {
-        setGbo(r);
+        setGbo(parseGboSummary(r));
       })
       .finally(() => {
         endJob(jobId);

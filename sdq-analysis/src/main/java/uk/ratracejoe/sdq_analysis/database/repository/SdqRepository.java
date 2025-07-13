@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq_analysis.database.entity.SdqScoresEntity;
-import uk.ratracejoe.sdq_analysis.database.entity.SdqScoresPivot;
-import uk.ratracejoe.sdq_analysis.database.tables.SdqResponseTable;
+import uk.ratracejoe.sdq_analysis.database.entity.SdqPivot;
+import uk.ratracejoe.sdq_analysis.database.tables.SdqTable;
 import uk.ratracejoe.sdq_analysis.dto.Assessor;
 import uk.ratracejoe.sdq_analysis.dto.Category;
 import uk.ratracejoe.sdq_analysis.dto.Posture;
@@ -16,20 +16,21 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static uk.ratracejoe.sdq_analysis.database.repository.RepositoryUtils.handle;
-import static uk.ratracejoe.sdq_analysis.database.tables.SdqResponseTable.*;
+import static uk.ratracejoe.sdq_analysis.database.tables.SdqTable.*;
 
 @Service
 @RequiredArgsConstructor
-public class SdqResponseRepository {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SdqResponseRepository.class);
+public class SdqRepository {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SdqRepository.class);
     private final DataSource dataSource;
 
-    public List<SdqScoresPivot> getScores(UUID fileUuid) throws SdqException {
-        return handle(dataSource, "getScores", SdqResponseTable.selectScoresPivotSQL(), stmt -> {
+    public List<SdqPivot> getScores(UUID fileUuid) throws SdqException {
+        return handle(dataSource, "getScores", SdqTable.selectScoresPivotSQL(), stmt -> {
             stmt.setString(1, fileUuid.toString());
-            List<SdqScoresPivot> sdqScores = new ArrayList<>();
+            List<SdqPivot> sdqScores = new ArrayList<>();
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 UUID uuid = UUID.fromString(rs.getString(FIELD_FILE_UUID));
@@ -46,7 +47,7 @@ public class SdqResponseRepository {
                     postureScores.put(p, score);
                 }
                 int total = rs.getInt(FIELD_TOTAL);
-                sdqScores.add(new SdqScoresPivot(uuid, period, assessor, categoryScores, postureScores, total));
+                sdqScores.add(new SdqPivot(uuid, period, assessor, categoryScores, postureScores, total));
             }
 
             return sdqScores;
@@ -54,29 +55,28 @@ public class SdqResponseRepository {
     }
 
     public void recordResponse(SdqScoresEntity score) throws SdqException {
-        handle(dataSource, "recordSdq", SdqResponseTable.insertSQL(), stmt -> {
-            int rowsUpdated = 0;
+        handle(dataSource, "recordSdq", SdqTable.insertSQL(), stmt -> {
             try {
-                stmt.setString(1, score.fileUUID().toString());
-                stmt.setInt(2, score.period());
-                stmt.setString(3, score.assessor().name());
-                stmt.setString(4, score.statement().name());
-                stmt.setString(5, score.statement().category().name());
-                stmt.setString(6, score.statement().category().posture().name());
-                stmt.setInt(7, score.score());
-                rowsUpdated = stmt.executeUpdate();
-                LOGGER.info("Inserted SDQ response to database, rows updated {}", rowsUpdated);
+                AtomicInteger paramIndex = new AtomicInteger(1);
+                stmt.setString(paramIndex.getAndIncrement(), score.fileUUID().toString());
+                stmt.setInt(paramIndex.getAndIncrement(), score.period());
+                stmt.setString(paramIndex.getAndIncrement(), score.assessor().name());
+                stmt.setString(paramIndex.getAndIncrement(), score.statement().name());
+                stmt.setString(paramIndex.getAndIncrement(), score.statement().category().name());
+                stmt.setString(paramIndex.getAndIncrement(), score.statement().category().posture().name());
+                stmt.setInt(paramIndex.getAndIncrement(), score.score());
+                stmt.executeUpdate();
             } catch (Exception e) {
                 LOGGER.error("Could not save response", e);
             }
-            return rowsUpdated;
+            return 0;
         });
     }
 
     public int deleteAll() throws SdqException {
         return handle(dataSource,
                 "deleteAll",
-                SdqResponseTable.deleteAllSQL(),
+                SdqTable.deleteAllSQL(),
                 PreparedStatement::executeUpdate);
     }
 }

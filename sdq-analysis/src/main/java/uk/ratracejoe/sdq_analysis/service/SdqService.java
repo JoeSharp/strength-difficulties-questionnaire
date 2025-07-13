@@ -3,36 +3,39 @@ package uk.ratracejoe.sdq_analysis.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq_analysis.database.entity.SdqScoresEntity;
-import uk.ratracejoe.sdq_analysis.database.entity.SdqScoresPivot;
-import uk.ratracejoe.sdq_analysis.database.repository.SdqResponseRepository;
+import uk.ratracejoe.sdq_analysis.database.entity.SdqPivot;
+import uk.ratracejoe.sdq_analysis.database.repository.SdqRepository;
+import uk.ratracejoe.sdq_analysis.dto.Assessor;
 import uk.ratracejoe.sdq_analysis.dto.ClientFile;
 import uk.ratracejoe.sdq_analysis.dto.SdqPeriod;
-import uk.ratracejoe.sdq_analysis.dto.SdqScoresSummary;
+import uk.ratracejoe.sdq_analysis.dto.SdqSummary;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SdqResponseService {
+public class SdqService {
     private final DatabaseService dbService;
-    private final SdqResponseRepository sdqResponseRepository;
+    private final SdqRepository sdqRepository;
 
-    public List<SdqScoresSummary> getScores(UUID fileUuid) throws SdqException {
+    public Map<Assessor, List<SdqSummary>> getScores(UUID fileUuid) throws SdqException {
         if (!dbService.databaseExists()) throw new SdqException("DB Not ready");
 
-        return sdqResponseRepository.getScores(fileUuid).stream()
-                .map(this::toDTO)
-                .toList();
+        return sdqRepository.getScores(fileUuid).stream()
+                .collect(Collectors.groupingBy(SdqPivot::assessor,
+                        Collectors.collectingAndThen(
+                                Collectors.groupingBy(SdqPivot::uuid),
+                                fileMap -> fileMap.entrySet().stream()
+                                        .flatMap(d -> d.getValue().stream())
+                                        .map(this::toDTO)
+                                        .toList())));
     }
 
-    private SdqScoresSummary toDTO(SdqScoresPivot pivot) {
-        return new SdqScoresSummary(pivot.uuid(),
+    private SdqSummary toDTO(SdqPivot pivot) {
+        return new SdqSummary(pivot.uuid(),
                 pivot.period(),
-                pivot.assessor(),
                 pivot.categoryScores(),
                 pivot.postureScores(),
                 pivot.total());
@@ -49,7 +52,7 @@ public class SdqResponseService {
                             key,
                             response.statement(),
                             response.score());
-                    sdqResponseRepository.recordResponse(entity);
+                    sdqRepository.recordResponse(entity);
                 })));
     }
 }

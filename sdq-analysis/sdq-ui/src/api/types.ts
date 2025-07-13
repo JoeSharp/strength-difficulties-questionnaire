@@ -49,10 +49,9 @@ export const EMPTY_CLIENT_FILE: ClientFile = {
   fundingSource: "",
 };
 
-export interface SdqScoresSummary {
+export interface SdqSummary {
   uuid: string;
   period: number;
-  assessor: string;
   categoryScores: Record<string, number>;
   postureScores: Record<string, number>;
   total: number;
@@ -60,13 +59,28 @@ export interface SdqScoresSummary {
 
 export interface GboSummary {
   uuid: string;
-  assessor: string;
   periodIndex: number;
   periodDate: Date;
   scores: Record<number, number>;
 }
 
 export type Assessor = "Parent1" | "Parent2" | "School" | "Child";
+
+export type SdqSummaryByAssessor = Record<Assessor, SdqSummary[]>;
+export type GboSummaryByAssessor = Record<Assessor, GboSummary[]>;
+
+export const EMPTY_SDQ: SdqSummaryByAssessor = {
+  Parent1: [],
+  Parent2: [],
+  Child: [],
+  School: [],
+};
+export const EMPTY_GBQ: GboSummaryByAssessor = {
+  Parent1: [],
+  Parent2: [],
+  Child: [],
+  School: [],
+};
 
 export type Statement =
   | "CONSIDERATE"
@@ -94,6 +108,20 @@ export type Statement =
   | "GETS_ON_ADULTS_BETTER"
   | "FEARS"
   | "ATTENTION";
+
+export const CATEGORIES: string[] = [
+  "Conduct",
+  "Peer",
+  "HyperActivity",
+  "ProSocial",
+  "Emotional",
+];
+
+export const POSTURES: string[] = [
+  "Internalising",
+  "Externalising",
+  "ProSocial",
+];
 
 export interface StatementResponse {
   statement: Statement;

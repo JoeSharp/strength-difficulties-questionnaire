@@ -11,12 +11,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import uk.ratracejoe.sdq_analysis.SdqTestExtension;
-import uk.ratracejoe.sdq_analysis.dto.DatabaseStructure;
+import uk.ratracejoe.sdq_analysis.dto.Assessor;
+import uk.ratracejoe.sdq_analysis.dto.GboSummary;
 import uk.ratracejoe.sdq_analysis.dto.ParsedFile;
-import uk.ratracejoe.sdq_analysis.dto.SdqScoresSummary;
+import uk.ratracejoe.sdq_analysis.dto.SdqSummary;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.ratracejoe.sdq_analysis.Utils.getWorkbookPost;
@@ -28,7 +30,8 @@ class EndToEndTest {
     private TestRestTemplate restTemplate;
     private static final String REST_URL_DATABASE = "/api/database";
     private static final String REST_URL_UPLOAD = "/api/upload";
-    private static final String REST_URL_CLIENT_SCORES = "/api/client/scores/";
+    private static final String REST_URL_CLIENT_SDQ = "/api/client/sdq/";
+    private static final String REST_URL_CLIENT_GBO = "/api/client/gbo/";
 
     @Test
     void completeLifecycle() throws IOException {
@@ -42,10 +45,16 @@ class EndToEndTest {
         assertThat(ingestResponse.getBody()).hasSize(1);
         var clientUuid = ingestResponse.getBody().get(0).clientFile().uuid();
 
-        var scoresResponse = restTemplate.exchange(REST_URL_CLIENT_SCORES + clientUuid,
-                HttpMethod.GET, new HttpEntity<>(null, new HttpHeaders()), new ParameterizedTypeReference<List<SdqScoresSummary>>() {
+        var sdqResponse = restTemplate.exchange(REST_URL_CLIENT_SDQ + clientUuid,
+                HttpMethod.GET, new HttpEntity<>(null, new HttpHeaders()), new ParameterizedTypeReference<Map<Assessor, List<SdqSummary>>>() {
                 });
-        assertThat(scoresResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(scoresResponse.getBody()).hasSize(NUMBER_ASSESSORS * NUMBER_PERIODS);
+        assertThat(sdqResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(sdqResponse.getBody()).hasSize(NUMBER_ASSESSORS);
+
+        var gboResponse = restTemplate.exchange(REST_URL_CLIENT_GBO + clientUuid,
+                HttpMethod.GET, new HttpEntity<>(null, new HttpHeaders()), new ParameterizedTypeReference<Map<Assessor, List<GboSummary>>>() {
+                });
+        assertThat(gboResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(gboResponse.getBody()).hasSize(NUMBER_ASSESSORS);
     }
 }

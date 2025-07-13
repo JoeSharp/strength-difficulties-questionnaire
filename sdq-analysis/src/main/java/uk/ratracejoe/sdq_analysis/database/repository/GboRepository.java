@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq_analysis.database.entity.GboEntity;
 import uk.ratracejoe.sdq_analysis.database.entity.GboPivot;
 import uk.ratracejoe.sdq_analysis.database.tables.GoalBasedOutcomeTable;
+import uk.ratracejoe.sdq_analysis.dto.Assessor;
 import uk.ratracejoe.sdq_analysis.exception.SdqException;
 
 import javax.sql.DataSource;
@@ -14,14 +15,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static uk.ratracejoe.sdq_analysis.database.repository.RepositoryUtils.handle;
 import static uk.ratracejoe.sdq_analysis.database.repository.RepositoryUtils.toInstant;
 import static uk.ratracejoe.sdq_analysis.database.tables.GoalBasedOutcomeTable.*;
+import static uk.ratracejoe.sdq_analysis.service.xslx.XslxGboExtractor.NUMBER_SCORES_EXPECTED;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class GboRepository {
     }
 
     public List<GboPivot> getByFileUuid(UUID uuid) throws SdqException {
-        return handle(dataSource, "getGboByFile", GoalBasedOutcomeTable.getByFileSQL(), stmt -> {
+        return handle(dataSource, "getGboByFile", GoalBasedOutcomeTable.selectScoresPivotSQL(), stmt -> {
             stmt.setString(1, uuid.toString());
             ResultSet rs = stmt.executeQuery();
             List<GboPivot> results = new ArrayList<>();
@@ -58,13 +58,17 @@ public class GboRepository {
     }
 
     private GboPivot getFromResultSet(ResultSet rs) throws SQLException {
-        return null;
-        /*
-        return new GboEntity(UUID.fromString(rs.getString(FIELD_FILE_UUID)),
+        Map<Integer, Integer> scores = new HashMap<>();
+        for (int p = 1; p <= NUMBER_SCORES_EXPECTED; p++) {
+            Integer score = rs.getInt(pivotFieldForScore(p));
+            scores.put(p, score);
+        }
+        return new GboPivot(
+                UUID.fromString(rs.getString(FIELD_FILE_UUID)),
+                Assessor.valueOf(rs.getString(FIELD_ASSESSOR)),
                 rs.getInt(FIELD_PERIOD_INDEX),
                 toInstant(rs.getDate(FIELD_PERIOD_DATE)),
-                rs.getInt(FIELD_SCORE_INDEX),
-                rs.getInt(FIELD_SCORE));
-         */
+                scores
+        );
     }
 }

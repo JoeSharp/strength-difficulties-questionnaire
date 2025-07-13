@@ -19,7 +19,7 @@ import java.util.stream.StreamSupport;
 public class XslxGboExtractor {
 
     private static final String SHEET_NAME = "Goal Based Outcomes (GBO)";
-    private static final int NUMBER_SCORES_EXPECTED = 6;
+    public static final int NUMBER_SCORES_EXPECTED = 6;
     private static final int NUMBER_PERIODS_EXPECTED = 18;
     private static final int FIRST_SCORE_COLUMN = 4;
     private static final int FIRST_ROW_PARENT_1 = 12;
