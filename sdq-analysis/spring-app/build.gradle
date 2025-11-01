@@ -32,6 +32,7 @@ dependencies {
 	implementation 'org.dhatim:fastexcel-reader:0.18.1'
 	implementation 'org.dhatim:fastexcel:0.18.1'
 	testImplementation("org.hamcrest:hamcrest-library:2.2")
+	testImplementation 'org.liquibase:liquibase-core'
 }
 
 tasks.named('test') {

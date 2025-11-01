@@ -26,7 +26,6 @@ import uk.ratracejoe.sdq_analysis.dto.SdqSummary;
 @ExtendWith({SdqTestExtension.class})
 class EndToEndTest {
   @Autowired private TestRestTemplate restTemplate;
-  private static final String REST_URL_DATABASE = "/api/database";
   private static final String REST_URL_UPLOAD = "/api/upload";
   private static final String REST_URL_CLIENT_SDQ = "/api/client/sdq/";
   private static final String REST_URL_CLIENT_GBO = "/api/client/gbo/";

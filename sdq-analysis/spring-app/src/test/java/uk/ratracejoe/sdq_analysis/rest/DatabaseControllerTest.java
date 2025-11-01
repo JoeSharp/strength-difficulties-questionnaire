@@ -18,9 +18,9 @@ class DatabaseControllerTest {
   private static final String REST_URL_DATABASE = "/api/database";
 
   @Test
-  void databaseDoesNotExistInitially() {
+  void databaseShouldExist() {
     var response = restTemplate.getForEntity(REST_URL_DATABASE, Void.class);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
   }
 }
