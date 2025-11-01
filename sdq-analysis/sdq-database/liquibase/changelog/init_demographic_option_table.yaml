@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Joe Sharp
+      labels: init
+      comment: Create initial Demographic Option table
+      changes:
+        - createTable:
+            tableName: demographic_option
+            columns:
+              - column:
+                  name: demographic
+                  type: TEXT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_demographic_option
+              - column:
+                  name: option_text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_demographic_option

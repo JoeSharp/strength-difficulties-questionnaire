@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Joe Sharp
+      labels: init
+      comment: Create initial Goal Based Outcome table
+      changes:
+        - createTable:
+            tableName: gbo
+            columns:
+              - column:
+                  name: file_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assessor
+                  type: TEXT
+              - column:
+                  name: period_index
+                  type: INT
+              - column:
+                  name: period_date
+                  type: DATE
+              - column:
+                  name: score_index
+                  type: INT
+              - column:
+                  name: score
+                  type: INT
+        - createTable:
+            tableName: participation
+            columns:
+              - column:
+                  name: event_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: participant_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false

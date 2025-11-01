@@ -1,0 +1,6 @@
+services:
+  sdq-db-migration:
+    image: sdq-db-migration
+    container_name: sdq-db-migration
+    volumes:
+      - ./data:/liquibase/sqlite

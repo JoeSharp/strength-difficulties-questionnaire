@@ -1,1 +1,3 @@
 rootProject.name = 'sdq-analysis'
+
+include 'spring-app'

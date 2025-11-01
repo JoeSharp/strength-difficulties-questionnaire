@@ -1,5 +1,3 @@
-import React from "react";
-
 import type { Assessor, GboSummary } from "../../api/types";
 import Card from "../Card";
 

@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Joe Sharp
+      labels: init
+      comment: Create initial SDQ table
+      changes:
+        - createTable:
+            tableName: sdq
+            columns:
+              - column:
+                  name: file_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period
+                  type: int
+              - column:
+                  name: assessor
+                  type: TEXT
+              - column:
+                  name: statement
+                  type: TEXT
+              - column:
+                  name: category
+                  type: TEXT
+              - column:
+                  name: posture
+                  type: TEXT
+              - column:
+                  name: score
+                  type: INT

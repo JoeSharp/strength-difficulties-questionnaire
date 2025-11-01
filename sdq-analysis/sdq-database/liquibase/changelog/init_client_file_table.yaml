@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Joe Sharp
+      labels: init
+      comment: Create initial Client File table
+      changes:
+        - createTable:
+            tableName: client_file
+            columns:
+              - column:
+                  name: file_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: filename
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_of_birth
+                  type: date
+              - column:
+                  name: gender
+                  type: TEXT
+              - column:
+                  name: council
+                  type: TEXT
+              - column:
+                  name: ethnicity
+                  type: TEXT
+              - column:
+                  name: eal
+                  type: TEXT
+              - column:
+                  name: disability_status
+                  type: TEXT
+              - column:
+                  name: disability_type
+                  type: TEXT
+              - column:
+                  name: care_experience
+                  type: TEXT
+              - column:
+                  name: aces
+                  type: int
+              - column:
+                  name: funding_source
+                  type: TEXT

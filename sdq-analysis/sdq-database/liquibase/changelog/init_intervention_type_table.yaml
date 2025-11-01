@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Joe Sharp
+      labels: init
+      comment: Create initial Intervention Type table
+      changes:
+        - createTable:
+            tableName: intervention_type
+            columns:
+              - column:
+                  name: file_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: intervention_type
+                  type: TEXT
+                  constraints:
+                    nullable: false
