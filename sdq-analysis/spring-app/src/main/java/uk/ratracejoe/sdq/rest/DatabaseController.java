@@ -3,7 +3,7 @@ package uk.ratracejoe.sdq.rest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.ratracejoe.sdq.service.DatabaseService;
+import uk.ratracejoe.sdq.repository.DatabaseService;
 
 @RestController
 @RequestMapping("/api/database")

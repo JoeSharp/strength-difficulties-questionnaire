@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import uk.ratracejoe.sdq.dto.ErrorResponse;
+import uk.ratracejoe.sdq.model.ErrorResponse;
 
 @ControllerAdvice
 public class SdqExceptionHandler {

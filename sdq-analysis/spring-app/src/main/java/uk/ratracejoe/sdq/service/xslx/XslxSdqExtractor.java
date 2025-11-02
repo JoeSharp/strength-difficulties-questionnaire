@@ -14,10 +14,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.dto.Assessor;
-import uk.ratracejoe.sdq.dto.SdqPeriod;
-import uk.ratracejoe.sdq.dto.Statement;
-import uk.ratracejoe.sdq.dto.StatementResponse;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.SdqPeriod;
+import uk.ratracejoe.sdq.model.Statement;
+import uk.ratracejoe.sdq.model.StatementResponse;
 
 @Service
 public class XslxSdqExtractor {

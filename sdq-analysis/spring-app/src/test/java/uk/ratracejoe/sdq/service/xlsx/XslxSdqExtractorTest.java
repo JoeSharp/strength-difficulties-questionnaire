@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
-import uk.ratracejoe.sdq.dto.SdqPeriod;
+import uk.ratracejoe.sdq.model.SdqPeriod;
 import uk.ratracejoe.sdq.service.xslx.XslxSdqExtractor;
 
 class XslxSdqExtractorTest {

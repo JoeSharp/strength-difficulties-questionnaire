@@ -2,8 +2,8 @@ package uk.ratracejoe.sdq.database.tables;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import uk.ratracejoe.sdq.dto.Category;
-import uk.ratracejoe.sdq.dto.Posture;
+import uk.ratracejoe.sdq.model.Category;
+import uk.ratracejoe.sdq.model.Posture;
 
 public interface SdqTable {
   String TABLE_NAME = "sdq";

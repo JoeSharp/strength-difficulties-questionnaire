@@ -3,7 +3,7 @@ package uk.ratracejoe.sdq.database.entity;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
-import uk.ratracejoe.sdq.dto.Assessor;
+import uk.ratracejoe.sdq.model.Assessor;
 
 public record GboPivot(
     UUID uuid,

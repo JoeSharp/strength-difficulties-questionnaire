@@ -8,8 +8,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.dto.DemographicField;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.DemographicField;
 
 @Service
 public class XslxStructureExtractor {

@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq.database.entity.GboEntity;
 import uk.ratracejoe.sdq.database.entity.GboPivot;
 import uk.ratracejoe.sdq.database.tables.GoalBasedOutcomeTable;
-import uk.ratracejoe.sdq.dto.Assessor;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.Assessor;
 
 @Service
 @RequiredArgsConstructor

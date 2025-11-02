@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
-import uk.ratracejoe.sdq.dto.DemographicField;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.service.xslx.XslxStructureExtractor;
 
 class XslxStructureExtractorTest {

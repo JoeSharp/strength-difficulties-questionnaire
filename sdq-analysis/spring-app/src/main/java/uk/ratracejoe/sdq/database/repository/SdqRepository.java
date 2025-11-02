@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq.database.entity.SdqPivot;
 import uk.ratracejoe.sdq.database.entity.SdqScoresEntity;
 import uk.ratracejoe.sdq.database.tables.SdqTable;
-import uk.ratracejoe.sdq.dto.Assessor;
-import uk.ratracejoe.sdq.dto.Category;
-import uk.ratracejoe.sdq.dto.Posture;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.Category;
+import uk.ratracejoe.sdq.model.Posture;
 
 @Service
 @RequiredArgsConstructor

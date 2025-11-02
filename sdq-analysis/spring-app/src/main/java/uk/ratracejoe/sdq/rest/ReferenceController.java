@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ratracejoe.sdq.database.repository.DemographicOptionRepository;
-import uk.ratracejoe.sdq.dto.*;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.service.DatabaseService;
+import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.repository.DatabaseService;
 
 @RestController
 @RequestMapping("/api/reference")

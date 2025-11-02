@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq.database.entity.DemographicOptionEntity;
 import uk.ratracejoe.sdq.database.tables.DemographicOptionTable;
-import uk.ratracejoe.sdq.dto.DemographicField;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.DemographicField;
 
 @Service
 @RequiredArgsConstructor

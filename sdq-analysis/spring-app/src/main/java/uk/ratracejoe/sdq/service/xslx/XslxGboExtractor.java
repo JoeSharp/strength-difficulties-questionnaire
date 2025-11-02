@@ -11,8 +11,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.dto.*;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.GboPeriod;
 
 @Service
 public class XslxGboExtractor {

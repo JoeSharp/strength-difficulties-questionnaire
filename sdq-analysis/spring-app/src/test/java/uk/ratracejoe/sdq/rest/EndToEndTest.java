@@ -17,10 +17,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import uk.ratracejoe.sdq.SdqTestExtension;
-import uk.ratracejoe.sdq.dto.Assessor;
-import uk.ratracejoe.sdq.dto.GboSummary;
-import uk.ratracejoe.sdq.dto.ParsedFile;
-import uk.ratracejoe.sdq.dto.SdqSummary;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.GboSummary;
+import uk.ratracejoe.sdq.model.ParsedFile;
+import uk.ratracejoe.sdq.model.SdqSummary;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith({SdqTestExtension.class})
