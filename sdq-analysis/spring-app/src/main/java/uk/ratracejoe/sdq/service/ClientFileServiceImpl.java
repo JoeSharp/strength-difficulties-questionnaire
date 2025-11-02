@@ -12,6 +12,7 @@ import uk.ratracejoe.sdq.database.repository.ClientFileRepository;
 import uk.ratracejoe.sdq.database.repository.InterventionTypeRepository;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.ClientFile;
+import uk.ratracejoe.sdq.model.DemographicReport;
 import uk.ratracejoe.sdq.repository.DatabaseService;
 
 @Service
@@ -20,6 +21,11 @@ public class ClientFileServiceImpl implements ClientFileService {
   private final DatabaseService dbService;
   private final ClientFileRepository fileRepository;
   private final InterventionTypeRepository interventionTypeRepository;
+
+  @Override
+  public DemographicReport getDemographicReport(String demographic) {
+    return fileRepository.getDemographicReport(demographic);
+  }
 
   @Override
   public List<ClientFile> getAll() throws SdqException {

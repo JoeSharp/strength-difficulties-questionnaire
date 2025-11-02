@@ -44,6 +44,12 @@ public interface ClientFileTable {
     return sb.toString();
   }
 
+  static String getDemographicReportSQL(String demographic) {
+    return String.format(
+        "select %s, count(*) AS count, round(100 * count(*) / (select count(*) from client_file), 2) as percentage FROM client_file GROUP BY %s;",
+        demographic, demographic);
+  }
+
   static String selectByUUID() {
     return String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_FILE_ID);
   }

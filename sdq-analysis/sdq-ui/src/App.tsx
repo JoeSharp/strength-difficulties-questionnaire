@@ -5,11 +5,13 @@ import InProgressSpinner from "./components/InProgressSpinner";
 import ClientFileTable from "./components/ClientFileTable";
 import useApiContext from "./context/ApiContext";
 import ClientFilePage from "./components/ClientFilePage";
+import DemographicReport from "./components/DemographicReport";
 
 function Home() {
   return (
     <>
       <FileUploadForm />
+      <DemographicReport />
       <ClientFileTable />
     </>
   );
@@ -19,9 +21,7 @@ function DbDoesNotExist() {
   return (
     <div>
       <p>The database currently does not exist</p>
-      <p>
-        Close the application and create the database before launching.
-      </p>
+      <p>Close the application and create the database before launching.</p>
       <FileUploadForm />
     </div>
   );
@@ -33,7 +33,7 @@ function App() {
   } = useApiContext();
 
   if (!exists) {
-    return <DbDoesNotExist />
+    return <DbDoesNotExist />;
   }
 
   return (

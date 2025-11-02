@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import uk.ratracejoe.sdq.database.entity.ClientFileEntity;
 import uk.ratracejoe.sdq.database.tables.ClientFileTable;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.DemographicCount;
+import uk.ratracejoe.sdq.model.DemographicReport;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +55,25 @@ public class ClientFileRepository {
           int rowsUpdated = stmt.executeUpdate();
           LOGGER.info("Inserted File to database, rows updated {}", rowsUpdated);
           return rowsUpdated;
+        });
+  }
+
+  public DemographicReport getDemographicReport(String demographic) {
+    return handle(
+        dataSource,
+        "getDemographicReport",
+        ClientFileTable.getDemographicReportSQL(demographic),
+        stmt -> {
+          ResultSet rs = stmt.executeQuery();
+          List<DemographicCount> counts = new ArrayList<>();
+          while (rs.next()) {
+            String text = rs.getString(1);
+            Integer count = rs.getInt(2);
+            Double percentage = rs.getDouble(3);
+            counts.add(new DemographicCount(text, count, percentage));
+          }
+
+          return new DemographicReport(counts);
         });
   }
 

@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.Assessor;
-import uk.ratracejoe.sdq.model.ClientFile;
-import uk.ratracejoe.sdq.model.GboSummary;
-import uk.ratracejoe.sdq.model.SdqSummary;
+import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.service.ClientFileService;
 import uk.ratracejoe.sdq.service.GboService;
 import uk.ratracejoe.sdq.service.SdqService;
@@ -29,6 +26,11 @@ public class ClientFileController {
   @GetMapping
   public List<ClientFile> getAll() throws SdqException {
     return fileService.getAll();
+  }
+
+  @GetMapping("/demographic_report/{demographic}")
+  public DemographicReport getDemographicReport(@PathVariable("demographic") String demographic) {
+    return fileService.getDemographicReport(demographic);
   }
 
   @GetMapping("/sdq/{uuid}")

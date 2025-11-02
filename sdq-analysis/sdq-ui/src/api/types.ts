@@ -57,6 +57,20 @@ export interface SdqSummary {
   total: number;
 }
 
+export interface DemographicCount {
+  option: string;
+  count: number;
+  percentage: number;
+}
+
+export interface DemographicReport {
+  counts: DemographicCount[];
+}
+
+export const EMPTY_DEMOGRAPHIC_REPORT: DemographicReport = {
+  counts: [],
+};
+
 export interface GboSummary {
   uuid: string;
   periodIndex: number;

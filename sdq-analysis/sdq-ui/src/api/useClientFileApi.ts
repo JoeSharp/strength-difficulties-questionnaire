@@ -5,6 +5,8 @@ import {
   EMPTY_CLIENT_FILE,
   EMPTY_GBQ as EMPTY_GBO,
   EMPTY_SDQ,
+  EMPTY_DEMOGRAPHIC_REPORT,
+  type DemographicReport,
   type Assessor,
   type ClientFile,
   type GboSummary,
@@ -17,7 +19,9 @@ export interface ClientFileApi {
   scores: SdqSummaryByAssessor;
   files: ClientFile[];
   file: ClientFile;
+  demographicReport: DemographicReport;
   refresh: () => void;
+  getDemographicReport: (tableName: string) => void;
   getFileByUuid: (uuid: string) => void;
   getScoresByUuid: (uuid: string) => void;
   getGboByUuid: (uuid: string) => void;
@@ -28,7 +32,9 @@ export const EMPTY_FILE_API: ClientFileApi = {
   scores: EMPTY_SDQ,
   files: [],
   file: EMPTY_CLIENT_FILE,
+  demographicReport: EMPTY_DEMOGRAPHIC_REPORT,
   refresh: () => console.error("default implementation"),
+  getDemographicReport: () => console.error("default implementation"),
   getFileByUuid: () => console.error("default implementation"),
   getScoresByUuid: () => console.error("default implementation"),
   getGboByUuid: () => console.error("default implementation"),
@@ -61,9 +67,34 @@ function useClientFileApi(): ClientFileApi {
   const [gbo, setGbo] = React.useState<GboSummaryByAssessor>(EMPTY_GBO);
   const [scores, setScores] = React.useState<SdqSummaryByAssessor>(EMPTY_SDQ);
   const [files, setFiles] = React.useState<ClientFile[]>([]);
+  const [demographicReport, setDemographicReport] =
+    React.useState<DemographicReport>(EMPTY_DEMOGRAPHIC_REPORT);
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
   const [file, setFile] = React.useState<ClientFile>(EMPTY_CLIENT_FILE);
+
+  const getDemographicReport = React.useCallback((tableName: string) => {
+    const jobId = beginJob("Fetching demographc report");
+    fetch(`${BASE_CLIENT_URL}/demographic_report/${tableName}`)
+      .then((response) => {
+        if (!response.ok) {
+          addMessage(
+            "danger",
+            response.status,
+            "Failed to fetch demographic report: " + response.statusText
+          );
+          throw new Error("Network response was not ok");
+        }
+
+        return response.json();
+      })
+      .then((r) => {
+        setDemographicReport(r);
+      })
+      .finally(() => {
+        endJob(jobId);
+      });
+  }, []);
 
   const fetchFiles = React.useCallback(() => {
     const jobId = beginJob("Fetching files");
@@ -166,7 +197,9 @@ function useClientFileApi(): ClientFileApi {
     file,
     scores,
     gbo,
+    demographicReport,
     refresh: fetchFiles,
+    getDemographicReport,
     getFileByUuid,
     getScoresByUuid,
     getGboByUuid,
