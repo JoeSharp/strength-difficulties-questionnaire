@@ -1,3 +1,8 @@
 rootProject.name = 'sdq-analysis'
 
 include 'spring-app'
+include 'domain:model'
+include 'domain:use-cases'
+include 'domain:ports:incoming:service'
+include 'domain:ports:outgoing:repository'
+include 'adapters:service:service-rest-adapter'

@@ -4,14 +4,8 @@ plugins {
 	id 'io.spring.dependency-management' version "${springDependencyVersion}"
 }
 
-group = 'uk.ratracejoe'
+group = 'uk.ratracejoe.sdq'
 version = '0.0.1-SNAPSHOT'
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
 
 repositories {
 	mavenCentral()
@@ -24,6 +18,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	implementation project(":domain:use-cases")
+	implementation project(":domain:model")
+	implementation project(":domain:ports:incoming:service")
+	implementation project(":domain:ports:outgoing:repository")
+	implementation project(":adapters:service:service-rest-adapter")
 	implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
 
 	implementation 'org.apache.poi:poi:5.3.0'
