@@ -25,7 +25,7 @@ build-db: clear-db build-db-migration-image
 	docker compose -f $(DB_MODULE)/docker-compose.yaml up
 
 clear-db:
-	rm $(DATABASE_FILE)
+	rm -rf $(DATABASE_FILE)
 
 connect-db:
 	sqlite3 $(DATABASE_FILE)
