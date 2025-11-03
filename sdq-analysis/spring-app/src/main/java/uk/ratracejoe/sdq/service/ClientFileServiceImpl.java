@@ -6,14 +6,14 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.database.entity.ClientFileEntity;
-import uk.ratracejoe.sdq.database.entity.InterventionTypeEntity;
-import uk.ratracejoe.sdq.database.repository.ClientFileRepository;
-import uk.ratracejoe.sdq.database.repository.InterventionTypeRepository;
+import uk.ratracejoe.sdq.entity.ClientFileEntity;
+import uk.ratracejoe.sdq.entity.InterventionTypeEntity;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.ClientFile;
 import uk.ratracejoe.sdq.model.DemographicReport;
+import uk.ratracejoe.sdq.repository.ClientFileRepository;
 import uk.ratracejoe.sdq.repository.DatabaseService;
+import uk.ratracejoe.sdq.repository.InterventionTypeRepository;
 
 @Service
 @RequiredArgsConstructor

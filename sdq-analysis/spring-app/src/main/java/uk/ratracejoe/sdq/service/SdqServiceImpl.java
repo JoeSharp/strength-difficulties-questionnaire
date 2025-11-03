@@ -4,15 +4,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.database.entity.SdqPivot;
-import uk.ratracejoe.sdq.database.entity.SdqScoresEntity;
-import uk.ratracejoe.sdq.database.repository.SdqRepository;
+import uk.ratracejoe.sdq.entity.SdqPivot;
+import uk.ratracejoe.sdq.entity.SdqScoresEntity;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ClientFile;
 import uk.ratracejoe.sdq.model.SdqPeriod;
 import uk.ratracejoe.sdq.model.SdqSummary;
 import uk.ratracejoe.sdq.repository.DatabaseService;
+import uk.ratracejoe.sdq.repository.SdqRepository;
 
 @Service
 @RequiredArgsConstructor

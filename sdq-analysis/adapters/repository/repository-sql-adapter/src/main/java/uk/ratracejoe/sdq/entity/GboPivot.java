@@ -1,7 +1,6 @@
-package uk.ratracejoe.sdq.database.entity;
+package uk.ratracejoe.sdq.entity;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 import uk.ratracejoe.sdq.model.Assessor;
 
@@ -10,4 +9,5 @@ public record GboPivot(
     Assessor assessor,
     int periodIndex,
     Instant periodDate,
-    Map<Integer, Integer> scores) {}
+    Integer scoreIndex,
+    Integer score) {}

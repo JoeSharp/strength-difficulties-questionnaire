@@ -1,9 +1,6 @@
-package uk.ratracejoe.sdq.database.repository;
+package uk.ratracejoe.sdq.repository;
 
-import static uk.ratracejoe.sdq.database.repository.RepositoryUtils.handle;
-import static uk.ratracejoe.sdq.database.repository.RepositoryUtils.toInstant;
-import static uk.ratracejoe.sdq.database.tables.GoalBasedOutcomeTable.*;
-import static uk.ratracejoe.sdq.service.xslx.XslxGboExtractor.NUMBER_SCORES_EXPECTED;
+import static uk.ratracejoe.sdq.tables.GoalBasedOutcomeTable.*;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -14,20 +11,18 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.database.entity.GboEntity;
-import uk.ratracejoe.sdq.database.entity.GboPivot;
-import uk.ratracejoe.sdq.database.tables.GoalBasedOutcomeTable;
+import uk.ratracejoe.sdq.entity.GboEntity;
+import uk.ratracejoe.sdq.entity.GboPivot;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.tables.GoalBasedOutcomeTable;
 
-@Service
 @RequiredArgsConstructor
 public class GboRepository {
   private final DataSource dataSource;
 
   public void save(GboEntity entity) {
-    handle(
+    RepositoryUtils.handle(
         dataSource,
         "saveGbo",
         GoalBasedOutcomeTable.insertSQL(),
@@ -48,10 +43,10 @@ public class GboRepository {
   }
 
   public List<GboPivot> getByFileUuid(UUID uuid) throws SdqException {
-    return handle(
+    return RepositoryUtils.handle(
         dataSource,
         "getGboByFile",
-        GoalBasedOutcomeTable.selectScoresPivotSQL(),
+        GoalBasedOutcomeTable.getByFileSQL(),
         stmt -> {
           stmt.setString(1, uuid.toString());
           ResultSet rs = stmt.executeQuery();
@@ -64,16 +59,12 @@ public class GboRepository {
   }
 
   private GboPivot getFromResultSet(ResultSet rs) throws SQLException {
-    Map<Integer, Integer> scores = new HashMap<>();
-    for (int p = 1; p <= NUMBER_SCORES_EXPECTED; p++) {
-      Integer score = rs.getInt(pivotFieldForScore(p));
-      scores.put(p, score);
-    }
     return new GboPivot(
         UUID.fromString(rs.getString(FIELD_FILE_ID)),
         Assessor.valueOf(rs.getString(FIELD_ASSESSOR)),
         rs.getInt(FIELD_PERIOD_INDEX),
-        toInstant(rs.getDate(FIELD_PERIOD_DATE)),
-        scores);
+        RepositoryUtils.toInstant(rs.getDate(FIELD_PERIOD_DATE)),
+        rs.getInt(FIELD_SCORE_INDEX),
+        rs.getInt(FIELD_SCORE));
   }
 }

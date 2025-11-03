@@ -1,8 +1,4 @@
-package uk.ratracejoe.sdq.database.repository;
-
-import static uk.ratracejoe.sdq.database.repository.RepositoryUtils.handle;
-import static uk.ratracejoe.sdq.database.repository.RepositoryUtils.toInstant;
-import static uk.ratracejoe.sdq.database.tables.ClientFileTable.*;
+package uk.ratracejoe.sdq.repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -18,21 +14,19 @@ import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.database.entity.ClientFileEntity;
-import uk.ratracejoe.sdq.database.tables.ClientFileTable;
+import uk.ratracejoe.sdq.entity.ClientFileEntity;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.DemographicCount;
 import uk.ratracejoe.sdq.model.DemographicReport;
+import uk.ratracejoe.sdq.tables.ClientFileTable;
 
-@Service
 @RequiredArgsConstructor
 public class ClientFileRepository {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientFileRepository.class);
   private final DataSource dataSource;
 
   public void saveFile(ClientFileEntity file) throws SdqException {
-    handle(
+    RepositoryUtils.handle(
         dataSource,
         "saveFile",
         ClientFileTable.insertSQL(),
@@ -59,7 +53,7 @@ public class ClientFileRepository {
   }
 
   public DemographicReport getDemographicReport(String demographic) {
-    return handle(
+    return RepositoryUtils.handle(
         dataSource,
         "getDemographicReport",
         ClientFileTable.getDemographicReportSQL(demographic),
@@ -78,7 +72,7 @@ public class ClientFileRepository {
   }
 
   public Optional<ClientFileEntity> getByUUID(UUID uuid) throws SdqException {
-    return handle(
+    return RepositoryUtils.handle(
         dataSource,
         "getByUUID",
         ClientFileTable.selectByUUID(),
@@ -91,7 +85,7 @@ public class ClientFileRepository {
   }
 
   public List<ClientFileEntity> getAll() throws SdqException {
-    return handle(
+    return RepositoryUtils.handle(
         dataSource,
         "getAll",
         ClientFileTable.selectAllSQL(),
@@ -106,22 +100,22 @@ public class ClientFileRepository {
   }
 
   private ClientFileEntity getFromResultSet(ResultSet rs) throws SQLException {
-    String uuid = rs.getString(FIELD_FILE_ID);
-    String filename = rs.getString(FIELD_FILENAME);
-    Date dob = rs.getDate(FIELD_DOB);
-    String gender = rs.getString(FIELD_GENDER);
-    String council = rs.getString(FIELD_COUNCIL);
-    String ethnicity = rs.getString(FIELD_ETHNICITY);
-    String eal = rs.getString(FIELD_EAL);
-    String disabilityStatus = rs.getString(FIELD_DISABILITY_STATUS);
-    String disabilityType = rs.getString(FIELD_DISABILITY_TYPE);
-    String careExperience = rs.getString(FIELD_CARE_EXPERIENCE);
-    Integer aces = rs.getInt(FIELD_ACES);
-    String fundingSource = String.valueOf(rs.getString(FIELD_FUNDING_SOURCE));
+    String uuid = rs.getString(ClientFileTable.FIELD_FILE_ID);
+    String filename = rs.getString(ClientFileTable.FIELD_FILENAME);
+    Date dob = rs.getDate(ClientFileTable.FIELD_DOB);
+    String gender = rs.getString(ClientFileTable.FIELD_GENDER);
+    String council = rs.getString(ClientFileTable.FIELD_COUNCIL);
+    String ethnicity = rs.getString(ClientFileTable.FIELD_ETHNICITY);
+    String eal = rs.getString(ClientFileTable.FIELD_EAL);
+    String disabilityStatus = rs.getString(ClientFileTable.FIELD_DISABILITY_STATUS);
+    String disabilityType = rs.getString(ClientFileTable.FIELD_DISABILITY_TYPE);
+    String careExperience = rs.getString(ClientFileTable.FIELD_CARE_EXPERIENCE);
+    Integer aces = rs.getInt(ClientFileTable.FIELD_ACES);
+    String fundingSource = String.valueOf(rs.getString(ClientFileTable.FIELD_FUNDING_SOURCE));
     return new ClientFileEntity(
         UUID.fromString(uuid),
         filename,
-        toInstant(dob),
+        RepositoryUtils.toInstant(dob),
         gender,
         council,
         ethnicity,
@@ -134,7 +128,7 @@ public class ClientFileRepository {
   }
 
   public int deleteAll() throws SdqException {
-    return handle(
+    return RepositoryUtils.handle(
         dataSource, "deleteAll", ClientFileTable.deleteAllSQL(), PreparedStatement::executeUpdate);
   }
 }

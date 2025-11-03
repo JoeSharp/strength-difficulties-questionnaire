@@ -1,7 +1,6 @@
-package uk.ratracejoe.sdq.database.repository;
+package uk.ratracejoe.sdq.repository;
 
-import static uk.ratracejoe.sdq.database.repository.RepositoryUtils.handle;
-import static uk.ratracejoe.sdq.database.tables.SdqTable.*;
+import static uk.ratracejoe.sdq.repository.RepositoryUtils.handle;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,16 +10,14 @@ import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.database.entity.SdqPivot;
-import uk.ratracejoe.sdq.database.entity.SdqScoresEntity;
-import uk.ratracejoe.sdq.database.tables.SdqTable;
+import uk.ratracejoe.sdq.entity.SdqPivot;
+import uk.ratracejoe.sdq.entity.SdqScoresEntity;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.Category;
 import uk.ratracejoe.sdq.model.Posture;
+import uk.ratracejoe.sdq.tables.SdqTable;
 
-@Service
 @RequiredArgsConstructor
 public class SdqRepository {
   private static final Logger LOGGER = LoggerFactory.getLogger(SdqRepository.class);
@@ -36,9 +33,9 @@ public class SdqRepository {
           List<SdqPivot> sdqScores = new ArrayList<>();
           ResultSet rs = stmt.executeQuery();
           while (rs.next()) {
-            UUID uuid = UUID.fromString(rs.getString(FIELD_FILE_ID));
-            int period = rs.getInt(FIELD_PERIOD_INDEX);
-            Assessor assessor = Assessor.valueOf(rs.getString(FIELD_ASSESSOR));
+            UUID uuid = UUID.fromString(rs.getString(SdqTable.FIELD_FILE_ID));
+            int period = rs.getInt(SdqTable.FIELD_PERIOD_INDEX);
+            Assessor assessor = Assessor.valueOf(rs.getString(SdqTable.FIELD_ASSESSOR));
             Map<Category, Integer> categoryScores = new HashMap<>();
             for (Category c : Category.values()) {
               Integer score = rs.getInt(c.name());
@@ -49,7 +46,7 @@ public class SdqRepository {
               Integer score = rs.getInt(p.name());
               postureScores.put(p, score);
             }
-            int total = rs.getInt(FIELD_TOTAL);
+            int total = rs.getInt(SdqTable.FIELD_TOTAL);
             sdqScores.add(
                 new SdqPivot(uuid, period, assessor, categoryScores, postureScores, total));
           }

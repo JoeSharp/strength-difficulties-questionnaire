@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.database.tables;
+package uk.ratracejoe.sdq.tables;
 
 public interface DemographicOptionTable {
   String TABLE_NAME = "demographic_option";

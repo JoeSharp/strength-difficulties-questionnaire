@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.database.tables;
+package uk.ratracejoe.sdq.tables;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -71,17 +71,18 @@ export const EMPTY_DEMOGRAPHIC_REPORT: DemographicReport = {
   counts: [],
 };
 
-export interface GboSummary {
+export interface GboScore {
   uuid: string;
   periodIndex: number;
   periodDate: Date;
-  scores: Record<number, number>;
+  scoreIndex: number;
+  score: number;
 }
 
 export type Assessor = "Parent1" | "Parent2" | "School" | "Child";
 
 export type SdqSummaryByAssessor = Record<Assessor, SdqSummary[]>;
-export type GboSummaryByAssessor = Record<Assessor, GboSummary[]>;
+export type GboScoreByAssessor = Record<Assessor, GboScore[]>;
 
 export const EMPTY_SDQ: SdqSummaryByAssessor = {
   Parent1: [],
@@ -89,7 +90,7 @@ export const EMPTY_SDQ: SdqSummaryByAssessor = {
   Child: [],
   School: [],
 };
-export const EMPTY_GBQ: GboSummaryByAssessor = {
+export const EMPTY_GBQ: GboScoreByAssessor = {
   Parent1: [],
   Parent2: [],
   Child: [],

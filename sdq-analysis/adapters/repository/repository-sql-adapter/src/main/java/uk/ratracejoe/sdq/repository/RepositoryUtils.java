@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.database.repository;
+package uk.ratracejoe.sdq.repository;
 
 import java.sql.Connection;
 import java.sql.Date;

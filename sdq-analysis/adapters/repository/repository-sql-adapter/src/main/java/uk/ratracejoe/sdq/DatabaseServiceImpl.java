@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.service;
+package uk.ratracejoe.sdq;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,24 +11,21 @@ import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import uk.ratracejoe.sdq.config.DbConfig;
-import uk.ratracejoe.sdq.database.tables.*;
 import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.model.SdqEnumerations;
 import uk.ratracejoe.sdq.repository.DatabaseService;
+import uk.ratracejoe.sdq.tables.DemographicOptionTable;
 
-@Component
 @RequiredArgsConstructor
 public class DatabaseServiceImpl implements DatabaseService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServiceImpl.class);
 
   private final DataSource dataSource;
-  private final DbConfig dbConfig;
+  private final String dbFilename;
 
   @Override
   public boolean databaseExists() {
-    return Files.exists(Path.of(dbConfig.getDatabaseFile()));
+    return Files.exists(Path.of(dbFilename));
   }
 
   @Override

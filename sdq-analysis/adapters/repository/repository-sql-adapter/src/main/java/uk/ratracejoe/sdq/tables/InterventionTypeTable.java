@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.database.tables;
+package uk.ratracejoe.sdq.tables;
 
 public interface InterventionTypeTable {
   String TABLE_NAME = "intervention_type";

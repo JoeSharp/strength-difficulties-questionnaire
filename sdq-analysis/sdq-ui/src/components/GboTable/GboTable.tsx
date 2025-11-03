@@ -1,9 +1,9 @@
-import type { Assessor, GboSummary } from "../../api/types";
+import type { Assessor, GboScore } from "../../api/types";
 import Card from "../Card";
 
 interface Props {
   assessor: Assessor;
-  scores: GboSummary[];
+  scores: GboScore[];
 }
 
 function GboTable({ assessor, scores }: Props) {
@@ -17,9 +17,8 @@ function GboTable({ assessor, scores }: Props) {
             <tr>
               <th>File</th>
               <th>Period</th>
-              {Object.keys(scores[0].scores).map((k) => (
-                <th key={k}>{k}</th>
-              ))}
+              <th>Goal</th>
+              <th>Score</th>
             </tr>
           </thead>
           <tbody>
@@ -29,9 +28,8 @@ function GboTable({ assessor, scores }: Props) {
                 <td>
                   {score.periodIndex} - {score.periodDate.toISOString()}
                 </td>
-                {Object.entries(score.scores).map(([i, s]) => (
-                  <td key={i}>{s}</td>
-                ))}
+                <th>{score.scoreIndex}</th>
+                <th>{score.score}</th>
               </tr>
             ))}
           </tbody>

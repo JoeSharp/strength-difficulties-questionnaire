@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.ratracejoe.sdq.database.repository.DemographicOptionRepository;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.repository.DatabaseService;
+import uk.ratracejoe.sdq.repository.DemographicOptionRepository;
 
 @RestController
 @RequestMapping("/api/reference")

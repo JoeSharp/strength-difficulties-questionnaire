@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.database.entity;
+package uk.ratracejoe.sdq.entity;
 
 import java.util.Map;
 import java.util.UUID;

@@ -6,15 +6,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.database.entity.GboEntity;
-import uk.ratracejoe.sdq.database.entity.GboPivot;
-import uk.ratracejoe.sdq.database.repository.GboRepository;
+import uk.ratracejoe.sdq.entity.GboEntity;
+import uk.ratracejoe.sdq.entity.GboPivot;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ClientFile;
 import uk.ratracejoe.sdq.model.GboPeriod;
 import uk.ratracejoe.sdq.model.GboSummary;
 import uk.ratracejoe.sdq.repository.DatabaseService;
+import uk.ratracejoe.sdq.repository.GboRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +40,8 @@ public class GboServiceImpl implements GboService {
   }
 
   private GboSummary toDTO(GboPivot pivot) {
-    return new GboSummary(pivot.uuid(), pivot.periodIndex(), pivot.periodDate(), pivot.scores());
+    return new GboSummary(
+        pivot.uuid(), pivot.periodIndex(), pivot.periodDate(), pivot.scoreIndex(), pivot.score());
   }
 
   @Override

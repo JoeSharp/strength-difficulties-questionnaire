@@ -1,0 +1,12 @@
+apply plugin: 'java-library'
+
+group = 'uk.ratracejoe.sdq.db'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    implementation project(":domain:ports:outgoing:repository")
+    implementation project(":domain:model")
+    implementation("org.slf4j:slf4j-api:2.0.16") // Service
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+}

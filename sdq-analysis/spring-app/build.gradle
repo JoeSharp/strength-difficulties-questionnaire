@@ -23,6 +23,7 @@ dependencies {
 	implementation project(":domain:ports:incoming:service")
 	implementation project(":domain:ports:outgoing:repository")
 	implementation project(":adapters:service:service-rest-adapter")
+	implementation project(":adapters:repository:repository-sql-adapter")
 	implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
 
 	implementation 'org.apache.poi:poi:5.3.0'

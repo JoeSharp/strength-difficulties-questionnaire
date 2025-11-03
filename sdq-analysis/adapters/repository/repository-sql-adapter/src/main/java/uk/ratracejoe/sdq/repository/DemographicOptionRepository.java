@@ -1,8 +1,8 @@
-package uk.ratracejoe.sdq.database.repository;
+package uk.ratracejoe.sdq.repository;
 
-import static uk.ratracejoe.sdq.database.repository.RepositoryUtils.handle;
-import static uk.ratracejoe.sdq.database.tables.DemographicOptionTable.FIELD_DEMOGRAPHIC;
-import static uk.ratracejoe.sdq.database.tables.DemographicOptionTable.FIELD_OPTION_TEXT;
+import static uk.ratracejoe.sdq.repository.RepositoryUtils.handle;
+import static uk.ratracejoe.sdq.tables.DemographicOptionTable.FIELD_DEMOGRAPHIC;
+import static uk.ratracejoe.sdq.tables.DemographicOptionTable.FIELD_OPTION_TEXT;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -12,13 +12,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import uk.ratracejoe.sdq.database.entity.DemographicOptionEntity;
-import uk.ratracejoe.sdq.database.tables.DemographicOptionTable;
+import uk.ratracejoe.sdq.entity.DemographicOptionEntity;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.DemographicField;
+import uk.ratracejoe.sdq.tables.DemographicOptionTable;
 
-@Service
 @RequiredArgsConstructor
 public class DemographicOptionRepository {
   private final DataSource dataSource;
