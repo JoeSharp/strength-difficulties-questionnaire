@@ -1,14 +1,9 @@
-import {
-  CATEGORIES,
-  POSTURES,
-  type Assessor,
-  type SdqSummary,
-} from "../../api/types";
+import { type Assessor, type SdqScore } from "../../api/types";
 import Card from "../Card";
 
 interface Props {
   assessor: Assessor;
-  scores: SdqSummary[];
+  scores: SdqScore[];
 }
 
 function SdqScoresTable({ assessor, scores }: Props) {
@@ -20,27 +15,19 @@ function SdqScoresTable({ assessor, scores }: Props) {
             <tr>
               <th>File</th>
               <th>Period</th>
-              {CATEGORIES.map((c) => (
-                <th key={c}>{c}</th>
-              ))}
-              {POSTURES.map((p) => (
-                <th key={p}>{p}</th>
-              ))}
-              <th>Total Difficulties</th>
+              <th>Assessor</th>
+              <th>Statement</th>
+              <th>Score</th>
             </tr>
           </thead>
           <tbody>
             {scores.map((score) => (
-              <tr key={score.uuid}>
-                <td>{score.uuid}</td>
+              <tr key={score.fileId}>
+                <td>{score.fileId}</td>
                 <td>{score.period}</td>
-                {CATEGORIES.map((c) => (
-                  <td key={c}>{score.categoryScores[c]}</td>
-                ))}
-                {POSTURES.map((p) => (
-                  <td key={p}>{score.postureScores[p]}</td>
-                ))}
-                <td>{score.total}</td>
+                <td>{score.assessor}</td>
+                <td>{score.statement}</td>
+                <td>{score.score}</td>
               </tr>
             ))}
           </tbody>

@@ -24,11 +24,11 @@ function UploadFileTable() {
         <tbody>
           {files.map((file) => (
             <tr
-              key={file.uuid}
+              key={file.fileId}
               className="clickable"
-              onClick={() => navigate(`/client/${file.uuid}`)}
+              onClick={() => navigate(`/client/${file.fileId}`)}
             >
-              <td>{file.uuid}</td>
+              <td>{file.fileId}</td>
               <td>{file.filename}</td>
               <td>{file.dateOfBirth.toISOString().slice(0, 7)}</td>
             </tr>

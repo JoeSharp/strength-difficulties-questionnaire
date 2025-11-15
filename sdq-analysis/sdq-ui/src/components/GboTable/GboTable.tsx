@@ -23,8 +23,8 @@ function GboTable({ assessor, scores }: Props) {
           </thead>
           <tbody>
             {scores.map((score) => (
-              <tr key={score.uuid}>
-                <td>{score.uuid}</td>
+              <tr key={score.fileId}>
+                <td>{score.fileId}</td>
                 <td>
                   {score.periodIndex} - {score.periodDate.toISOString()}
                 </td>

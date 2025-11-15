@@ -11,12 +11,12 @@ import {
   type ClientFile,
   type GboScore,
   type GboScoreByAssessor,
-  type SdqSummaryByAssessor,
+  type SdqScoreByAssessor,
 } from "./types";
 
 export interface ClientFileApi {
   gbo: GboScoreByAssessor;
-  scores: SdqSummaryByAssessor;
+  scores: SdqScoreByAssessor;
   files: ClientFile[];
   file: ClientFile;
   demographicReport: DemographicReport;
@@ -63,7 +63,7 @@ function parseGboSummary(gboSummary: GboScoreByAssessor): GboScoreByAssessor {
 
 function useClientFileApi(): ClientFileApi {
   const [gbo, setGbo] = React.useState<GboScoreByAssessor>(EMPTY_GBO);
-  const [scores, setScores] = React.useState<SdqSummaryByAssessor>(EMPTY_SDQ);
+  const [scores, setScores] = React.useState<SdqScoreByAssessor>(EMPTY_SDQ);
   const [files, setFiles] = React.useState<ClientFile[]>([]);
   const [demographicReport, setDemographicReport] =
     React.useState<DemographicReport>(EMPTY_DEMOGRAPHIC_REPORT);
@@ -140,9 +140,9 @@ function useClientFileApi(): ClientFileApi {
       });
   }, []);
 
-  const getScoresByUuid = React.useCallback((uuid: string) => {
+  const getScoresByUuid = React.useCallback((fileId: string) => {
     const jobId = beginJob("Fetching SDQ");
-    fetch(`${BASE_CLIENT_URL}/sdq/${uuid}`)
+    fetch(`${BASE_CLIENT_URL}/sdq/${fileId}`)
       .then((response) => {
         if (!response.ok) {
           addMessage(
@@ -163,9 +163,9 @@ function useClientFileApi(): ClientFileApi {
       });
   }, []);
 
-  const getGboByUuid = React.useCallback((uuid: string) => {
+  const getGboByUuid = React.useCallback((fileId: string) => {
     const jobId = beginJob("Fetching gbo");
-    fetch(`${BASE_CLIENT_URL}/gbo/${uuid}`)
+    fetch(`${BASE_CLIENT_URL}/gbo/${fileId}`)
       .then((response) => {
         if (!response.ok) {
           addMessage(

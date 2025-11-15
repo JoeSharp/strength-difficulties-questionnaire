@@ -10,6 +10,7 @@ export type DemographicField =
   | "ACES"
   | "Funding Source"
   | "UNKNOWN";
+export type Assessor = "Parent1" | "Parent2" | "School" | "Child";
 
 export type DemographicReference = {
   [key in keyof DemographicField]?: string[];
@@ -18,7 +19,7 @@ export type DemographicReference = {
 const EMPTY_DEMOGRAPHIC_REFERENCE: DemographicReference = {};
 
 export interface ClientFile {
-  uuid: string;
+  fileId: string;
   filename: string;
   dateOfBirth: Date;
   gender: string;
@@ -34,7 +35,7 @@ export interface ClientFile {
 }
 
 export const EMPTY_CLIENT_FILE: ClientFile = {
-  uuid: "",
+  fileId: "",
   filename: "",
   dateOfBirth: new Date(),
   gender: "",
@@ -49,12 +50,12 @@ export const EMPTY_CLIENT_FILE: ClientFile = {
   fundingSource: "",
 };
 
-export interface SdqSummary {
-  uuid: string;
+export interface SdqScore {
+  fileId: string;
   period: number;
-  categoryScores: Record<string, number>;
-  postureScores: Record<string, number>;
-  total: number;
+  assessor: Assessor;
+  statement: string;
+  score: number;
 }
 
 export interface DemographicCount {
@@ -72,19 +73,17 @@ export const EMPTY_DEMOGRAPHIC_REPORT: DemographicReport = {
 };
 
 export interface GboScore {
-  uuid: string;
+  fileId: string;
   periodIndex: number;
   periodDate: Date;
   scoreIndex: number;
   score: number;
 }
 
-export type Assessor = "Parent1" | "Parent2" | "School" | "Child";
-
-export type SdqSummaryByAssessor = Record<Assessor, SdqSummary[]>;
+export type SdqScoreByAssessor = Record<Assessor, SdqScore[]>;
 export type GboScoreByAssessor = Record<Assessor, GboScore[]>;
 
-export const EMPTY_SDQ: SdqSummaryByAssessor = {
+export const EMPTY_SDQ: SdqScoreByAssessor = {
   Parent1: [],
   Parent2: [],
   Child: [],

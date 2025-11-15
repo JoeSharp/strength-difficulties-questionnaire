@@ -28,6 +28,15 @@ public class ClientFileController {
     return fileService.getAll();
   }
 
+  @GetMapping("/{fileId}")
+  public ResponseEntity<ClientFile> getByUUID(@PathVariable("fileId") UUID uuid)
+      throws SdqException {
+    return fileService
+        .getByUUID(uuid)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
+
   @GetMapping("/demographic_report/{demographic}")
   public DemographicReport getDemographicReport(@PathVariable("demographic") String demographic) {
     return fileService.getDemographicReport(demographic);
@@ -43,14 +52,5 @@ public class ClientFileController {
   public Map<Assessor, List<GboScore>> getGbo(@PathVariable("fileId") UUID fileUuid)
       throws SdqException {
     return gboService.getGbo(fileUuid);
-  }
-
-  @GetMapping("/{fileId}")
-  public ResponseEntity<ClientFile> getByUUID(@PathVariable("fileId") UUID uuid)
-      throws SdqException {
-    return fileService
-        .getByUUID(uuid)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
   }
 }
