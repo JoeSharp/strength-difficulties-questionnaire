@@ -3,7 +3,6 @@ package uk.ratracejoe.sdq.xslx;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import uk.ratracejoe.sdq.SdqFileParser;
@@ -31,10 +30,10 @@ public class XslxSdqFileParser implements SdqFileParser {
       SdqEnumerations structure = new SdqEnumerations(demographics);
 
       ClientFile clientFile = xslDemographicExtractor.parse(workbook, filename);
-      List<SdqPeriod> sdqs = xslSdqExtractor.parse(workbook);
-      Map<Assessor, List<GboPeriod>> gbos = xslxGboExtractor.parse(workbook);
+      List<SdqScore> sdq = xslSdqExtractor.parse(clientFile.fileId(), workbook);
+      List<GboScore> gbo = xslxGboExtractor.parse(clientFile.fileId(), workbook);
 
-      return new ParsedFile(clientFile, sdqs, gbos, structure);
+      return new ParsedFile(clientFile, sdq, gbo, structure);
     } catch (IOException e) {
       throw new SdqException("Could not parse XLSL Workbook", e);
     }

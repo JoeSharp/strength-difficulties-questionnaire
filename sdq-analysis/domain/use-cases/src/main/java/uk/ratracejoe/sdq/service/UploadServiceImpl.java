@@ -40,8 +40,8 @@ public class UploadServiceImpl implements UploadService {
         .clientFile()
         .interventionTypes()
         .forEach(it -> interventionTypeRepository.save(fileId, it));
-    sdqService.recordResponse(fileId, parsedFile.sdqPeriods());
-    gboService.recordResponse(fileId, parsedFile.gboPeriods());
+    sdqService.recordResponse(fileId, parsedFile.sdq());
+    gboService.recordResponse(fileId, parsedFile.gbo());
 
     return parsedFile;
   }

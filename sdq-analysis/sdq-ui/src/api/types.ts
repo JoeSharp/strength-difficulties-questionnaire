@@ -158,12 +158,14 @@ export interface SdqPeriod {
 
 export interface ParsedFile {
   clientFile: ClientFile;
-  sdqPeriods: SdqPeriod[];
+  sdq: SdqScore[];
+  gbo: GboScore[];
 }
 
 export const EMPTY_PARSED_FILE: ParsedFile = {
   clientFile: EMPTY_CLIENT_FILE,
-  sdqPeriods: [],
+  sdq: [],
+  gbo: [],
 };
 
 export type RefInfoDescription = Record<string, Record<string, object>>;

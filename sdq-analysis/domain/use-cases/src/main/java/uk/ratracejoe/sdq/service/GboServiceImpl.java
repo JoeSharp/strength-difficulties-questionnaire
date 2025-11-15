@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
-import uk.ratracejoe.sdq.model.GboPeriod;
 import uk.ratracejoe.sdq.model.GboScore;
 import uk.ratracejoe.sdq.repository.GboRepository;
 
@@ -30,24 +29,7 @@ public class GboServiceImpl implements GboService {
   }
 
   @Override
-  public void recordResponse(UUID fileId, Map<Assessor, List<GboPeriod>> gbosByAssessor)
-      throws SdqException {
-    gbosByAssessor.forEach(
-        (assessor, gbos) ->
-            gbos.forEach(
-                gbo ->
-                    gbo.scores()
-                        .forEach(
-                            (key, value) -> {
-                              GboScore entity =
-                                  new GboScore(
-                                      fileId,
-                                      assessor,
-                                      gbo.periodIndex(),
-                                      gbo.periodDate(),
-                                      key,
-                                      value);
-                              gboRepository.save(entity);
-                            })));
+  public void recordResponse(UUID fileId, List<GboScore> gbos) throws SdqException {
+    gbos.forEach(gboRepository::save);
   }
 }

@@ -9,5 +9,5 @@ import uk.ratracejoe.sdq.model.*;
 public interface SdqService {
   Map<Assessor, List<SdqScore>> getScores(UUID fileId) throws SdqException;
 
-  void recordResponse(UUID fileId, List<SdqPeriod> periods) throws SdqException;
+  void recordResponse(UUID fileId, List<SdqScore> sdqs) throws SdqException;
 }

@@ -21,23 +21,7 @@ public class SdqServiceImpl implements SdqService {
     return scores.stream().collect(groupingBy(SdqScore::assessor));
   }
 
-  public void recordResponse(UUID fileId, List<SdqPeriod> periods) throws SdqException {
-    periods.forEach(
-        period ->
-            period
-                .responses()
-                .forEach(
-                    (key, value) ->
-                        value.forEach(
-                            response -> {
-                              SdqScore entity =
-                                  new SdqScore(
-                                      fileId,
-                                      period.periodIndex(),
-                                      key,
-                                      response.statement(),
-                                      response.score());
-                              sdqRepository.recordResponse(entity);
-                            })));
+  public void recordResponse(UUID fileId, List<SdqScore> sdqs) throws SdqException {
+    sdqs.forEach(sdqRepository::recordResponse);
   }
 }
