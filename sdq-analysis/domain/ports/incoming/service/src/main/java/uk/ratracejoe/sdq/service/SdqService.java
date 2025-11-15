@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.Assessor;
-import uk.ratracejoe.sdq.model.SdqSummary;
+import uk.ratracejoe.sdq.model.*;
 
 public interface SdqService {
-  Map<Assessor, List<SdqSummary>> getScores(UUID fileUuid) throws SdqException;
+  Map<Assessor, List<SdqScore>> getScores(UUID fileId) throws SdqException;
+
+  void recordResponse(UUID fileId, List<SdqPeriod> periods) throws SdqException;
 }

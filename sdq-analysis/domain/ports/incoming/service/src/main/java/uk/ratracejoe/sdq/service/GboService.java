@@ -5,12 +5,11 @@ import java.util.Map;
 import java.util.UUID;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
-import uk.ratracejoe.sdq.model.ClientFile;
 import uk.ratracejoe.sdq.model.GboPeriod;
-import uk.ratracejoe.sdq.model.GboSummary;
+import uk.ratracejoe.sdq.model.GboScore;
 
 public interface GboService {
-  Map<Assessor, List<GboSummary>> getGbo(UUID fileUuid) throws SdqException;
+  Map<Assessor, List<GboScore>> getGbo(UUID fileUuid) throws SdqException;
 
-  void recordResponse(ClientFile file, Map<Assessor, List<GboPeriod>> gbosByAssessor);
+  void recordResponse(UUID fileId, Map<Assessor, List<GboPeriod>> gbosByAssessor);
 }

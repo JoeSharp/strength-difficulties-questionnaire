@@ -17,10 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import uk.ratracejoe.sdq.SdqTestExtension;
-import uk.ratracejoe.sdq.model.Assessor;
-import uk.ratracejoe.sdq.model.GboSummary;
-import uk.ratracejoe.sdq.model.ParsedFile;
-import uk.ratracejoe.sdq.model.SdqSummary;
+import uk.ratracejoe.sdq.model.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith({SdqTestExtension.class})
@@ -32,9 +29,6 @@ class EndToEndTest {
 
   @Test
   void completeLifecycle() throws IOException {
-    int NUMBER_ASSESSORS = 4;
-    int NUMBER_PERIODS = 9;
-
     var ingestFileRequest = getWorkbookPost("sdqFiles");
     var ingestResponse =
         restTemplate.exchange(
@@ -44,24 +38,24 @@ class EndToEndTest {
             new ParameterizedTypeReference<List<ParsedFile>>() {});
     assertThat(ingestResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(ingestResponse.getBody()).hasSize(1);
-    var clientUuid = ingestResponse.getBody().get(0).clientFile().uuid();
+    var clientUuid = ingestResponse.getBody().get(0).clientFile().fileId();
 
     var sdqResponse =
         restTemplate.exchange(
             REST_URL_CLIENT_SDQ + clientUuid,
             HttpMethod.GET,
             new HttpEntity<>(null, new HttpHeaders()),
-            new ParameterizedTypeReference<Map<Assessor, List<SdqSummary>>>() {});
+            new ParameterizedTypeReference<Map<Assessor, List<SdqScore>>>() {});
     assertThat(sdqResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(sdqResponse.getBody()).hasSize(NUMBER_ASSESSORS);
+    assertThat(sdqResponse.getBody()).hasSize(4);
 
     var gboResponse =
         restTemplate.exchange(
             REST_URL_CLIENT_GBO + clientUuid,
             HttpMethod.GET,
             new HttpEntity<>(null, new HttpHeaders()),
-            new ParameterizedTypeReference<Map<Assessor, List<GboSummary>>>() {});
+            new ParameterizedTypeReference<Map<Assessor, List<GboScore>>>() {});
     assertThat(gboResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(gboResponse.getBody()).hasSize(NUMBER_ASSESSORS);
+    assertThat(gboResponse.getBody()).hasSize(4);
   }
 }

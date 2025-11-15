@@ -22,16 +22,12 @@ dependencies {
 	implementation project(":domain:model")
 	implementation project(":domain:ports:incoming:service")
 	implementation project(":domain:ports:outgoing:repository")
-	implementation project(":adapters:service:service-rest-adapter")
-	implementation project(":adapters:repository:repository-sql-adapter")
+	implementation project(":domain:ports:outgoing:parse-file")
+	implementation project(":adapters:incoming:service:service-rest-adapter")
+	implementation project(":adapters:outgoing:repository:repository-sql-adapter")
+	implementation project(":adapters:outgoing:parse-file:xslx-parse-file")
 	implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
 
-	implementation 'org.apache.poi:poi:5.3.0'
-	implementation 'org.apache.poi:poi-ooxml:5.3.0'
-	implementation 'org.jxls:jxls-jexcel:1.0.9'
-	implementation 'org.dhatim:fastexcel-reader:0.18.1'
-	implementation 'org.dhatim:fastexcel:0.18.1'
-	testImplementation("org.hamcrest:hamcrest-library:2.2")
 	testImplementation 'org.liquibase:liquibase-core'
 }
 

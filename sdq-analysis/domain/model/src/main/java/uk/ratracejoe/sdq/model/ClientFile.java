@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record ClientFile(
-    UUID uuid,
+    UUID fileId,
     String filename,
     Instant dateOfBirth,
     String gender,
