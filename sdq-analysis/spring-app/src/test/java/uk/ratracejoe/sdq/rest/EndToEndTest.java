@@ -1,9 +1,8 @@
 package uk.ratracejoe.sdq.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.ratracejoe.sdq.Utils.getWorkbookPost;
+import static uk.ratracejoe.sdq.Utils.getFilePost;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -24,12 +23,46 @@ import uk.ratracejoe.sdq.model.*;
 class EndToEndTest {
   @Autowired private TestRestTemplate restTemplate;
   private static final String REST_URL_UPLOAD = "/api/upload";
+  private static final String REST_URL_CLIENT_FILE = "/api/client";
   private static final String REST_URL_CLIENT_SDQ = "/api/client/sdq/";
   private static final String REST_URL_CLIENT_GBO = "/api/client/gbo/";
 
   @Test
-  void completeLifecycle() throws IOException {
-    var ingestFileRequest = getWorkbookPost("sdqFiles");
+  void getFilteredFiles() {
+    var ingestFileRequest =
+        getFilePost(
+            "sdqFiles",
+            "Test File 1.xlsx",
+            "Test File 4.xlsx",
+            "Test File 5.xlsx",
+            "Test File 6.xlsx",
+            "Test File 7.xlsx",
+            "Test File 8.xlsx",
+            "Test File 9.xlsx",
+            "Test File 10.xlsx");
+    restTemplate.exchange(
+        REST_URL_UPLOAD,
+        HttpMethod.POST,
+        ingestFileRequest,
+        new ParameterizedTypeReference<List<ParsedFile>>() {});
+    Map<DemographicField, String> filters =
+        Map.of(
+            DemographicField.Gender, "Male",
+            DemographicField.Council, "Cheltenham");
+
+    var fileResponse =
+        restTemplate.exchange(
+            REST_URL_CLIENT_FILE,
+            HttpMethod.POST,
+            new HttpEntity<>(filters, new HttpHeaders()),
+            new ParameterizedTypeReference<List<ClientFile>>() {});
+    assertThat(fileResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(fileResponse.getBody()).hasSize(1);
+  }
+
+  @Test
+  void completeLifecycle() {
+    var ingestFileRequest = getFilePost("sdqFiles", "Test File 1.xlsx");
     var ingestResponse =
         restTemplate.exchange(
             REST_URL_UPLOAD,

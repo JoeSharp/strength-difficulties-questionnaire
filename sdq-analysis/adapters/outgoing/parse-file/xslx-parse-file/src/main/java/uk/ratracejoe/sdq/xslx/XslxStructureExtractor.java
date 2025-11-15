@@ -31,13 +31,15 @@ public class XslxStructureExtractor {
     headerRow
         .cellIterator()
         .forEachRemaining(
-            header -> {
-              DemographicField field = DemographicField.fromHeading(header.getStringCellValue());
-              int col = header.getAddress().getColumn();
-              Cell dataCell = dataRow.getCell(col);
-              List<String> options = getOptions(validations, field, dataCell);
-              optionsByField.put(field, options);
-            });
+            header ->
+                DemographicField.fromHeading(header.getStringCellValue())
+                    .ifPresent(
+                        field -> {
+                          int col = header.getAddress().getColumn();
+                          Cell dataCell = dataRow.getCell(col);
+                          List<String> options = getOptions(validations, field, dataCell);
+                          optionsByField.put(field, options);
+                        }));
 
     return optionsByField;
   }

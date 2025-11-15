@@ -12,6 +12,7 @@ import {
   type GboScore,
   type GboScoreByAssessor,
   type SdqScoreByAssessor,
+  type DemographicField,
 } from "./types";
 
 export interface ClientFileApi {
@@ -21,7 +22,7 @@ export interface ClientFileApi {
   file: ClientFile;
   demographicReport: DemographicReport;
   refresh: () => void;
-  getDemographicReport: (tableName: string) => void;
+  getDemographicReport: (demographic: DemographicField) => void;
   getFileByUuid: (uuid: string) => void;
   getScoresByUuid: (uuid: string) => void;
   getGboByUuid: (uuid: string) => void;

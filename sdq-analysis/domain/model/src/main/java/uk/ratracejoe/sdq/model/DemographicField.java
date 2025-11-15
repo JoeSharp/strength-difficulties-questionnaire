@@ -1,5 +1,6 @@
 package uk.ratracejoe.sdq.model;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public enum DemographicField {
@@ -11,10 +12,8 @@ public enum DemographicField {
   DisabilityType("Disability Type"),
   CareExperience("Care Experience"),
   InterventionType("Intervention Type"),
-  AdditionalInterventionType("Additional Intervention Type"),
   ACES("ACES"),
-  FundingSource("Funding source"),
-  UNKNOWN("UNKNOWN");
+  FundingSource("Funding source");
 
   private final String heading;
 
@@ -22,8 +21,8 @@ public enum DemographicField {
     this.heading = heading;
   }
 
-  public static DemographicField fromHeading(String heading) {
-    return Stream.of(values()).filter(v -> v.heading().equals(heading)).findFirst().orElse(UNKNOWN);
+  public static Optional<DemographicField> fromHeading(String heading) {
+    return Stream.of(values()).filter(v -> v.heading().equals(heading)).findFirst();
   }
 
   public String heading() {

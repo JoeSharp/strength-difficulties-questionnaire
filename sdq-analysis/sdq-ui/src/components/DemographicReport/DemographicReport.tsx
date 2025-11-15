@@ -1,15 +1,22 @@
 import React from "react";
 import useApiContext from "../../context/ApiContext";
+import { DEMOGRAPHIC_FIELDS, type DemographicField } from "../../api/types";
+
+const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
+  value: field,
+  label: field,
+}));
 
 function DemographicReport() {
   const {
     clientFileApi: { demographicReport, getDemographicReport },
   } = useApiContext();
 
-  const [demographicName, setDemographicName] = React.useState<string>("");
+  const [demographicName, setDemographicName] =
+    React.useState<DemographicField>("Gender");
   const onDemographicNameChange: React.ChangeEventHandler<HTMLSelectElement> =
     React.useCallback((e) => {
-      setDemographicName(e.target.value);
+      setDemographicName(e.target.value as DemographicField);
     }, []);
   const onClickFetch = React.useCallback(() => {
     getDemographicReport(demographicName);
@@ -17,6 +24,7 @@ function DemographicReport() {
 
   return (
     <div>
+      <h4>Demographic Report</h4>
       <div className="mb-3">
         <label>Demographic</label>
         <select
@@ -24,12 +32,9 @@ function DemographicReport() {
           value={demographicName}
           onChange={onDemographicNameChange}
         >
-          <option value="gender">Gender</option>
-          <option value="council">Council</option>
-          <option value="ethnicity">Ethnicity</option>
-          <option value="disability_status">Disability Status</option>
-          <option value="disability_type">Disability Type</option>
-          <option value="care_experience">Care Experience</option>
+          {OPTIONS.map(({ value, label }) => (
+            <option value={value}>{label}</option>
+          ))}
         </select>
       </div>
 

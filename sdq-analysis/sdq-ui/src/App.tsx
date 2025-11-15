@@ -5,11 +5,13 @@ import InProgressSpinner from "./components/InProgressSpinner";
 import ClientFileTable from "./components/ClientFileTable";
 import ClientFilePage from "./components/ClientFilePage";
 import DemographicReport from "./components/DemographicReport";
+import ExploreData from "./components/ExploreData";
 
 function Home() {
   return (
     <>
       <FileUploadForm />
+      <ExploreData />
       <DemographicReport />
       <ClientFileTable />
     </>

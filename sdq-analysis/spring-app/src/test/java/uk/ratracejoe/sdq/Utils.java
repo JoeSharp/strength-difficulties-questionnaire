@@ -3,6 +3,8 @@ package uk.ratracejoe.sdq;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Stream;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -13,26 +15,32 @@ import org.springframework.util.MultiValueMap;
 import uk.ratracejoe.sdq.xslx.XslxDemographicExtractor;
 
 public class Utils {
-  public static final String XLSX_TEST_FILE = "MasterDataRecordFor28_6.xlsx";
+  public static final String XLSX_TEST_FILE = "Test File 1.xlsx";
 
   public static InputStream workbookStream() {
     return XslxDemographicExtractor.class.getClassLoader().getResourceAsStream(XLSX_TEST_FILE);
   }
 
-  public static HttpEntity<MultiValueMap<String, Object>> getWorkbookPost(String paramName)
-      throws IOException {
-    return getFilePost(XLSX_TEST_FILE, paramName);
-  }
-
   public static HttpEntity<MultiValueMap<String, Object>> getFilePost(
-      String filename, String paramName) throws IOException {
+      String paramName, String... filenames) {
     // Load file from src/test/resources
-    File file = new ClassPathResource(filename).getFile();
-    FileSystemResource resource = new FileSystemResource(file);
+    List<FileSystemResource> resources =
+        Stream.of(filenames)
+            .map(
+                filename -> {
+                  File file = null;
+                  try {
+                    file = new ClassPathResource(filename).getFile();
+                  } catch (IOException e) {
+                    throw new AssertionError("Could not load file " + filename, e);
+                  }
+                  return new FileSystemResource(file);
+                })
+            .toList();
 
     // Prepare multipart body
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    body.add(paramName, resource);
+    body.addAll(paramName, resources);
 
     // Set headers
     HttpHeaders headers = new HttpHeaders();

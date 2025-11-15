@@ -5,10 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.service.ClientFileService;
@@ -28,6 +25,11 @@ public class ClientFileController {
     return fileService.getAll();
   }
 
+  @PostMapping
+  public List<ClientFile> getFiltered(@RequestBody Map<DemographicField, String> filters) {
+    return fileService.getFiltered(filters);
+  }
+
   @GetMapping("/{fileId}")
   public ResponseEntity<ClientFile> getByUUID(@PathVariable("fileId") UUID uuid)
       throws SdqException {
@@ -38,7 +40,8 @@ public class ClientFileController {
   }
 
   @GetMapping("/demographic_report/{demographic}")
-  public DemographicReport getDemographicReport(@PathVariable("demographic") String demographic) {
+  public DemographicReport getDemographicReport(
+      @PathVariable("demographic") DemographicField demographic) {
     return fileService.getDemographicReport(demographic);
   }
 

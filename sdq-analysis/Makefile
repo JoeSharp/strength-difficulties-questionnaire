@@ -1,5 +1,6 @@
 DB_MODULE=sdq-database
 APP_MODULE=spring-app
+UI_MODULE=sdq-ui
 DATABASE_FILE=$(DB_MODULE)/data/sdq-analysis.db
 
 run: copy-ui run-service
@@ -16,7 +17,10 @@ copy-ui: build-ui
 	rm -rf $(APP_MODULE)/src/main/resources/static && cp -R sdq-ui/dist $(APP_MODULE)/src/main/resources/static
 
 build-ui:
-	npm run build --prefix ./sdq-ui/
+	npm run build --prefix $(UI_MODULE)
+
+run-ui-dev:
+	npm run dev --prefix $(UI_MODULE)
 
 build-db-migration-image:
 	docker build --no-cache -t sdq-db-migration $(DB_MODULE)/.

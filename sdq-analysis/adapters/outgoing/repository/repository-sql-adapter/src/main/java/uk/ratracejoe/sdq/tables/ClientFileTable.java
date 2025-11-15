@@ -2,6 +2,7 @@ package uk.ratracejoe.sdq.tables;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import uk.ratracejoe.sdq.model.DemographicField;
 
 public interface ClientFileTable {
   String TABLE_NAME = "client_file";
@@ -44,10 +45,26 @@ public interface ClientFileTable {
     return sb.toString();
   }
 
-  static String getDemographicReportSQL(String demographic) {
+  static String demographicColumn(DemographicField field) {
+    return switch (field) {
+      case Gender -> "gender";
+      case Council -> "council";
+      case Ethnicity -> "ethnicity";
+      case EAL -> "eal";
+      case DisabilityStatus -> "disability_status";
+      case DisabilityType -> "disability_type";
+      case CareExperience -> "care_experience";
+      case InterventionType -> "intervention_type";
+      case ACES -> "aces";
+      case FundingSource -> "funding_source";
+    };
+  }
+
+  static String getDemographicReportSQL(DemographicField demographic) {
+    String columnName = demographicColumn(demographic);
     return String.format(
         "select %s, count(*) AS count, round(100 * count(*) / (select count(*) from client_file), 2) as percentage FROM client_file GROUP BY %s;",
-        demographic, demographic);
+        columnName, columnName);
   }
 
   static String selectByUUID() {
@@ -56,6 +73,22 @@ public interface ClientFileTable {
 
   static String selectAllSQL() {
     return String.format("SELECT * FROM %s", TABLE_NAME);
+  }
+
+  static String selectFilteredSql(List<DemographicField> fields) {
+    StringBuilder sql = new StringBuilder();
+    sql.append("SELECT * FROM ");
+    sql.append(TABLE_NAME);
+    if (!fields.isEmpty()) {
+      sql.append(
+          String.format(
+              " WHERE %s",
+              fields.stream()
+                  .map(ClientFileTable::demographicColumn)
+                  .map(column -> String.format("%s = ?", column))
+                  .collect(Collectors.joining(" AND "))));
+    }
+    return sql.toString();
   }
 
   static String deleteAllSQL() {

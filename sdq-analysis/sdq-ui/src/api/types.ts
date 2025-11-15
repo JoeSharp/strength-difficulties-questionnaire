@@ -1,22 +1,29 @@
-export type DemographicField =
-  | "Gender"
-  | "Council"
-  | "Ethnicity"
-  | "English as an Additional Language"
-  | "Disability Status"
-  | "Disability Type"
-  | "Care Experience"
-  | "Intervention Type"
-  | "ACES"
-  | "Funding Source"
-  | "UNKNOWN";
+export const DEMOGRAPHIC_FIELDS = [
+  "Gender",
+  "Council",
+  "Ethnicity",
+  "EAL",
+  "DisabilityStatus",
+  "DisabilityType",
+  "CareExperience",
+  "InterventionType",
+  "ACES",
+  "FundingSource",
+] as const;
+export type DemographicField = (typeof DEMOGRAPHIC_FIELDS)[number];
 export type Assessor = "Parent1" | "Parent2" | "School" | "Child";
 
 export type DemographicReference = {
-  [key in keyof DemographicField]?: string[];
+  [key in DemographicField]?: string[];
 };
 
 const EMPTY_DEMOGRAPHIC_REFERENCE: DemographicReference = {};
+
+export type DemographicFilter = {
+  [key in DemographicField]?: string;
+};
+
+export const EMPTY_DEMOGRAPHIC_FILTER: DemographicFilter = {};
 
 export interface ClientFile {
   fileId: string;
@@ -96,32 +103,34 @@ export const EMPTY_GBQ: GboScoreByAssessor = {
   School: [],
 };
 
-export type Statement =
-  | "CONSIDERATE"
-  | "RESTLESS"
-  | "COMPLAINS_ACHES"
-  | "SHARES_READILY"
-  | "TEMPER"
-  | "SOLITARY"
-  | "OBEDIENT"
-  | "WORRIES"
-  | "HELPFUL"
-  | "FIDGETING"
-  | "ONE_GOOD_FRIEND"
-  | "FIGHTS"
-  | "UNHAPPY"
-  | "LIKED_BY_OTHERS"
-  | "DISTRACTED"
-  | "NERVOUS"
-  | "KIND_TO_YOUNGER"
-  | "LIES"
-  | "PICKED_ON"
-  | "VOLUNTEERS"
-  | "THINKS_THROUGH"
-  | "STEALS"
-  | "GETS_ON_ADULTS_BETTER"
-  | "FEARS"
-  | "ATTENTION";
+export const STATEMENT = [
+  "CONSIDERATE",
+  "RESTLESS",
+  "COMPLAINS_ACHES",
+  "SHARES_READILY",
+  "TEMPER",
+  "SOLITARY",
+  "OBEDIENT",
+  "WORRIES",
+  "HELPFUL",
+  "FIDGETING",
+  "ONE_GOOD_FRIEND",
+  "FIGHTS",
+  "UNHAPPY",
+  "LIKED_BY_OTHERS",
+  "DISTRACTED",
+  "NERVOUS",
+  "KIND_TO_YOUNGER",
+  "LIES",
+  "PICKED_ON",
+  "VOLUNTEERS",
+  "THINKS_THROUGH",
+  "STEALS",
+  "GETS_ON_ADULTS_BETTER",
+  "FEARS",
+  "ATTENTION",
+] as const;
+export type Statement = (typeof STATEMENT)[number];
 
 export const CATEGORIES: string[] = [
   "Conduct",

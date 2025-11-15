@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.ClientFile;
 import uk.ratracejoe.sdq.model.DemographicCount;
+import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.model.DemographicReport;
 import uk.ratracejoe.sdq.tables.ClientFileTable;
 
@@ -50,7 +52,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
   }
 
   @Override
-  public DemographicReport getDemographicReport(String demographic) {
+  public DemographicReport getDemographicReport(DemographicField demographic) {
     return RepositoryUtils.handle(
         dataSource,
         "getDemographicReport",
@@ -70,13 +72,13 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
   }
 
   @Override
-  public Optional<ClientFile> getByUUID(UUID uuid) throws SdqException {
+  public Optional<ClientFile> getByUUID(UUID fileId) throws SdqException {
     return RepositoryUtils.handle(
         dataSource,
         "getByUUID",
         ClientFileTable.selectByUUID(),
         stmt -> {
-          stmt.setString(1, uuid.toString());
+          stmt.setString(1, fileId.toString());
           ResultSet rs = stmt.executeQuery();
           if (!rs.next()) return Optional.empty();
           return Optional.of(getFromResultSet(rs));
@@ -89,6 +91,39 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
         "getAll",
         ClientFileTable.selectAllSQL(),
         stmt -> {
+          List<ClientFile> files = new ArrayList<>();
+          ResultSet rs = stmt.executeQuery();
+          while (rs.next()) {
+            files.add(getFromResultSet(rs));
+          }
+          return files;
+        });
+  }
+
+  private record FilterAndValue(DemographicField field, String value) {}
+
+  @Override
+  public List<ClientFile> getFiltered(Map<DemographicField, String> filterMap) throws SdqException {
+    List<FilterAndValue> filters =
+        filterMap.entrySet().stream()
+            .map(e -> new FilterAndValue(e.getKey(), e.getValue()))
+            .toList();
+    String sql =
+        ClientFileTable.selectFilteredSql(filters.stream().map(FilterAndValue::field).toList());
+    return RepositoryUtils.handle(
+        dataSource,
+        "getFiltered",
+        sql,
+        stmt -> {
+          AtomicInteger index = new AtomicInteger(1);
+          filters.forEach(
+              e -> {
+                try {
+                  stmt.setString(index.getAndIncrement(), e.value);
+                } catch (SQLException ex) {
+                  throw new RuntimeException(ex);
+                }
+              });
           List<ClientFile> files = new ArrayList<>();
           ResultSet rs = stmt.executeQuery();
           while (rs.next()) {
