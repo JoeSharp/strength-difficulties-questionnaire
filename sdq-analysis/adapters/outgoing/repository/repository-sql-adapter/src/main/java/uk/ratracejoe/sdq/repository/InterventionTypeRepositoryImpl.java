@@ -20,7 +20,7 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
         "saveInterventionType",
         InterventionTypeTable.insertOptionSQL(),
         stmt -> {
-          stmt.setString(1, fileId.toString());
+          stmt.setObject(1, fileId);
           stmt.setString(2, interventionType);
           return stmt.executeUpdate();
         });
@@ -33,7 +33,7 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
         InterventionTypeTable.getByFileSQL(),
         stmt -> {
           List<InterventionTypeEntity> results = new ArrayList<>();
-          stmt.setString(1, fileId.toString());
+          stmt.setObject(1, fileId);
           ResultSet rs = stmt.executeQuery();
 
           while (rs.next()) {

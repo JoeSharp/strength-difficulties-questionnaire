@@ -26,9 +26,12 @@ dependencies {
 	implementation project(":adapters:incoming:service:service-rest-adapter")
 	implementation project(":adapters:outgoing:repository:repository-sql-adapter")
 	implementation project(":adapters:outgoing:parse-file:xslx-parse-file")
-	implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
+	implementation 'org.postgresql:postgresql'
+	implementation 'com.zaxxer:HikariCP:5.1.0'
 
 	testImplementation 'org.liquibase:liquibase-core'
+	testImplementation 'org.testcontainers:testcontainers:1.20.4'
+	testImplementation 'org.testcontainers:postgresql:1.20.4'
 }
 
 tasks.named('test') {

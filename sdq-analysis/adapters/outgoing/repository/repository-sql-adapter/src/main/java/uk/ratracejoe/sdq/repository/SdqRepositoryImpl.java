@@ -25,11 +25,11 @@ public class SdqRepositoryImpl implements SdqRepository {
         "getScores",
         SdqTable.selectScoresSQL(),
         stmt -> {
-          stmt.setString(1, fileId.toString());
+          stmt.setObject(1, fileId);
           List<SdqScore> sdqScores = new ArrayList<>();
           ResultSet rs = stmt.executeQuery();
           while (rs.next()) {
-            UUID uuid = UUID.fromString(rs.getString(SdqTable.FIELD_FILE_ID));
+            UUID uuid = rs.getObject(SdqTable.FIELD_FILE_ID, UUID.class);
             int period = rs.getInt(SdqTable.FIELD_PERIOD_INDEX);
             Assessor assessor = Assessor.valueOf(rs.getString(SdqTable.FIELD_ASSESSOR));
             Statement statement = Statement.valueOf(rs.getString(SdqTable.FIELD_STATEMENT));
@@ -50,7 +50,7 @@ public class SdqRepositoryImpl implements SdqRepository {
         stmt -> {
           try {
             AtomicInteger paramIndex = new AtomicInteger(1);
-            stmt.setString(paramIndex.getAndIncrement(), score.fileId().toString());
+            stmt.setObject(paramIndex.getAndIncrement(), score.fileId());
             stmt.setInt(paramIndex.getAndIncrement(), score.period());
             stmt.setString(paramIndex.getAndIncrement(), score.assessor().name());
             stmt.setString(paramIndex.getAndIncrement(), score.statement().name());

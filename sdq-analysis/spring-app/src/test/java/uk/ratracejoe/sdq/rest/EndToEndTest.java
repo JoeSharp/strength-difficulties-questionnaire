@@ -5,6 +5,8 @@ import static uk.ratracejoe.sdq.Utils.getFilePost;
 
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
 import uk.ratracejoe.sdq.SdqTestExtension;
 import uk.ratracejoe.sdq.model.*;
 
@@ -26,6 +31,29 @@ class EndToEndTest {
   private static final String REST_URL_CLIENT_FILE = "/api/client";
   private static final String REST_URL_CLIENT_SDQ = "/api/client/sdq/";
   private static final String REST_URL_CLIENT_GBO = "/api/client/gbo/";
+
+  @DynamicPropertySource
+  static void registerDynamicProperties(DynamicPropertyRegistry registry) {
+    registry.add("database.url", postgres::getJdbcUrl);
+    registry.add("database.username", () -> "test");
+    registry.add("database.password", () -> "test");
+  }
+
+  private static final PostgreSQLContainer<?> postgres =
+      new PostgreSQLContainer<>("postgres:17")
+          .withDatabaseName("sdq")
+          .withUsername("test")
+          .withPassword("test");
+
+  @BeforeAll
+  static void beforeAll() {
+    postgres.start();
+  }
+
+  @AfterAll
+  static void afterAll() {
+    postgres.stop();
+  }
 
   @Test
   void getFilteredFiles() {

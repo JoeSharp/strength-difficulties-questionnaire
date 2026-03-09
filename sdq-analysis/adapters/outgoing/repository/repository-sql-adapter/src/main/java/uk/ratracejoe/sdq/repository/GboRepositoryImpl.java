@@ -30,7 +30,7 @@ public class GboRepositoryImpl implements GboRepository {
           Date periodDate = Date.valueOf(localDate);
 
           AtomicInteger paramIndex = new AtomicInteger(1);
-          stmt.setString(paramIndex.getAndIncrement(), domain.fileId().toString());
+          stmt.setObject(paramIndex.getAndIncrement(), domain.fileId());
           stmt.setString(paramIndex.getAndIncrement(), domain.assessor().name());
           stmt.setInt(paramIndex.getAndIncrement(), domain.periodIndex());
           stmt.setDate(paramIndex.getAndIncrement(), periodDate);
@@ -47,7 +47,7 @@ public class GboRepositoryImpl implements GboRepository {
         "getGboByFile",
         GoalBasedOutcomeTable.getByFileSQL(),
         stmt -> {
-          stmt.setString(1, uuid.toString());
+          stmt.setObject(1, uuid);
           ResultSet rs = stmt.executeQuery();
           List<GboScore> results = new ArrayList<>();
           while (rs.next()) {
@@ -59,7 +59,7 @@ public class GboRepositoryImpl implements GboRepository {
 
   private GboScore getFromResultSet(ResultSet rs) throws SQLException {
     return new GboScore(
-        UUID.fromString(rs.getString(FIELD_FILE_ID)),
+        rs.getObject(FIELD_FILE_ID, UUID.class),
         Assessor.valueOf(rs.getString(FIELD_ASSESSOR)),
         rs.getInt(FIELD_PERIOD_INDEX),
         RepositoryUtils.toInstant(rs.getDate(FIELD_PERIOD_DATE)),

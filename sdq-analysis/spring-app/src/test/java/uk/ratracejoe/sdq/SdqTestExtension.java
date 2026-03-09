@@ -1,8 +1,6 @@
 package uk.ratracejoe.sdq;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
@@ -29,9 +27,7 @@ public class SdqTestExtension implements BeforeEachCallback, AfterEachCallback {
   }
 
   @Override
-  public void afterEach(ExtensionContext context) throws Exception {
-    deleteDatabase(context);
-  }
+  public void afterEach(ExtensionContext context) throws Exception {}
 
   public static void createDatabase(ExtensionContext context) throws SQLException {
     ApplicationContext appContext = SpringExtension.getApplicationContext(context);
@@ -53,18 +49,6 @@ public class SdqTestExtension implements BeforeEachCallback, AfterEachCallback {
     } catch (Exception e) {
       LOGGER.error("Failed to run Liquibase migration", e);
       throw new SQLException(e);
-    }
-  }
-
-  private void deleteDatabase(ExtensionContext context) {
-    ApplicationContext appContext = SpringExtension.getApplicationContext(context);
-    DbConfig dbConfig = appContext.getBean(DbConfig.class);
-    LOGGER.info("Ending SDQ Test");
-    try {
-      Files.delete(Path.of(dbConfig.getDatabaseFile()));
-      LOGGER.info("Deleted existing test database {}", dbConfig.getDatabaseFile());
-    } catch (Exception e) {
-      LOGGER.info("Couldn't delete database, but that may be fine");
     }
   }
 }

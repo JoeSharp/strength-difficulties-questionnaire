@@ -42,29 +42,29 @@ public class XslxGboExtractor {
 
   private List<GboScore> parseGbo(UUID fileId, Sheet sheet) {
     return FIRST_ROWS.stream()
-            .flatMap(d -> getGboPeriods(fileId, d.assessor(), sheet, d.firstRow()))
-            .toList();
+        .flatMap(d -> getGboPeriods(fileId, d.assessor(), sheet, d.firstRow()))
+        .toList();
   }
 
   private Stream<GboScore> getGboPeriods(
-          UUID fileId, Assessor assessor, Sheet sheet, int startRow) {
+      UUID fileId, Assessor assessor, Sheet sheet, int startRow) {
     return IntStream.range(1, NUMBER_PERIODS_EXPECTED + 1)
-            .mapToObj(i -> extractPeriod(fileId, assessor, i, sheet.getRow(startRow + i - 1)))
-            .flatMap(Function.identity());
+        .mapToObj(i -> extractPeriod(fileId, assessor, i, sheet.getRow(startRow + i - 1)))
+        .flatMap(Function.identity());
   }
 
   private Stream<GboScore> extractPeriod(UUID fileId, Assessor assessor, int periodIndex, Row row) {
     Instant periodDate = extractDate(row);
     return extractScores(row).entrySet().stream()
-            .map(
-                    e -> new GboScore(fileId, assessor, periodIndex, periodDate, e.getKey(), e.getValue()));
+        .map(
+            e -> new GboScore(fileId, assessor, periodIndex, periodDate, e.getKey(), e.getValue()));
   }
 
   private Instant extractDate(Row row) {
     return Optional.ofNullable(row.getCell(FIRST_SCORE_COLUMN - 1))
-            .map(Cell::getDateCellValue)
-            .map(Date::toInstant)
-            .orElse(Instant.now());
+        .map(Cell::getDateCellValue)
+        .map(Date::toInstant)
+        .orElse(Instant.now());
   }
 
   private Map<Integer, Integer> extractScores(Row row) {
@@ -75,8 +75,8 @@ public class XslxGboExtractor {
 
   private Integer getScore(Row row, int scoreIndex) {
     return Optional.ofNullable(row.getCell(FIRST_SCORE_COLUMN + scoreIndex - 1))
-            .map(Cell::getNumericCellValue)
-            .map(Double::intValue)
-            .orElse(0);
+        .map(Cell::getNumericCellValue)
+        .map(Double::intValue)
+        .orElse(0);
   }
 }

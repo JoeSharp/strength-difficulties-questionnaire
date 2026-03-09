@@ -33,7 +33,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
           int paramIndex = 1;
           LocalDate localDate = LocalDate.ofInstant(file.dateOfBirth(), ZoneId.systemDefault());
           Date dateOfBirth = Date.valueOf(localDate);
-          stmt.setString(paramIndex++, file.fileId().toString());
+          stmt.setObject(paramIndex++, file.fileId());
           stmt.setString(paramIndex++, file.filename());
           stmt.setDate(paramIndex++, dateOfBirth);
           stmt.setString(paramIndex++, file.gender());
@@ -78,7 +78,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
         "getByUUID",
         ClientFileTable.selectByUUID(),
         stmt -> {
-          stmt.setString(1, fileId.toString());
+          stmt.setObject(1, fileId);
           ResultSet rs = stmt.executeQuery();
           if (!rs.next()) return Optional.empty();
           return Optional.of(getFromResultSet(rs));
@@ -134,7 +134,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
   }
 
   private ClientFile getFromResultSet(ResultSet rs) throws SQLException {
-    String uuid = rs.getString(ClientFileTable.FIELD_FILE_ID);
+    UUID uuid = rs.getObject(ClientFileTable.FIELD_FILE_ID, UUID.class);
     String filename = rs.getString(ClientFileTable.FIELD_FILENAME);
     Date dob = rs.getDate(ClientFileTable.FIELD_DOB);
     String gender = rs.getString(ClientFileTable.FIELD_GENDER);
@@ -147,7 +147,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
     Integer aces = rs.getInt(ClientFileTable.FIELD_ACES);
     String fundingSource = String.valueOf(rs.getString(ClientFileTable.FIELD_FUNDING_SOURCE));
     return new ClientFile(
-        UUID.fromString(uuid),
+        uuid,
         filename,
         RepositoryUtils.toInstant(dob),
         gender,

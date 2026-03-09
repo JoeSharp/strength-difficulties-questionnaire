@@ -3,4 +3,6 @@ spring:
     name: sdq-analysis
 
 database:
-  file: ${database-file:sdq-analysis.db}
+  url: default
+  username: default
+  password: default
