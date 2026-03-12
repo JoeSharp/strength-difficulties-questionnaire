@@ -1,0 +1,58 @@
+set dotenv-load := true
+
+DB_MODULE := env_var("DB_MODULE")
+APP_MODULE := env_var("APP_MODULE")
+UI_MODULE := env_var("UI_MODULE")
+APPLICATION_NAME := env_var("APPLICATION_NAME")
+SDQ_DATABASE_NAME := env_var("SDQ_DATABASE_NAME")
+SDQ_DATABASE_USERNAME := env_var("SDQ_DATABASE_USERNAME")
+
+# Default task
+default: run
+
+run: copy-ui run-service-dev
+
+build-jar: copy-ui
+    ./gradlew :spring-app:bootJar
+
+run-service-dev:
+    ./gradlew :spring-app:bootRun
+
+run-service-dev-ui: copy-ui run-service-dev
+
+clean-run: build-db run
+
+copy-ui: build-ui
+    rm -rf {{APP_MODULE}}/src/main/resources/static
+    cp -R sdq-ui/dist {{APP_MODULE}}/src/main/resources/static
+
+build-ui:
+    npm run build --prefix {{UI_MODULE}}
+
+run-ui-dev:
+    npm run dev --prefix {{UI_MODULE}}
+
+docker-run-db:
+    docker compose -f local/docker-compose.yaml up sdq-db
+
+docker-run-app: build-app-image build-db-migration-image
+    docker compose -f local/docker-compose.yaml up
+
+docker-run-deps: build-db-migration-image
+    docker compose -f local/docker-compose.yaml up sdq-db-migration auth
+
+docker-stop-app:
+    docker compose -f local/docker-compose.yaml down
+
+build-app-image:
+    docker build -t sdq-app .
+
+build-db-migration-image:
+    docker build -t sdq-db-migration {{DB_MODULE}}/.
+
+build-db: build-db-migration-image
+    docker compose -f {{DB_MODULE}}/docker-compose.yaml up
+
+connect-db:
+    echo "Connecting to database"
+    docker exec -it {{APPLICATION_NAME}}-db psql -d {{SDQ_DATABASE_NAME}} -U {{SDQ_DATABASE_USERNAME}}
