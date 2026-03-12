@@ -1,3 +1,4 @@
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AppNotifications from "./components/AppNotifications";
 import FileUploadForm from "./components/FileUploadForm";
@@ -19,6 +20,10 @@ function Home() {
 }
 
 function App() {
+  const onClickLogout = React.useCallback(() => {
+    window.location.href = "/logout";
+  }, []);
+
   return (
     <div className="container-fluid py-3">
       <div className="d-flex justify-content-between align-items-center">
@@ -26,6 +31,7 @@ function App() {
 
         <div className="top-left-header">
           <AppNotifications />
+          <button onClick={onClickLogout}>Logout</button>
         </div>
       </div>
       <InProgressSpinner />

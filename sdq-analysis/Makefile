@@ -13,6 +13,9 @@ export APPLICATION_NAME=sdq
 export SDQ_DATABASE_NAME=sdq
 export SDQ_DATABASE_USERNAME=sdqUser
 export SDQ_DATABASE_PASSWORD=GYUsdfsd234
+export SDQ_DATABASE_URL=jdbc:postgresql://localhost:5432/$(SDQ_DATABASE_NAME)
+export SDQ_CLIENT_ID=timesheets-service
+export SDQ_CLIENT_SECRET=rX0uyWb89PxdeclkQoLMtmRtCLRxFlKy
 
 export KEYCLOAK_DATABASE_NAME=kc
 export KEYCLOAK_DATABASE_USERNAME=keycloak
@@ -20,11 +23,24 @@ export KEYCLOAK_DATABASE_PASSWORD=kc-password
 export KEYCLOAK_DATABASE_ROOT_PASSWORD=superSecret
 export KEYCLOAK_ADMIN_USERNAME=keycloak
 export KEYCLOAK_ADMIN_PASSWORD=Q@v3rTYT
+export KEYCLOAK_ISSUER_URI=http://localhost:8085/realms/ratracejoe
 
 run: copy-ui run-service
 
 build-jar: copy-ui
 	./gradlew :spring-app:bootJar
+
+export DATABASE_URL=$(SDQ_DATABASE_URL)
+export DATABASE_USERNAME=$(SDQ_DATABASE_USERNAME)
+export DATABASE_PASSWORD=$(SDQ_DATABASE_PASSWORD)
+export OAUTH2_ISSUER_URI=$(KEYCLOAK_ISSUER_URI)
+export CLIENT_ID=$(SDQ_CLIENT_ID)
+export CLIENT_SECRET=$(SDQ_CLIENT_SECRET)
+
+run-service-dev:
+	./gradlew :spring-app:bootRun
+
+run-service-dev-ui: copy-ui run-service-dev
 
 clean-run: build-db run
 
@@ -40,8 +56,11 @@ run-ui-dev:
 docker-run-db:
 	docker compose -f local/docker-compose.yaml up sdq-db
 
-docker-run-app: build-app-image
-	docker compose -f local/docker-compose.yaml up sdq-service
+docker-run-app: build-app-image build-db-migration-image
+	docker compose -f local/docker-compose.yaml up
+
+docker-run-deps: build-db-migration-image
+	docker compose -f local/docker-compose.yaml up sdq-db-migration auth
 
 docker-stop-app:
 	docker compose -f local/docker-compose.yaml down
