@@ -1,6 +1,8 @@
 services:
 
   sdq-service:
+    build:
+      context: ..
     image: sdq-app
     container_name: sdq-app
     networks:
@@ -11,9 +13,9 @@ services:
       SDQ_DATABASE_URL: jdbc:postgresql://${APPLICATION_NAME}-db:5432/${SDQ_DATABASE_NAME}
       SDQ_DATABASE_USERNAME: ${SDQ_DATABASE_USERNAME}
       SDQ_DATABASE_PASSWORD: ${SDQ_DATABASE_PASSWORD}
-      OAUTH2_ISSUER_URI: http://${APPLICATION_NAME}-auth.${LOCAL_STACK_HOST}.nip.io:8085/realms/ratracejoe
-      CLIENT_ID: ${SDQ_CLIENT_ID}
-      CLIENT_SECRET: ${SDQ_CLIENT_SECRET}
+      OAUTH2_ISSUER_URI: http://${APPLICATION_NAME}-auth.${LOCAL_STACK_HOST}.sslip.io:8085/realms/ratracejoe
+      SDQ_CLIENT_ID: ${SDQ_CLIENT_ID}
+      SDQ_CLIENT_SECRET: ${SDQ_CLIENT_SECRET}
     ports:
       # Required when running the UI in dev mode on top of the service in docker
       - "8080:8080"
@@ -24,6 +26,8 @@ services:
         condition: service_completed_successfully
 
   sdq-db-migration:
+    build:
+      context: ../sdq-database
     image: sdq-db-migration
     container_name: sdq-db-migration
     networks:

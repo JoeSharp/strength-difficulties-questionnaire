@@ -8,49 +8,46 @@ SDQ_DATABASE_NAME := env_var("SDQ_DATABASE_NAME")
 SDQ_DATABASE_USERNAME := env_var("SDQ_DATABASE_USERNAME")
 
 # Default task
-default: run-dev
+default: docker-start-app
 
-# Build the UI and Run the service via gradle
-run-dev: copy-ui run-service-dev
-
-# Build the application JAR file
-build-jar: copy-ui
-    ./gradlew :spring-app:bootJar
-
-# Run the service via gradle
-run-service-dev:
-    ./gradlew :spring-app:bootRun
+# Build the user interface
+build-ui:
+    npm run build --prefix {{UI_MODULE}}
 
 # Copy the static resources of the UI into the public backend folder.
 copy-ui: build-ui
     rm -rf {{APP_MODULE}}/src/main/resources/static
     cp -R sdq-ui/dist {{APP_MODULE}}/src/main/resources/static
 
-# Build the user interface
-build-ui:
-    npm run build --prefix {{UI_MODULE}}
+# Run the service via gradle
+run-service-dev:
+    ./gradlew :spring-app:bootRun
+
+# Build the UI and Run the service via gradle
+run-dev: copy-ui run-service-dev
+
+# Build the JAR file
+run-build-jar:
+    ./gradlew :spring-app:bootJar
+
+# Build the UI and bundle into application JAR file
+build-jar: copy-ui run-build-jar
 
 # Runs the user interface in hot reloading mode.
 run-ui-dev:
     npm run dev --prefix {{UI_MODULE}}
 
-docker-start-app:
-    docker compose -f local/docker-compose.yaml --profile include-app up
-
 # Run the entire system up within Docker
-docker-run-app: build-app-image build-db-migration-image docker-start-app
-
-docker-start-deps:
-    docker compose -f local/docker-compose.yaml up
+docker-start-app:
+    docker compose -f local/docker-compose.yaml --profile include-app up --build
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that
-docker-run-deps: build-db-migration-image docker-start-deps
+docker-run-deps:
+    docker compose -f local/docker-compose.yaml up
 
 # Stop any docker containers relating to this application
-docker-stop-deps:
-    docker compose -f local/docker-compose.yaml down
-docker-stop-app:
+docker-stop:
     docker compose -f local/docker-compose.yaml --profile include-app down
 
 # Build the Docker image for the application
@@ -62,8 +59,11 @@ build-db-migration-image:
     docker build -t sdq-db-migration {{DB_MODULE}}/.
 
 # Run the database migration
-build-db: build-db-migration-image
-    docker compose -f {{DB_MODULE}}/docker-compose.yaml up
+docker-run-db-migration:
+    docker compose -f {{DB_MODULE}}/docker-compose.yaml up --build
+
+# Build the db migration and run it
+build-db: build-db-migration-image db-run-migration
 
 # Connect a shell to the database.
 connect-db:
