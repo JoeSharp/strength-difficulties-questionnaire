@@ -6,7 +6,7 @@ services:
     networks:
       - sdq
     profiles:
-      - include-service
+      - include-app
     environment:
       SDQ_DATABASE_URL: jdbc:postgresql://${APPLICATION_NAME}-db:5432/${SDQ_DATABASE_NAME}
       SDQ_DATABASE_USERNAME: ${SDQ_DATABASE_USERNAME}

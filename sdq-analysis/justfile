@@ -34,18 +34,24 @@ build-ui:
 run-ui-dev:
     npm run dev --prefix {{UI_MODULE}}
 
+docker-start-app:
+    docker compose -f local/docker-compose.yaml --profile include-app up
+
 # Run the entire system up within Docker
-docker-run-app: build-app-image build-db-migration-image
-    docker compose -f local/docker-compose.yaml --profile include-service up
+docker-run-app: build-app-image build-db-migration-image docker-start-app
+
+docker-start-deps:
+    docker compose -f local/docker-compose.yaml up
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that
-docker-run-deps: build-db-migration-image
-    docker compose -f local/docker-compose.yaml up
+docker-run-deps: build-db-migration-image docker-start-deps
 
 # Stop any docker containers relating to this application
-docker-stop:
+docker-stop-deps:
     docker compose -f local/docker-compose.yaml down
+docker-stop-app:
+    docker compose -f local/docker-compose.yaml --profile include-app down
 
 # Build the Docker image for the application
 build-app-image:
