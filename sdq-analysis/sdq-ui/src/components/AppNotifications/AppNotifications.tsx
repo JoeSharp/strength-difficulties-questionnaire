@@ -1,8 +1,8 @@
 import React from "react";
-import useAppNotificationContext from "../../context/AppNotificationContext";
+import useAppNotificationContext from "@/context/AppNotificationContext";
 import AppNotification from "./AppNotification";
 
-import "./AppNotifications.css";
+import "./AppNotifications.scss";
 
 function AppNotifications() {
   const { messages, dismissMessage } = useAppNotificationContext();

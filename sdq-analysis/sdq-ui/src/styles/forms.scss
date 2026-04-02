@@ -1,0 +1,53 @@
+@use "sass:color";
+
+$primary: #007bff;
+$error: #d9534f;
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+
+  label {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.25);
+      outline: none;
+    }
+  }
+
+  .form-error {
+    color: $error;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.form-button {
+  padding: 0.6rem 1.2rem;
+  background: $primary;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: color.scale($primary, $lightness: -10%);
+  }
+}

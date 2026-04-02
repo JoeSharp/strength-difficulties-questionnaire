@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import AppNotifications from "../../components/AppNotifications";
+import AppNotifications from "@/components/AppNotifications";
 
 import "./SdqNav.css";
 

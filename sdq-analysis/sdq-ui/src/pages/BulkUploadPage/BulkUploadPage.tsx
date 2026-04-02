@@ -1,6 +1,6 @@
 import type React from "react";
 
-import FileUploadForm from "../../components/FileUploadForm";
+import FileUploadForm from "@/components/FileUploadForm";
 
 const BulkUploadPage: React.FC = () => {
   return (

@@ -1,6 +1,5 @@
 import React from "react";
-import useApiContext from "../../context/ApiContext";
-import JsonDisplay from "../JsonDisplay";
+import useApiContext from "@/context/ApiContext";
 
 function FileUploadForm() {
   const {
@@ -16,7 +15,7 @@ function FileUploadForm() {
 
         onSubmitFile(formData).then(() => refresh());
       },
-      [onSubmitFile, refresh]
+      [onSubmitFile, refresh],
     );
 
   return (
@@ -26,27 +25,15 @@ function FileUploadForm() {
         encType="multipart/form-data"
         onSubmit={onClickSubmit}
       >
-        <div className="mb-3">
-          <label>File</label>
-          <input
-            className="form-control"
-            type="file"
-            multiple
-            name="sdqFiles"
-          />
+        <div className="form-group">
+          <label htmlFor="sdqFiles">File</label>
+          <input type="file" multiple name="sdqFiles" />
         </div>
-        <input
-          className="btn btn-primary"
-          type="submit"
-          value="Upload File(s)"
-        />
+        <input className="form-button" type="submit" value="Upload File(s)" />
       </form>
-      <div className="mb-3"></div>
-      <JsonDisplay
-        id="lastSubmission"
-        title="Debug - Last Submission"
-        value={lastFile}
-      />
+      {lastFile && (
+        <p>File uploaded with name {lastFile.clientFile.filename}</p>
+      )}
     </>
   );
 }

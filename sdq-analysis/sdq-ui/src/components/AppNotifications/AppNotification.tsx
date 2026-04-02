@@ -1,4 +1,4 @@
-import type { IAppNotification } from "../../context/AppNotificationContext/useAppNotifications";
+import type { IAppNotification } from "@/context/AppNotificationContext/useAppNotifications";
 
 interface Props {
   message: IAppNotification;

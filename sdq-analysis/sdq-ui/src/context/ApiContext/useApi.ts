@@ -1,11 +1,11 @@
 import React from "react";
 
-import type { ClientFileApi } from "../../api/useClientFileApi";
-import useClientFileApi from "../../api/useClientFileApi";
-import type { UploadApi } from "../../api/useUploadApi";
-import useUploadApi from "../../api/useUploadApi";
-import type { ReferenceApi } from "../../api/useReferenceApi";
-import useReferenceApi from "../../api/useReferenceApi";
+import type { ClientFileApi } from "@/api/useClientFileApi";
+import useClientFileApi from "@/api/useClientFileApi";
+import type { UploadApi } from "@/api/useUploadApi";
+import useUploadApi from "@/api/useUploadApi";
+import type { ReferenceApi } from "@/api/useReferenceApi";
+import useReferenceApi from "@/api/useReferenceApi";
 
 export interface IApi {
   refresh: () => void;

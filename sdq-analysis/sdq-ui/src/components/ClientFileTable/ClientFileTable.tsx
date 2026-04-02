@@ -1,6 +1,5 @@
-import useApiContext from "../../context/ApiContext";
+import useApiContext from "@/context/ApiContext";
 
-import "./clientFileTable.css";
 import { useNavigate } from "react-router-dom";
 
 function UploadFileTable() {

@@ -1,4 +1,4 @@
-import { type Assessor, type SdqScore } from "../../api/types";
+import { type Assessor, type SdqScore } from "@/api/types";
 import Card from "../Card";
 
 interface Props {

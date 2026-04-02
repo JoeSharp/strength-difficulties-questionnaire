@@ -1,0 +1,36 @@
+$table-border: #ddd;
+$table-header-bg: #f7f7f7;
+$table-row-hover: #f0f8ff;
+
+.table-container {
+  width: 100%;
+  overflow-x: auto; // responsive for narrow screens
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid $table-border;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th {
+    background: $table-header-bg;
+    font-weight: 600;
+  }
+
+  tr:hover {
+    background: $table-row-hover;
+  }
+
+  // Optional: zebra striping
+  tr:nth-child(even) {
+    background: #fafafa;
+  }
+}

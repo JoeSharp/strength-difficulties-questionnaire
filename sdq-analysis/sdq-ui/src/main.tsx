@@ -1,7 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import "./index.css";
+
+import "./styles/index.scss";
+
 import App from "./App";
 import InProgressContextProvider from "./context/InProgressContext/InProgressContextProvider";
 import ApplicationErrorContextProvider from "./context/AppNotificationContext/AppNotificationContextProvider";
@@ -18,5 +20,5 @@ createRoot(document.getElementById("root")!).render(
         </InProgressContextProvider>
       </ApplicationErrorContextProvider>
     </BrowserRouter>
-  </StrictMode>
+  </StrictMode>,
 );

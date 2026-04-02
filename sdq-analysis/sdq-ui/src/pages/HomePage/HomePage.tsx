@@ -1,6 +1,6 @@
 import type React from "react";
 
-import ClientFileTable from "../../components/ClientFileTable";
+import ClientFileTable from "@/components/ClientFileTable";
 
 const HomePage: React.FC = () => {
   {

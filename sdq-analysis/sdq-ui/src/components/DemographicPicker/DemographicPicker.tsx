@@ -1,6 +1,6 @@
 import React from "react";
-import type { DemographicField } from "../../api/types";
-import useApiContext from "../../context/ApiContext";
+import type { DemographicField } from "@/api/types";
+import useApiContext from "@/context/ApiContext";
 
 interface Props {
   demographic: DemographicField;
@@ -29,18 +29,13 @@ function DemographicPicker({ demographic, value, onChange }: Props) {
       ({ target: { value } }) => {
         onChange(value);
       },
-      [onChange]
+      [onChange],
     );
 
   return (
-    <div className="mb-3">
+    <div className="form-group">
       <label htmlFor={demographic}>{demographic}</label>
-      <select
-        value={value}
-        onChange={onSelectChange}
-        className="form-control"
-        name={demographic}
-      >
+      <select value={value} onChange={onSelectChange} name={demographic}>
         <option value="">Any</option>
         {options.map(({ value, label }) => (
           <option key={value} value={value}>

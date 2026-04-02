@@ -1,9 +1,9 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import useApiContext from "../../context/ApiContext";
-import SdqScoresTable from "../../components/SdqScoresTable";
-import GboTable from "../../components/GboTable";
-import type { Assessor } from "../../api/types";
+import useApiContext from "@/context/ApiContext";
+import SdqScoresTable from "@/components/SdqScoresTable";
+import GboTable from "@/components/GboTable";
+import type { Assessor } from "@/api/types";
 
 function ClientFilePage() {
   const { id } = useParams();

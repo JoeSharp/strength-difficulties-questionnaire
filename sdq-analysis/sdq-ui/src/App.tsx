@@ -9,7 +9,7 @@ import ExploreDataPage from "./pages/ExploreDataPage";
 import SdqNav from "./components/SdqNav";
 import DemographicReportPage from "./pages/DemographicReportPage";
 
-function App() {
+const App: React.FC = () => {
   return (
     <div className="container-fluid py-3">
       <SdqNav />
@@ -23,6 +23,6 @@ function App() {
       </Routes>
     </div>
   );
-}
+};
 
 export default App;

@@ -1,6 +1,6 @@
 import React from "react";
-import useApiContext from "../../context/ApiContext";
-import { DEMOGRAPHIC_FIELDS, type DemographicField } from "../../api/types";
+import useApiContext from "@/context/ApiContext";
+import { DEMOGRAPHIC_FIELDS, type DemographicField } from "@/api/types";
 
 const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
   value: field,
@@ -29,20 +29,18 @@ function DemographicReportPage() {
         This report lets you get a quick idea of the distribution of the various
         demographic values.
       </p>
-      <div className="mb-3">
+      <div className="form-group">
         <label>Demographic</label>
-        <select
-          className="form-control"
-          value={demographicName}
-          onChange={onDemographicNameChange}
-        >
+        <select value={demographicName} onChange={onDemographicNameChange}>
           {OPTIONS.map(({ value, label }) => (
-            <option value={value}>{label}</option>
+            <option key={value} value={value}>
+              {label}
+            </option>
           ))}
         </select>
       </div>
 
-      <button className="btn btn-primary" onClick={onClickFetch}>
+      <button className="form-button" onClick={onClickFetch}>
         Fetch
       </button>
 
