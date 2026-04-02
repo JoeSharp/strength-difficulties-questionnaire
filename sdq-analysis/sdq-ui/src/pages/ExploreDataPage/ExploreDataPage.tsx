@@ -5,11 +5,11 @@ import {
   EMPTY_DEMOGRAPHIC_FILTER,
   type DemographicFilter,
 } from "../../api/types";
-import DemographicPicker from "../DemographicPicker";
+import DemographicPicker from "../../components/DemographicPicker";
 
-function ExploreData() {
+function ExploreDataPage() {
   const [filter, setFilter] = React.useState<DemographicFilter>(
-    EMPTY_DEMOGRAPHIC_FILTER
+    EMPTY_DEMOGRAPHIC_FILTER,
   );
 
   const onChange = React.useMemo(
@@ -17,12 +17,12 @@ function ExploreData() {
       DEMOGRAPHIC_FIELDS.map((field) => (newValue: string) => {
         setFilter((prev) => ({ ...prev, [field]: newValue }));
       }),
-    []
+    [],
   );
 
   return (
     <div>
-      <h4>Explore Data</h4>
+      <h2>Explore Data</h2>
       {DEMOGRAPHIC_FIELDS.map((field, i) => (
         <DemographicPicker
           key={field}
@@ -35,4 +35,4 @@ function ExploreData() {
   );
 }
 
-export default ExploreData;
+export default ExploreDataPage;

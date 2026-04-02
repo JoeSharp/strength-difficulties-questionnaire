@@ -1,0 +1,39 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import AppNotifications from "../../components/AppNotifications";
+
+import "./SdqNav.css";
+
+const SdqNav: React.FC = () => {
+  const onClickLogout = React.useCallback(() => {
+    window.location.href = "/logout";
+  }, []);
+
+  return (
+    <nav className="nav">
+      <div className="nav-left">
+        <span className="nav-title">Strength & Difficulties Analysis</span>
+      </div>
+      <ul className="nav-links">
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/explore-data">Explore Data</Link>
+        </li>
+        <li>
+          <Link to="/demographic-report">Demographic Report</Link>
+        </li>
+        <li>
+          <Link to="/bulk-upload">Bulk Upload</Link>
+        </li>
+      </ul>
+      <div className="nav-right">
+        <AppNotifications />
+        <button onClick={onClickLogout}>Logout</button>
+      </div>
+    </nav>
+  );
+};
+
+export default SdqNav;

@@ -7,7 +7,7 @@ const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
   label: field,
 }));
 
-function DemographicReport() {
+function DemographicReportPage() {
   const {
     clientFileApi: { demographicReport, getDemographicReport },
   } = useApiContext();
@@ -24,7 +24,11 @@ function DemographicReport() {
 
   return (
     <div>
-      <h4>Demographic Report</h4>
+      <h2>Demographic Report</h2>
+      <p>
+        This report lets you get a quick idea of the distribution of the various
+        demographic values.
+      </p>
       <div className="mb-3">
         <label>Demographic</label>
         <select
@@ -64,4 +68,4 @@ function DemographicReport() {
   );
 }
 
-export default DemographicReport;
+export default DemographicReportPage;

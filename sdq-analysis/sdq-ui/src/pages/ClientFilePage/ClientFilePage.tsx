@@ -1,9 +1,9 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useApiContext from "../../context/ApiContext";
-import SdqScoresTable from "../SdqScoresTable";
+import SdqScoresTable from "../../components/SdqScoresTable";
+import GboTable from "../../components/GboTable";
 import type { Assessor } from "../../api/types";
-import GboTable from "../GboTable";
 
 function ClientFilePage() {
   const { id } = useParams();
@@ -28,12 +28,7 @@ function ClientFilePage() {
 
   return (
     <div>
-      <nav>
-        <Link className="btn btn-primary" to="/">
-          Home
-        </Link>
-      </nav>
-      <h3>Client file {id}</h3>
+      <h2>Client file {id}</h2>
       <dl className="two-columns">
         <dt>Gender</dt>
         <dd>{file.gender}</dd>
