@@ -63,7 +63,7 @@ docker-run-db-migration:
     docker compose -f {{DB_MODULE}}/docker-compose.yaml up --build
 
 # Build the db migration and run it
-build-db: build-db-migration-image db-run-migration
+build-db: build-db-migration-image docker-run-db-migration
 
 # Connect a shell to the database.
 connect-db:
