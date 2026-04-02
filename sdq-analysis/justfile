@@ -36,12 +36,12 @@ run-ui-dev:
 
 # Run the entire system up within Docker
 docker-run-app: build-app-image build-db-migration-image
-    docker compose -f local/docker-compose.yaml up
+    docker compose -f local/docker-compose.yaml --profile include-service up
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that
 docker-run-deps: build-db-migration-image
-    docker compose -f local/docker-compose.yaml up sdq-db-migration auth
+    docker compose -f local/docker-compose.yaml up
 
 # Stop any docker containers relating to this application
 docker-stop:
