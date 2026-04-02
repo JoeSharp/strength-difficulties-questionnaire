@@ -8,51 +8,58 @@ SDQ_DATABASE_NAME := env_var("SDQ_DATABASE_NAME")
 SDQ_DATABASE_USERNAME := env_var("SDQ_DATABASE_USERNAME")
 
 # Default task
-default: run
+default: run-dev
 
-run: copy-ui run-service-dev
+# Build the UI and Run the service via gradle
+run-dev: copy-ui run-service-dev
 
+# Build the application JAR file
 build-jar: copy-ui
     ./gradlew :spring-app:bootJar
 
+# Run the service via gradle
 run-service-dev:
     ./gradlew :spring-app:bootRun
 
-run-service-dev-ui: copy-ui run-service-dev
-
-clean-run: build-db run
-
+# Copy the static resources of the UI into the public backend folder.
 copy-ui: build-ui
     rm -rf {{APP_MODULE}}/src/main/resources/static
     cp -R sdq-ui/dist {{APP_MODULE}}/src/main/resources/static
 
+# Build the user interface
 build-ui:
     npm run build --prefix {{UI_MODULE}}
 
+# Runs the user interface in hot reloading mode.
 run-ui-dev:
     npm run dev --prefix {{UI_MODULE}}
 
-docker-run-db:
-    docker compose -f local/docker-compose.yaml up sdq-db
-
+# Run the entire system up within Docker
 docker-run-app: build-app-image build-db-migration-image
     docker compose -f local/docker-compose.yaml up
 
+# Run the app dependencies in docker, but not the app itself
+# Use run-service-dev for that
 docker-run-deps: build-db-migration-image
     docker compose -f local/docker-compose.yaml up sdq-db-migration auth
 
-docker-stop-app:
+# Stop any docker containers relating to this application
+docker-stop:
     docker compose -f local/docker-compose.yaml down
 
+# Build the Docker image for the application
 build-app-image:
     docker build -t sdq-app .
 
+# Build the Docker image for the database migration
 build-db-migration-image:
     docker build -t sdq-db-migration {{DB_MODULE}}/.
 
+# Run the database migration
 build-db: build-db-migration-image
     docker compose -f {{DB_MODULE}}/docker-compose.yaml up
 
+# Connect a shell to the database.
 connect-db:
     echo "Connecting to database"
     docker exec -it {{APPLICATION_NAME}}-db psql -d {{SDQ_DATABASE_NAME}} -U {{SDQ_DATABASE_USERNAME}}
