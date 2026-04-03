@@ -13,7 +13,8 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -31,9 +32,6 @@ dependencies {
 	implementation 'com.zaxxer:HikariCP:5.1.0'
 
 	testImplementation 'org.liquibase:liquibase-core'
-	testImplementation platform("org.testcontainers:testcontainers-bom:1.21.3")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:postgresql")
 }
 
 test {

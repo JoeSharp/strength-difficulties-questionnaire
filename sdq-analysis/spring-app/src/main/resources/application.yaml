@@ -1,6 +1,10 @@
 spring:
   application:
     name: sdq-analysis
+  datasource:
+    url: ${SDQ_DATABASE_URL}
+    username: ${SDQ_DATABASE_USERNAME}
+    password: ${SDQ_DATABASE_PASSWORD}
   security.oauth2.client:
     registration:
       keycloak:
@@ -12,8 +16,3 @@ spring:
     provider:
       keycloak:
         issuer-uri: ${OAUTH2_ISSUER_URI}
-
-database:
-  url: ${SDQ_DATABASE_URL}
-  username: ${SDQ_DATABASE_USERNAME}
-  password: ${SDQ_DATABASE_PASSWORD}

@@ -41,18 +41,30 @@ build-jar: copy-ui run-build-jar
 run-ui-dev: install-ui
     npm run dev --prefix {{UI_MODULE}}
 
+# Run the backend unit tests
+gradle-run-tests:
+    ./gradlew :spring-app:test
+
+# Run the dependencies required by unit tets
+docker-run-test-deps:
+    docker compose -f local/docker-compose.test.yaml up -d
+
+# Run the unit tests, which depends on us running containers
+run-tests: docker-run-test-deps gradle-run-tests
+
 # Run the entire system up within Docker
 docker-start-app:
-    docker compose -f local/docker-compose.yaml --profile include-app up --build
+    docker compose -f local/docker-compose.yaml --profile include-app up --build -d
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that
 docker-run-deps:
-    docker compose -f local/docker-compose.yaml up
+    docker compose -f local/docker-compose.yaml up -d
 
 # Stop any docker containers relating to this application
 docker-stop:
     docker compose -f local/docker-compose.yaml --profile include-app down
+    docker compose -f local/docker-compose.test.yaml --profile include-app down
 
 # Build the Docker image for the application
 docker-build-app:

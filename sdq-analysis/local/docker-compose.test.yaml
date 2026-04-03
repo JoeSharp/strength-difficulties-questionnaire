@@ -1,0 +1,21 @@
+services:
+
+  sdq-db:
+    image: postgres:17
+    container_name: sdq-test-db
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: testPassword123
+      POSTGRES_DB: sdq
+    ports:
+      - "5435:5432"
+    volumes:
+      - sdq_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U test -d sdq
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  sdq_test_data:
