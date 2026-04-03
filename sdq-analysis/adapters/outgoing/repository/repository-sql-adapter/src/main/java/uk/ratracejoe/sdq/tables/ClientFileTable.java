@@ -6,8 +6,8 @@ import uk.ratracejoe.sdq.model.DemographicField;
 
 public interface ClientFileTable {
   String TABLE_NAME = "client_file";
-  String FIELD_FILE_ID = "file_id";
-  String FIELD_FILENAME = "filename";
+  String FIELD_CLIENT_ID = "client_id";
+  String FIELD_CODE_NAME = "code_name";
   String FIELD_DOB = "date_of_birth";
   String FIELD_GENDER = "gender";
   String FIELD_COUNCIL = "council";
@@ -20,8 +20,8 @@ public interface ClientFileTable {
   String FIELD_FUNDING_SOURCE = "funding_source";
   List<String> FIELDS =
       List.of(
-          FIELD_FILE_ID,
-          FIELD_FILENAME,
+          FIELD_CLIENT_ID,
+          FIELD_CODE_NAME,
           FIELD_DOB,
           FIELD_GENDER,
           FIELD_COUNCIL,
@@ -68,7 +68,7 @@ public interface ClientFileTable {
   }
 
   static String selectByUUID() {
-    return String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_FILE_ID);
+    return String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_CLIENT_ID);
   }
 
   static String selectAllSQL() {

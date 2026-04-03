@@ -32,12 +32,12 @@ public class UploadServiceImpl implements UploadService {
 
   public ParsedFile ingestFile(String filename, InputStream file) throws SdqException {
     ParsedFile parsedFile = fileParser.parse(filename, file);
-    UUID fileId = parsedFile.clientFile().fileId();
+    UUID fileId = parsedFile.sdqClient().clientId();
 
     demographicOptionRepository.ensureEnumerations(parsedFile.structure());
-    fileRepository.saveFile(parsedFile.clientFile());
+    fileRepository.saveFile(parsedFile.sdqClient());
     parsedFile
-        .clientFile()
+        .sdqClient()
         .interventionTypes()
         .forEach(it -> interventionTypeRepository.save(fileId, it));
     sdqService.recordResponse(fileId, parsedFile.sdq());

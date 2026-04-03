@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.ClientFile;
+import uk.ratracejoe.sdq.model.SdqClient;
 
 class XslxDemographicExtractorTest {
   @Test
@@ -17,12 +17,12 @@ class XslxDemographicExtractorTest {
     Workbook workbook = workbookLoaded();
 
     // When
-    ClientFile file = extractor.parse(workbook, Utils.XLSX_TEST_FILE);
+    SdqClient file = extractor.parse(workbook, Utils.XLSX_TEST_FILE);
 
     // Then
-    assertThat(file).extracting(ClientFile::filename).isEqualTo(Utils.XLSX_TEST_FILE);
-    assertThat(file).extracting(ClientFile::gender).isEqualTo("Male");
-    assertThat(file).extracting(ClientFile::ethnicity).isEqualTo("White British");
-    assertThat(file).extracting(ClientFile::aces).isEqualTo(3);
+    assertThat(file).extracting(SdqClient::codeName).isEqualTo(Utils.XLSX_TEST_FILE);
+    assertThat(file).extracting(SdqClient::gender).isEqualTo("Male");
+    assertThat(file).extracting(SdqClient::ethnicity).isEqualTo("White British");
+    assertThat(file).extracting(SdqClient::aces).isEqualTo(3);
   }
 }

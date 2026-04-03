@@ -29,7 +29,7 @@ public class SdqRepositoryImpl implements SdqRepository {
           List<SdqScore> sdqScores = new ArrayList<>();
           ResultSet rs = stmt.executeQuery();
           while (rs.next()) {
-            UUID uuid = rs.getObject(SdqTable.FIELD_FILE_ID, UUID.class);
+            UUID uuid = rs.getObject(SdqTable.FIELD_CLIENT_ID, UUID.class);
             int period = rs.getInt(SdqTable.FIELD_PERIOD_INDEX);
             Assessor assessor = Assessor.valueOf(rs.getString(SdqTable.FIELD_ASSESSOR));
             Statement statement = Statement.valueOf(rs.getString(SdqTable.FIELD_STATEMENT));

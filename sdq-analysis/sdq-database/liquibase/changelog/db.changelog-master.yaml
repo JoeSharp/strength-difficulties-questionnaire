@@ -1,6 +1,6 @@
 databaseChangeLog:
   - include:
-      file: changelog/init_client_file_table.yaml
+      file: changelog/init_client_table.yaml
   - include:
       file: changelog/init_demographic_option_table.yaml
   - include:

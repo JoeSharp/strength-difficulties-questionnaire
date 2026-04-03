@@ -9,7 +9,7 @@ databaseChangeLog:
             tableName: sdq
             columns:
               - column:
-                  name: file_id
+                  name: client_id
                   type: uuid
                   constraints:
                     nullable: false

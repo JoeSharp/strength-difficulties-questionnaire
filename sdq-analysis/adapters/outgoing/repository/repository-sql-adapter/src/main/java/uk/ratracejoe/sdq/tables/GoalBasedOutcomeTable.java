@@ -3,7 +3,7 @@ package uk.ratracejoe.sdq.tables;
 public interface GoalBasedOutcomeTable {
   String TABLE_NAME = "gbo";
 
-  String FIELD_FILE_ID = "file_id";
+  String FIELD_CLIENT_ID = "client_id";
   String FIELD_ASSESSOR = "assessor";
   String FIELD_PERIOD_INDEX = "period_index";
   String FIELD_PERIOD_DATE = "period_date";
@@ -16,7 +16,7 @@ public interface GoalBasedOutcomeTable {
     String fieldList =
         String.join(
             ",",
-            FIELD_FILE_ID,
+            FIELD_CLIENT_ID,
             FIELD_ASSESSOR,
             FIELD_PERIOD_INDEX,
             FIELD_PERIOD_DATE,
@@ -26,7 +26,7 @@ public interface GoalBasedOutcomeTable {
     sb.append(" FROM ");
     sb.append(TABLE_NAME);
     sb.append(" WHERE ");
-    sb.append(FIELD_FILE_ID);
+    sb.append(FIELD_CLIENT_ID);
     sb.append(" = ? ");
 
     return sb.toString();
@@ -36,7 +36,7 @@ public interface GoalBasedOutcomeTable {
     return String.format(
         "INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)",
         TABLE_NAME,
-        FIELD_FILE_ID,
+        FIELD_CLIENT_ID,
         FIELD_ASSESSOR,
         FIELD_PERIOD_INDEX,
         FIELD_PERIOD_DATE,

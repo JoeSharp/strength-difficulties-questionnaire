@@ -59,7 +59,7 @@ public class GboRepositoryImpl implements GboRepository {
 
   private GboScore getFromResultSet(ResultSet rs) throws SQLException {
     return new GboScore(
-        rs.getObject(FIELD_FILE_ID, UUID.class),
+        rs.getObject(FIELD_CLIENT_ID, UUID.class),
         Assessor.valueOf(rs.getString(FIELD_ASSESSOR)),
         rs.getInt(FIELD_PERIOD_INDEX),
         RepositoryUtils.toInstant(rs.getDate(FIELD_PERIOD_DATE)),

@@ -29,11 +29,11 @@ public class XslxSdqFileParser implements SdqFileParser {
       var demographics = structureExtractor.extractDemographicOptions(workbook);
       SdqEnumerations structure = new SdqEnumerations(demographics);
 
-      ClientFile clientFile = xslDemographicExtractor.parse(workbook, filename);
-      List<SdqScore> sdq = xslSdqExtractor.parse(clientFile.fileId(), workbook);
-      List<GboScore> gbo = xslxGboExtractor.parse(clientFile.fileId(), workbook);
+      SdqClient sdqClient = xslDemographicExtractor.parse(workbook, filename);
+      List<SdqScore> sdq = xslSdqExtractor.parse(sdqClient.clientId(), workbook);
+      List<GboScore> gbo = xslxGboExtractor.parse(sdqClient.clientId(), workbook);
 
-      return new ParsedFile(clientFile, sdq, gbo, structure);
+      return new ParsedFile(sdqClient, sdq, gbo, structure);
     } catch (IOException e) {
       throw new SdqException("Could not parse XLSL Workbook", e);
     }

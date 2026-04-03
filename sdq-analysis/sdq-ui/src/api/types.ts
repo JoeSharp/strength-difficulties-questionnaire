@@ -26,8 +26,8 @@ export type DemographicFilter = {
 export const EMPTY_DEMOGRAPHIC_FILTER: DemographicFilter = {};
 
 export interface ClientFile {
-  fileId: string;
-  filename: string;
+  clientId: string;
+  codeName: string;
   dateOfBirth: Date;
   gender: string;
   council: string;
@@ -42,8 +42,8 @@ export interface ClientFile {
 }
 
 export const EMPTY_CLIENT_FILE: ClientFile = {
-  fileId: "",
-  filename: "",
+  clientId: "",
+  codeName: "",
   dateOfBirth: new Date(),
   gender: "",
   council: "",

@@ -1,21 +1,19 @@
 import React from "react";
 
+import "./card.scss";
+
 interface Props {
-    id: string;
-    title: string;
-    children: React.ReactNode
+  title: string;
+  children: React.ReactNode;
 }
 
-function Card({ id, title, children }: Props) {
-
-    return <div className="card mb-4">
-        <div className="card-header" role='button' data-bs-toggle='collapse' data-bs-target={`#${id}`}>{title}</div>
-        <div className='collapse' id={id}>
-            <div className="card-body">
-                {children}
-            </div>
-        </div>
+function Card({ title, children }: Props) {
+  return (
+    <div className={`card card--hover`}>
+      {title && <div className="card__header">{title}</div>}
+      <div className="card__body">{children}</div>
     </div>
+  );
 }
 
 export default Card;

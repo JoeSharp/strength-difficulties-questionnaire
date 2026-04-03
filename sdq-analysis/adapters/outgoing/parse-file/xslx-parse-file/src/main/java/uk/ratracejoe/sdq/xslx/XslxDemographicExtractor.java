@@ -12,14 +12,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.ClientFile;
+import uk.ratracejoe.sdq.model.SdqClient;
 
 public class XslxDemographicExtractor {
   public static final String DEMOGRAPHIC_SHEET_NAME = "Demographic Information";
   private static final int ROW_NUMBER_ANSWERS = 1;
   private static final int NUMBER_INTERVENTION_TYPES = 4;
 
-  public ClientFile parse(Workbook workbook, String filename) throws SdqException {
+  public SdqClient parse(Workbook workbook, String filename) throws SdqException {
     Sheet sheet =
         Optional.ofNullable(workbook.getSheet(DEMOGRAPHIC_SHEET_NAME))
             .orElseThrow(() -> new SdqException("Could not find demographic information sheet"));
@@ -45,7 +45,7 @@ public class XslxDemographicExtractor {
     Integer aces = readIntCell(row, cellNum.getAndIncrement());
     String fundingSource = readStringCell(row, cellNum.getAndIncrement());
 
-    return new ClientFile(
+    return new SdqClient(
         UUID.randomUUID(),
         filename,
         dateOfBirth,

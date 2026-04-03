@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.ClientFile;
 import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.model.DemographicReport;
+import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.repository.*;
 
 public class ClientFileServiceImpl implements ClientFileService {
@@ -23,17 +23,17 @@ public class ClientFileServiceImpl implements ClientFileService {
   }
 
   @Override
-  public List<ClientFile> getAll() throws SdqException {
+  public List<SdqClient> getAll() throws SdqException {
     return fileRepository.getAll().stream().toList();
   }
 
   @Override
-  public List<ClientFile> getFiltered(Map<DemographicField, String> filters) throws SdqException {
+  public List<SdqClient> getFiltered(Map<DemographicField, String> filters) throws SdqException {
     return fileRepository.getFiltered(filters);
   }
 
   @Override
-  public Optional<ClientFile> getByUUID(UUID uuid) throws SdqException {
+  public Optional<SdqClient> getByUUID(UUID uuid) throws SdqException {
     return fileRepository.getByUUID(uuid);
   }
 }

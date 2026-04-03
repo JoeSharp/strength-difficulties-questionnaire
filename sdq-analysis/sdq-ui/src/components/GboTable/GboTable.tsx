@@ -11,7 +11,7 @@ function GboTable({ assessor, scores }: Props) {
 
   return (
     <div>
-      <Card id={`gbo-${assessor}`} title={`GBO Scores for ${assessor}`}>
+      <Card title={`GBO Scores for ${assessor}`}>
         <table className="table table-striped">
           <thead>
             <tr>

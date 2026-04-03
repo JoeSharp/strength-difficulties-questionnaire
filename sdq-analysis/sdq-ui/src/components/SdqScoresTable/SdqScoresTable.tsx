@@ -9,7 +9,7 @@ interface Props {
 function SdqScoresTable({ assessor, scores }: Props) {
   return (
     <div>
-      <Card id={`sdq-${assessor}`} title={`SDQ Scores for ${assessor}`}>
+      <Card title={`SDQ Scores for ${assessor}`}>
         <table className="table table-striped">
           <thead>
             <tr>

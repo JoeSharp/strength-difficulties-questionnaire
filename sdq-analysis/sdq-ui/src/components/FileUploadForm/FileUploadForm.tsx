@@ -32,7 +32,7 @@ function FileUploadForm() {
         <input className="form-button" type="submit" value="Upload File(s)" />
       </form>
       {lastFile && (
-        <p>File uploaded with name {lastFile.clientFile.filename}</p>
+        <p>File uploaded with name {lastFile.clientFile.codeName}</p>
       )}
     </>
   );

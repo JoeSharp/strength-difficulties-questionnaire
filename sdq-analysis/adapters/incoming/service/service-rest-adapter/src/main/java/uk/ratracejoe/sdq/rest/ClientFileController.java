@@ -21,17 +21,17 @@ public class ClientFileController {
   private final GboService gboService;
 
   @GetMapping
-  public List<ClientFile> getAll() throws SdqException {
+  public List<SdqClient> getAll() throws SdqException {
     return fileService.getAll();
   }
 
   @PostMapping
-  public List<ClientFile> getFiltered(@RequestBody Map<DemographicField, String> filters) {
+  public List<SdqClient> getFiltered(@RequestBody Map<DemographicField, String> filters) {
     return fileService.getFiltered(filters);
   }
 
-  @GetMapping("/{fileId}")
-  public ResponseEntity<ClientFile> getByUUID(@PathVariable("fileId") UUID uuid)
+  @GetMapping("/{clientId}")
+  public ResponseEntity<SdqClient> getByUUID(@PathVariable("clientId") UUID uuid)
       throws SdqException {
     return fileService
         .getByUUID(uuid)
@@ -45,14 +45,14 @@ public class ClientFileController {
     return fileService.getDemographicReport(demographic);
   }
 
-  @GetMapping("/sdq/{fileId}")
-  public Map<Assessor, List<SdqScore>> getSdq(@PathVariable("fileId") UUID fileId)
+  @GetMapping("/sdq/{clientId}")
+  public Map<Assessor, List<SdqScore>> getSdq(@PathVariable("clientId") UUID fileId)
       throws SdqException {
     return sdqService.getScores(fileId);
   }
 
-  @GetMapping("/gbo/{fileId}")
-  public Map<Assessor, List<GboScore>> getGbo(@PathVariable("fileId") UUID fileUuid)
+  @GetMapping("/gbo/{clientId}")
+  public Map<Assessor, List<GboScore>> getGbo(@PathVariable("clientId") UUID fileUuid)
       throws SdqException {
     return gboService.getGbo(fileUuid);
   }

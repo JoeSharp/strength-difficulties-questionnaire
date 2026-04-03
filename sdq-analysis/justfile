@@ -10,8 +10,12 @@ SDQ_DATABASE_USERNAME := env_var("SDQ_DATABASE_USERNAME")
 # Default task
 default: docker-start-app
 
+# Install UI dependencies
+install-ui:
+    npm install --prefix {{UI_MODULE}}
+
 # Build the user interface
-build-ui:
+build-ui: install-ui
     npm run build --prefix {{UI_MODULE}}
 
 # Copy the static resources of the UI into the public backend folder.
@@ -34,7 +38,7 @@ run-build-jar:
 build-jar: copy-ui run-build-jar
 
 # Runs the user interface in hot reloading mode.
-run-ui-dev:
+run-ui-dev: install-ui
     npm run dev --prefix {{UI_MODULE}}
 
 # Run the entire system up within Docker
@@ -51,19 +55,20 @@ docker-stop:
     docker compose -f local/docker-compose.yaml --profile include-app down
 
 # Build the Docker image for the application
-build-app-image:
+docker-build-app:
     docker build -t sdq-app .
 
 # Build the Docker image for the database migration
-build-db-migration-image:
+docker-build-db-migration:
     docker build -t sdq-db-migration {{DB_MODULE}}/.
 
-# Run the database migration
-docker-run-db-migration:
-    docker compose -f {{DB_MODULE}}/docker-compose.yaml up --build
+# Run the migration on its own
+docker-db-migrate:
+    docker compose -f local/docker-compose.yaml sdq-db-migration
 
-# Build the db migration and run it
-build-db: build-db-migration-image docker-run-db-migration
+# take down the docker stack, but also remove volumes
+docker-clear-volumes:
+    docker compose -f local/docker-compose.yaml down --volumes
 
 # Connect a shell to the database.
 connect-db:

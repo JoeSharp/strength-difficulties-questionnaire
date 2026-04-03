@@ -13,10 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.ClientFile;
 import uk.ratracejoe.sdq.model.DemographicCount;
 import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.model.DemographicReport;
+import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.tables.ClientFileTable;
 
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientFileRepositoryImpl.class);
   private final DataSource dataSource;
 
-  public void saveFile(ClientFile file) throws SdqException {
+  public void saveFile(SdqClient file) throws SdqException {
     RepositoryUtils.handle(
         dataSource,
         "saveFile",
@@ -33,8 +33,8 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
           int paramIndex = 1;
           LocalDate localDate = LocalDate.ofInstant(file.dateOfBirth(), ZoneId.systemDefault());
           Date dateOfBirth = Date.valueOf(localDate);
-          stmt.setObject(paramIndex++, file.fileId());
-          stmt.setString(paramIndex++, file.filename());
+          stmt.setObject(paramIndex++, file.clientId());
+          stmt.setString(paramIndex++, file.codeName());
           stmt.setDate(paramIndex++, dateOfBirth);
           stmt.setString(paramIndex++, file.gender());
           stmt.setString(paramIndex++, file.council());
@@ -72,7 +72,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
   }
 
   @Override
-  public Optional<ClientFile> getByUUID(UUID fileId) throws SdqException {
+  public Optional<SdqClient> getByUUID(UUID fileId) throws SdqException {
     return RepositoryUtils.handle(
         dataSource,
         "getByUUID",
@@ -85,13 +85,13 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
         });
   }
 
-  public List<ClientFile> getAll() throws SdqException {
+  public List<SdqClient> getAll() throws SdqException {
     return RepositoryUtils.handle(
         dataSource,
         "getAll",
         ClientFileTable.selectAllSQL(),
         stmt -> {
-          List<ClientFile> files = new ArrayList<>();
+          List<SdqClient> files = new ArrayList<>();
           ResultSet rs = stmt.executeQuery();
           while (rs.next()) {
             files.add(getFromResultSet(rs));
@@ -103,7 +103,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
   private record FilterAndValue(DemographicField field, String value) {}
 
   @Override
-  public List<ClientFile> getFiltered(Map<DemographicField, String> filterMap) throws SdqException {
+  public List<SdqClient> getFiltered(Map<DemographicField, String> filterMap) throws SdqException {
     List<FilterAndValue> filters =
         filterMap.entrySet().stream()
             .map(e -> new FilterAndValue(e.getKey(), e.getValue()))
@@ -124,7 +124,7 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
                   throw new RuntimeException(ex);
                 }
               });
-          List<ClientFile> files = new ArrayList<>();
+          List<SdqClient> files = new ArrayList<>();
           ResultSet rs = stmt.executeQuery();
           while (rs.next()) {
             files.add(getFromResultSet(rs));
@@ -133,9 +133,9 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
         });
   }
 
-  private ClientFile getFromResultSet(ResultSet rs) throws SQLException {
-    UUID uuid = rs.getObject(ClientFileTable.FIELD_FILE_ID, UUID.class);
-    String filename = rs.getString(ClientFileTable.FIELD_FILENAME);
+  private SdqClient getFromResultSet(ResultSet rs) throws SQLException {
+    UUID uuid = rs.getObject(ClientFileTable.FIELD_CLIENT_ID, UUID.class);
+    String codeName = rs.getString(ClientFileTable.FIELD_CODE_NAME);
     Date dob = rs.getDate(ClientFileTable.FIELD_DOB);
     String gender = rs.getString(ClientFileTable.FIELD_GENDER);
     String council = rs.getString(ClientFileTable.FIELD_COUNCIL);
@@ -146,9 +146,9 @@ public class ClientFileRepositoryImpl implements ClientFileRepository {
     String careExperience = rs.getString(ClientFileTable.FIELD_CARE_EXPERIENCE);
     Integer aces = rs.getInt(ClientFileTable.FIELD_ACES);
     String fundingSource = String.valueOf(rs.getString(ClientFileTable.FIELD_FUNDING_SOURCE));
-    return new ClientFile(
+    return new SdqClient(
         uuid,
-        filename,
+        codeName,
         RepositoryUtils.toInstant(dob),
         gender,
         council,
