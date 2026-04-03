@@ -9,4 +9,6 @@ public interface GboRepository {
   List<GboScore> getByFileUuid(UUID uuid) throws SdqException;
 
   void save(GboScore domain);
+
+  int deleteAll();
 }

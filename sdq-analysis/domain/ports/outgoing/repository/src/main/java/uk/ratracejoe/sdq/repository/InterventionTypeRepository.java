@@ -4,4 +4,6 @@ import java.util.UUID;
 
 public interface InterventionTypeRepository {
   void save(UUID fileId, String interventionType);
+
+  int deleteAll();
 }

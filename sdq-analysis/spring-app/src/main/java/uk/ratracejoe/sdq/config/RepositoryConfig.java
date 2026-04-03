@@ -1,35 +1,35 @@
 package uk.ratracejoe.sdq.config;
 
-import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.repository.*;
 
 @Configuration
 public class RepositoryConfig {
 
   @Bean
-  public ClientFileRepository clientFileRepository(DataSource dataSource) {
-    return new ClientFileRepositoryImpl(dataSource);
+  public SdqClientRepository clientFileRepository(JdbcClient jdbcClient) {
+    return new SdqClientRepositoryImpl(jdbcClient);
   }
 
   @Bean
-  public DemographicOptionRepository demographicOptionRepository(DataSource dataSource) {
-    return new DemographicOptionRepositoryImpl(dataSource);
+  public DemographicOptionRepository demographicOptionRepository(JdbcClient jdbcClient) {
+    return new DemographicOptionRepositoryImpl(jdbcClient);
   }
 
   @Bean
-  public GboRepository gboRepository(DataSource dataSource) {
-    return new GboRepositoryImpl(dataSource);
+  public GboRepository gboRepository(JdbcClient jdbcClient) {
+    return new GboRepositoryImpl(jdbcClient);
   }
 
   @Bean
-  public InterventionTypeRepository interventionTypeRepository(DataSource dataSource) {
-    return new InterventionTypeRepositoryImpl(dataSource);
+  public InterventionTypeRepository interventionTypeRepository(JdbcClient jdbcClient) {
+    return new InterventionTypeRepositoryImpl(jdbcClient);
   }
 
   @Bean
-  public SdqRepository sdqRepository(DataSource dataSource) {
-    return new SdqRepositoryImpl(dataSource);
+  public SdqRepository sdqRepository(JdbcClient jdbcClient) {
+    return new SdqRepositoryImpl(jdbcClient);
   }
 }

@@ -16,6 +16,11 @@ public interface DemographicOptionTable {
 
   static String insertOptionSQL() {
     return String.format(
-        "INSERT INTO %s (%s, %s) VALUES (? ,?)", TABLE_NAME, FIELD_DEMOGRAPHIC, FIELD_OPTION_TEXT);
+        "INSERT INTO %s (%s, %s) VALUES (? ,?) ON CONFLICT DO NOTHING",
+        TABLE_NAME, FIELD_DEMOGRAPHIC, FIELD_OPTION_TEXT);
+  }
+
+  static String deleteAllSQL() {
+    return String.format("DELETE FROM %s", TABLE_NAME);
   }
 }

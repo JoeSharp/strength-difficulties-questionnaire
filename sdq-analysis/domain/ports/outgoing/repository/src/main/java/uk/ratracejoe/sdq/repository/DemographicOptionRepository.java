@@ -10,4 +10,6 @@ public interface DemographicOptionRepository {
   void ensureEnumerations(SdqEnumerations sdqEnumerations);
 
   Map<DemographicField, List<String>> getOptionsByField() throws SdqException;
+
+  int deleteAll();
 }

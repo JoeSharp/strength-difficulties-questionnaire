@@ -9,7 +9,9 @@ import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.model.DemographicReport;
 import uk.ratracejoe.sdq.model.SdqClient;
 
-public interface ClientFileService {
+public interface SdqClientService {
+  SdqClient create(SdqClient newClient);
+
   DemographicReport getDemographicReport(DemographicField demographic);
 
   List<SdqClient> getAll() throws SdqException;

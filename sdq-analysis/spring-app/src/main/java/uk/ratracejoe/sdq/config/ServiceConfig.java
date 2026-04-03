@@ -9,8 +9,8 @@ import uk.ratracejoe.sdq.service.*;
 @Configuration
 public class ServiceConfig {
   @Bean
-  public ClientFileService clientFileService(ClientFileRepository fileRepository) {
-    return new ClientFileServiceImpl(fileRepository);
+  public SdqClientService clientFileService(SdqClientRepository fileRepository) {
+    return new SdqClientServiceImpl(fileRepository);
   }
 
   @Bean
@@ -32,7 +32,7 @@ public class ServiceConfig {
   public UploadService uploadService(
       DemographicOptionRepository demographicOptionRepository,
       InterventionTypeRepository interventionTypeRepository,
-      ClientFileRepository fileRepository,
+      SdqClientRepository fileRepository,
       SdqService sdqService,
       GboService gboService,
       SdqFileParser fileParser) {

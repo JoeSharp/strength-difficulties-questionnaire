@@ -5,56 +5,41 @@ import static uk.ratracejoe.sdq.tables.GoalBasedOutcomeTable.*;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
-import uk.ratracejoe.sdq.exception.SdqException;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.GboScore;
 import uk.ratracejoe.sdq.tables.GoalBasedOutcomeTable;
 
 @RequiredArgsConstructor
 public class GboRepositoryImpl implements GboRepository {
-  private final DataSource dataSource;
+  private final JdbcClient jdbcClient;
 
   public void save(GboScore domain) {
-    RepositoryUtils.handle(
-        dataSource,
-        "saveGbo",
-        GoalBasedOutcomeTable.insertSQL(),
-        stmt -> {
-          LocalDate localDate = LocalDate.ofInstant(domain.periodDate(), ZoneId.systemDefault());
-          Date periodDate = Date.valueOf(localDate);
+    String sql = GoalBasedOutcomeTable.insertSQL();
 
-          AtomicInteger paramIndex = new AtomicInteger(1);
-          stmt.setObject(paramIndex.getAndIncrement(), domain.fileId());
-          stmt.setString(paramIndex.getAndIncrement(), domain.assessor().name());
-          stmt.setInt(paramIndex.getAndIncrement(), domain.periodIndex());
-          stmt.setDate(paramIndex.getAndIncrement(), periodDate);
-          stmt.setInt(paramIndex.getAndIncrement(), domain.scoreIndex());
-          stmt.setInt(paramIndex.getAndIncrement(), domain.score());
-
-          return stmt.executeUpdate();
-        });
+    jdbcClient
+        .sql(sql)
+        .param(1, domain.fileId())
+        .param(2, domain.assessor().name())
+        .param(3, domain.periodIndex())
+        .param(4, Date.valueOf(domain.periodDate().atZone(ZoneId.systemDefault()).toLocalDate()))
+        .param(5, domain.scoreIndex())
+        .param(6, domain.score())
+        .update();
   }
 
-  public List<GboScore> getByFileUuid(UUID uuid) throws SdqException {
-    return RepositoryUtils.handle(
-        dataSource,
-        "getGboByFile",
-        GoalBasedOutcomeTable.getByFileSQL(),
-        stmt -> {
-          stmt.setObject(1, uuid);
-          ResultSet rs = stmt.executeQuery();
-          List<GboScore> results = new ArrayList<>();
-          while (rs.next()) {
-            results.add(getFromResultSet(rs));
-          }
-          return results;
-        });
+  @Override
+  public int deleteAll() {
+    return jdbcClient.sql(GoalBasedOutcomeTable.deleteAllSQL()).update();
+  }
+
+  public List<GboScore> getByFileUuid(UUID uuid) {
+    String sql = GoalBasedOutcomeTable.getByFileSQL();
+
+    return jdbcClient.sql(sql).param(1, uuid).query((rs, rowNum) -> getFromResultSet(rs)).list();
   }
 
   private GboScore getFromResultSet(ResultSet rs) throws SQLException {

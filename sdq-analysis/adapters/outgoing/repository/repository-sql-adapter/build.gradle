@@ -4,6 +4,7 @@ group = 'uk.ratracejoe.sdq.db'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
+    implementation("org.springframework:spring-jdbc:6.2.8")
     implementation project(":domain:ports:outgoing:repository")
     implementation project(":domain:model")
     implementation("org.slf4j:slf4j-api:2.0.16") // Service

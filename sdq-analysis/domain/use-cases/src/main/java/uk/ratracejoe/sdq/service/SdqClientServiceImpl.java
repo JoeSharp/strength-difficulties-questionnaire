@@ -10,30 +10,35 @@ import uk.ratracejoe.sdq.model.DemographicReport;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.repository.*;
 
-public class ClientFileServiceImpl implements ClientFileService {
-  private final ClientFileRepository fileRepository;
+public class SdqClientServiceImpl implements SdqClientService {
+  private final SdqClientRepository clientRepository;
 
-  public ClientFileServiceImpl(ClientFileRepository fileRepository) {
-    this.fileRepository = fileRepository;
+  public SdqClientServiceImpl(SdqClientRepository clientRepository) {
+    this.clientRepository = clientRepository;
+  }
+
+  @Override
+  public SdqClient create(SdqClient newClient) {
+    return clientRepository.createClient(newClient);
   }
 
   @Override
   public DemographicReport getDemographicReport(DemographicField demographic) {
-    return fileRepository.getDemographicReport(demographic);
+    return clientRepository.getDemographicReport(demographic);
   }
 
   @Override
   public List<SdqClient> getAll() throws SdqException {
-    return fileRepository.getAll().stream().toList();
+    return clientRepository.getAll().stream().toList();
   }
 
   @Override
   public List<SdqClient> getFiltered(Map<DemographicField, String> filters) throws SdqException {
-    return fileRepository.getFiltered(filters);
+    return clientRepository.getFiltered(filters);
   }
 
   @Override
   public Optional<SdqClient> getByUUID(UUID uuid) throws SdqException {
-    return fileRepository.getByUUID(uuid);
+    return clientRepository.getByUUID(uuid);
   }
 }

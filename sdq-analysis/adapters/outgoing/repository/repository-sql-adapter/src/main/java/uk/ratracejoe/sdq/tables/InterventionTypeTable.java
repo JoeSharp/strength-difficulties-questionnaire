@@ -12,7 +12,11 @@ public interface InterventionTypeTable {
 
   static String insertOptionSQL() {
     return String.format(
-        "INSERT INTO %s (%s, %s) VALUES (? ,?)",
+        "INSERT INTO %s (%s, %s) VALUES (? ,?) ON CONFLICT DO NOTHING",
         TABLE_NAME, FIELD_CLIENT_ID, FIELD_INTERVENTION_TYPE);
+  }
+
+  static String deleteAllSQL() {
+    return String.format("DELETE FROM %s", TABLE_NAME);
   }
 }

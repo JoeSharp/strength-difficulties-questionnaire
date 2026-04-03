@@ -36,8 +36,7 @@ function UploadFileTable() {
       <table className="table">
         <thead>
           <tr>
-            <th>UUID</th>
-            <th>Filename</th>
+            <th>Name</th>
             <th>DOB</th>
           </tr>
         </thead>
@@ -48,7 +47,6 @@ function UploadFileTable() {
               className="clickable"
               onClick={() => navigate(`/client/${file.clientId}`)}
             >
-              <td>{file.clientId}</td>
               <td>{file.codeName}</td>
               <td>{file.dateOfBirth.toISOString().slice(0, 7)}</td>
             </tr>

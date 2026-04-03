@@ -10,7 +10,7 @@ import uk.ratracejoe.sdq.repository.*;
 public class UploadServiceImpl implements UploadService {
   private final DemographicOptionRepository demographicOptionRepository;
   private final InterventionTypeRepository interventionTypeRepository;
-  private final ClientFileRepository fileRepository;
+  private final SdqClientRepository fileRepository;
   private final SdqService sdqService;
   private final GboService gboService;
   private final SdqFileParser fileParser;
@@ -18,7 +18,7 @@ public class UploadServiceImpl implements UploadService {
   public UploadServiceImpl(
       DemographicOptionRepository demographicOptionRepository,
       InterventionTypeRepository interventionTypeRepository,
-      ClientFileRepository fileRepository,
+      SdqClientRepository fileRepository,
       SdqService sdqService,
       GboService gboService,
       SdqFileParser fileParser) {
@@ -35,7 +35,7 @@ public class UploadServiceImpl implements UploadService {
     UUID fileId = parsedFile.sdqClient().clientId();
 
     demographicOptionRepository.ensureEnumerations(parsedFile.structure());
-    fileRepository.saveFile(parsedFile.sdqClient());
+    fileRepository.createClient(parsedFile.sdqClient());
     parsedFile
         .sdqClient()
         .interventionTypes()

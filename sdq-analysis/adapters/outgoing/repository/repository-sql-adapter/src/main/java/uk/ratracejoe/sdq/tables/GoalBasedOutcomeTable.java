@@ -43,4 +43,8 @@ public interface GoalBasedOutcomeTable {
         FIELD_SCORE_INDEX,
         FIELD_SCORE);
   }
+
+  static String deleteAllSQL() {
+    return String.format("DELETE FROM %s", TABLE_NAME);
+  }
 }

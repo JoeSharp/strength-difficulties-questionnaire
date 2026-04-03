@@ -80,7 +80,7 @@ function useClientFileApi(): ClientFileApi {
           addMessage(
             "danger",
             response.status,
-            "Failed to fetch demographic report: " + response.statusText
+            "Failed to fetch demographic report: " + response.statusText,
           );
           throw new Error("Network response was not ok");
         }
@@ -103,7 +103,7 @@ function useClientFileApi(): ClientFileApi {
           addMessage(
             "danger",
             response.status,
-            "Failed to fetch file: " + response.statusText
+            "Failed to fetch file: " + response.statusText,
           );
           throw new Error("Network response was not ok");
         }
@@ -120,13 +120,13 @@ function useClientFileApi(): ClientFileApi {
 
   const getFileByUuid = React.useCallback((uuid: string) => {
     const jobId = beginJob("Fetching file");
-    fetch(`${BASE_CLIENT_URL}/${uuid}`)
+    fetch(`${BASE_CLIENT_URL}/byId/${uuid}`)
       .then((response) => {
         if (!response.ok) {
           addMessage(
             "danger",
             response.status,
-            "Failed to fetch scores: " + response.statusText
+            "Failed to fetch scores: " + response.statusText,
           );
           throw new Error("Network response was not ok");
         }
@@ -149,7 +149,7 @@ function useClientFileApi(): ClientFileApi {
           addMessage(
             "danger",
             response.status,
-            "Failed to fetch SDQ: " + response.statusText
+            "Failed to fetch SDQ: " + response.statusText,
           );
           throw new Error("Network response was not ok");
         }
@@ -172,7 +172,7 @@ function useClientFileApi(): ClientFileApi {
           addMessage(
             "danger",
             response.status,
-            "Failed to fetch gbo: " + response.statusText
+            "Failed to fetch gbo: " + response.statusText,
           );
           throw new Error("Network response was not ok");
         }

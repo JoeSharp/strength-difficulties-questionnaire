@@ -9,14 +9,16 @@ import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.model.DemographicReport;
 import uk.ratracejoe.sdq.model.SdqClient;
 
-public interface ClientFileRepository {
+public interface SdqClientRepository {
   List<SdqClient> getAll() throws SdqException;
 
   List<SdqClient> getFiltered(Map<DemographicField, String> filters) throws SdqException;
 
   Optional<SdqClient> getByUUID(UUID fileId) throws SdqException;
 
-  void saveFile(SdqClient sdqClient) throws SdqException;
+  SdqClient createClient(SdqClient sdqClient) throws SdqException;
 
   DemographicReport getDemographicReport(DemographicField demographic);
+
+  int deleteAll();
 }

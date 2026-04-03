@@ -17,6 +17,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -30,8 +32,6 @@ dependencies {
 	implementation project(":adapters:outgoing:parse-file:xslx-parse-file")
 	implementation 'org.postgresql:postgresql'
 	implementation 'com.zaxxer:HikariCP:5.1.0'
-
-	testImplementation 'org.liquibase:liquibase-core'
 }
 
 test {

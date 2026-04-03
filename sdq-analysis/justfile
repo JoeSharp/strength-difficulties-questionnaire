@@ -61,10 +61,16 @@ docker-start-app:
 docker-run-deps:
     docker compose -f local/docker-compose.yaml up -d
 
-# Stop any docker containers relating to this application
+# Stop the application stack
 docker-stop:
     docker compose -f local/docker-compose.yaml --profile include-app down
+
+# Stop the test dependencies
+docker-stop-test:
     docker compose -f local/docker-compose.test.yaml --profile include-app down
+
+# Stop any docker containers relating to this application
+docker-stop-all: docker-stop docker-stop-test
 
 # Build the Docker image for the application
 docker-build-app:

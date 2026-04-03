@@ -1,48 +1,39 @@
 package uk.ratracejoe.sdq.repository;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.entity.InterventionTypeEntity;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.tables.InterventionTypeTable;
 
 @RequiredArgsConstructor
 public class InterventionTypeRepositoryImpl implements InterventionTypeRepository {
-  private final DataSource dataSource;
+  private final JdbcClient jdbcClient;
 
   public void save(UUID fileId, String interventionType) {
-    RepositoryUtils.handle(
-        dataSource,
-        "saveInterventionType",
-        InterventionTypeTable.insertOptionSQL(),
-        stmt -> {
-          stmt.setObject(1, fileId);
-          stmt.setString(2, interventionType);
-          return stmt.executeUpdate();
-        });
+    jdbcClient
+        .sql(InterventionTypeTable.insertOptionSQL())
+        .param(1, fileId)
+        .param(2, interventionType)
+        .update();
+  }
+
+  @Override
+  public int deleteAll() {
+    return jdbcClient.sql(InterventionTypeTable.deleteAllSQL()).update();
   }
 
   public List<InterventionTypeEntity> getByFile(UUID fileId) throws SdqException {
-    return RepositoryUtils.handle(
-        dataSource,
-        "getInterventionTypeByFile",
-        InterventionTypeTable.getByFileSQL(),
-        stmt -> {
-          List<InterventionTypeEntity> results = new ArrayList<>();
-          stmt.setObject(1, fileId);
-          ResultSet rs = stmt.executeQuery();
-
-          while (rs.next()) {
-            String interventionType = rs.getString(InterventionTypeTable.FIELD_INTERVENTION_TYPE);
-            InterventionTypeEntity entity = new InterventionTypeEntity(fileId, interventionType);
-            results.add(entity);
-          }
-
-          return results;
-        });
+    return jdbcClient
+        .sql(InterventionTypeTable.getByFileSQL())
+        .param(1, fileId)
+        .query(
+            (rs, rowNum) -> {
+              String interventionType = rs.getString(InterventionTypeTable.FIELD_INTERVENTION_TYPE);
+              return new InterventionTypeEntity(fileId, interventionType);
+            })
+        .list();
   }
 }
