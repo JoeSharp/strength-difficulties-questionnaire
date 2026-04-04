@@ -2,9 +2,9 @@ package uk.ratracejoe.sdq.xslx;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,10 +26,10 @@ public class XslxSdqExtractor {
           new AssessorRow(Assessor.School, 75),
           new AssessorRow(Assessor.Child, 105));
 
-  public List<SdqSubmission> parse(UUID fileId, Workbook workbook) {
+  public List<SdqReportingPeriod> parse(UUID fileId, Workbook workbook) {
     return StreamSupport.stream(workbook.spliterator(), false)
         .filter(this::isSDQ)
-        .flatMap(sheet -> this.parseSdqPeriod(fileId, sheet))
+        .map(sheet -> this.parseSdqPeriod(fileId, sheet))
         .toList();
   }
 
@@ -61,23 +61,34 @@ public class XslxSdqExtractor {
         .toList();
   }
 
-  private Stream<SdqSubmission> parseSdqPeriod(UUID clientId, Sheet sheet) {
-    Integer periodIndex =
-        Integer.parseInt(sheet.getSheetName().replace(SHEET_NAME_PREFIX, "").trim(), 10);
+  private SdqReportingPeriod parseSdqPeriod(UUID clientId, Sheet sheet) {
+    UUID periodId = UUID.randomUUID();
+    // Integer periodIndex =
+    //    Integer.parseInt(sheet.getSheetName().replace(SHEET_NAME_PREFIX, "").trim(), 10);
 
-    return FIRST_ROWS.stream()
-        .map(
-            a -> {
-              List<SdqScore> scores =
-                  getStatementResponses(sheet, a.firstRow()).stream()
-                      .map(r -> new SdqScore(r.statement(), r.score()))
-                      .toList();
-              return SdqSubmission.builder()
-                  .clientId(clientId)
-                  .period(periodIndex)
-                  .assessor(a.assessor())
-                  .scores(scores)
-                  .build();
-            });
+    Map<Assessor, SdqSubmission> sdq = new EnumMap<>(Assessor.class);
+
+    for (var firstRow : FIRST_ROWS) {
+      List<SdqScore> scores =
+          getStatementResponses(sheet, firstRow.firstRow()).stream()
+              .map(r -> new SdqScore(r.statement(), r.score()))
+              .toList();
+      SdqSubmission submission =
+          SdqSubmission.builder()
+              .periodId(periodId)
+              .assessor(firstRow.assessor())
+              .scores(scores)
+              .build();
+      sdq.put(firstRow.assessor(), submission);
+    }
+    return SdqReportingPeriod.builder()
+        .period(
+            ReportingPeriod.builder()
+                .periodId(periodId)
+                .period(Instant.now()) // Figure out the right value later!
+                .clientId(clientId)
+                .build())
+        .sdq(sdq)
+        .build();
   }
 }

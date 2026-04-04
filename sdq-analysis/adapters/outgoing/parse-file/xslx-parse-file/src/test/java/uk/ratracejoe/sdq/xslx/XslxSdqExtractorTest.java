@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
-import uk.ratracejoe.sdq.model.SdqSubmission;
+import uk.ratracejoe.sdq.model.SdqReportingPeriod;
 
 class XslxSdqExtractorTest {
   @Test
@@ -19,7 +19,7 @@ class XslxSdqExtractorTest {
     Workbook workbook = workbookLoaded();
 
     // When
-    List<SdqSubmission> result = extractor.parse(fileId, workbook);
+    List<SdqReportingPeriod> result = extractor.parse(fileId, workbook);
 
     // Then
     assertThat(result).hasSize(9);

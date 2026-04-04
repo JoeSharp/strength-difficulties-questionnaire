@@ -5,5 +5,4 @@ import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record SdqSubmission(
-    UUID clientId, Integer period, Assessor assessor, List<SdqScore> scores) {}
+public record SdqSubmission(UUID periodId, Assessor assessor, List<SdqScore> scores) {}

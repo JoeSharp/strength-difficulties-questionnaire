@@ -1,27 +1,32 @@
 package uk.ratracejoe.sdq.repository;
 
-import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
-import uk.ratracejoe.sdq.tables.SdqTable;
 
 @RequiredArgsConstructor
 public class SdqRepositoryImpl implements SdqRepository {
   private final JdbcClient jdbcClient;
 
+  private static final String TABLE_NAME = "sdq";
+  private static final String FIELD_PERIOD_ID = "period_id";
+  private static final String FIELD_ASSESSOR = "assessor";
+  private static final String FIELD_STATEMENT = "statement";
+  private static final String FIELD_CATEGORY = "category";
+  private static final String FIELD_POSTURE = "posture";
+  private static final String FIELD_SCORE = "score";
+
   @Override
-  public void recordResponse(SdqSubmission sdq) throws SdqException {
+  public void save(SdqSubmission sdq) throws SdqException {
     sdq.scores()
         .forEach(
             score -> {
               AtomicInteger paramIndex = new AtomicInteger(1);
               jdbcClient
-                  .sql(SdqTable.insertSQL())
-                  .param(paramIndex.getAndIncrement(), sdq.clientId())
-                  .param(paramIndex.getAndIncrement(), sdq.period())
+                  .sql(insertSQL())
+                  .param(paramIndex.getAndIncrement(), sdq.periodId())
                   .param(paramIndex.getAndIncrement(), sdq.assessor().name())
                   .param(paramIndex.getAndIncrement(), score.statement().name())
                   .param(paramIndex.getAndIncrement(), score.statement().category().name())
@@ -33,6 +38,22 @@ public class SdqRepositoryImpl implements SdqRepository {
   }
 
   public int deleteAll() throws SdqException {
-    return jdbcClient.sql(SdqTable.deleteAllSQL()).update();
+    return jdbcClient.sql(deleteAllSQL()).update();
+  }
+
+  static String insertSQL() {
+    return String.format(
+        "INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)",
+        TABLE_NAME,
+        FIELD_PERIOD_ID,
+        FIELD_ASSESSOR,
+        FIELD_STATEMENT,
+        FIELD_CATEGORY,
+        FIELD_POSTURE,
+        FIELD_SCORE);
+  }
+
+  static String deleteAllSQL() {
+    return String.format("DELETE FROM %s", TABLE_NAME);
   }
 }

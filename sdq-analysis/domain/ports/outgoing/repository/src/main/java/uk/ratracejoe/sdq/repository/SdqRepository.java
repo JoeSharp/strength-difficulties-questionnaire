@@ -5,7 +5,7 @@ import uk.ratracejoe.sdq.model.SdqSubmission;
 
 public interface SdqRepository {
 
-  void recordResponse(SdqSubmission sdq) throws SdqException;
+  void save(SdqSubmission sdq) throws SdqException;
 
   int deleteAll();
 }

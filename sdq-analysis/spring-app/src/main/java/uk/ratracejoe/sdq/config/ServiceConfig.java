@@ -9,13 +9,18 @@ import uk.ratracejoe.sdq.service.*;
 @Configuration
 public class ServiceConfig {
   @Bean
-  public SdqClientService clientFileService(SdqClientRepository fileRepository) {
-    return new SdqClientServiceImpl(fileRepository);
+  public ClientService clientFileService(ClientRepository repository) {
+    return new ClientServiceImpl(repository);
   }
 
   @Bean
-  public GboService gboService(GboRepository gboRepository) {
-    return new GboServiceImpl(gboRepository);
+  public GboService gboService(GboRepository repository) {
+    return new GboServiceImpl(repository);
+  }
+
+  @Bean
+  public ReportingPeriodService reportingPeriodService(ReportingPeriodRepository repository) {
+    return new ReportingPeriodServiceImpl(repository);
   }
 
   @Bean
@@ -31,11 +36,17 @@ public class ServiceConfig {
   @Bean
   public UploadService uploadService(
       InterventionTypeRepository interventionTypeRepository,
-      SdqClientRepository fileRepository,
-      SdqService sdqService,
-      GboService gboService,
+      ClientRepository fileRepository,
+      ReportingPeriodRepository reportingPeriodRepository,
+      SdqRepository sdqRepository,
+      GboRepository gboRepository,
       SdqFileParser fileParser) {
     return new UploadServiceImpl(
-        interventionTypeRepository, fileRepository, sdqService, gboService, fileParser);
+        interventionTypeRepository,
+        fileRepository,
+        reportingPeriodRepository,
+        sdqRepository,
+        gboRepository,
+        fileParser);
   }
 }

@@ -9,13 +9,10 @@ databaseChangeLog:
             tableName: sdq
             columns:
               - column:
-                  name: client_id
+                  name: period_id
                   type: uuid
                   constraints:
                     nullable: false
-              - column:
-                  name: period
-                  type: int
               - column:
                   name: assessor
                   type: TEXT

@@ -4,18 +4,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.model.DemographicReport;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.repository.*;
 
-public class SdqClientServiceImpl implements SdqClientService {
-  private final SdqClientRepository clientRepository;
-
-  public SdqClientServiceImpl(SdqClientRepository clientRepository) {
-    this.clientRepository = clientRepository;
-  }
+@RequiredArgsConstructor
+public class ClientServiceImpl implements ClientService {
+  private final ClientRepository clientRepository;
 
   @Override
   public SdqClient create(SdqClient newClient) {

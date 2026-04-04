@@ -26,7 +26,7 @@ public class XslxSdqFileParser implements SdqFileParser {
       Workbook workbook = new XSSFWorkbook(file);
 
       SdqClient sdqClient = xslDemographicExtractor.parse(workbook, filename);
-      List<SdqSubmission> sdq = xslSdqExtractor.parse(sdqClient.clientId(), workbook);
+      List<SdqReportingPeriod> sdq = xslSdqExtractor.parse(sdqClient.clientId(), workbook);
       List<GboSubmission> gbo = xslxGboExtractor.parse(sdqClient.clientId(), workbook);
 
       return new ParsedFile(sdqClient, sdq, gbo);

@@ -29,11 +29,11 @@ public class XslxGboExtractor {
           new AssessorRow(Assessor.School, 58),
           new AssessorRow(Assessor.Child, 81));
 
-  public List<GboSubmission> parse(UUID fileId, Workbook workbook) {
+  public List<GboSubmission> parse(UUID clientId, Workbook workbook) {
     return StreamSupport.stream(workbook.spliterator(), false)
         .filter(this::isGBO)
         .findFirst()
-        .map(sheet -> this.parseGbo(fileId, sheet))
+        .map(sheet -> this.parseGbo(clientId, sheet))
         .orElseThrow(() -> new SdqException("Could not find Goal Based Outcomes Sheet"));
   }
 
@@ -41,26 +41,26 @@ public class XslxGboExtractor {
     return sheet.getSheetName().equals(SHEET_NAME);
   }
 
-  private List<GboSubmission> parseGbo(UUID fileId, Sheet sheet) {
+  private List<GboSubmission> parseGbo(UUID clientId, Sheet sheet) {
     return FIRST_ROWS.stream()
-        .flatMap(d -> getGboPeriods(fileId, d.assessor(), sheet, d.firstRow()))
+        .flatMap(d -> getGboPeriods(clientId, d.assessor(), sheet, d.firstRow()))
         .toList();
   }
 
   private Stream<GboSubmission> getGboPeriods(
-      UUID fileId, Assessor assessor, Sheet sheet, int startRow) {
+      UUID clientId, Assessor assessor, Sheet sheet, int startRow) {
     return IntStream.range(1, NUMBER_PERIODS_EXPECTED + 1)
-        .mapToObj(i -> extractPeriod(fileId, assessor, sheet.getRow(startRow + i - 1)));
+        .mapToObj(i -> extractPeriod(clientId, assessor, sheet.getRow(startRow + i - 1)));
   }
 
-  private GboSubmission extractPeriod(UUID fileId, Assessor assessor, Row row) {
+  private GboSubmission extractPeriod(UUID clientId, Assessor assessor, Row row) {
     Instant periodDate = extractDate(row);
     List<GboScore> scores =
         extractScores(row).entrySet().stream()
             .map(e -> new GboScore(e.getKey(), e.getValue()))
             .toList();
     return GboSubmission.builder()
-        .clientId(fileId)
+        .clientId(clientId)
         .assessor(assessor)
         .period(periodDate)
         .scores(scores)

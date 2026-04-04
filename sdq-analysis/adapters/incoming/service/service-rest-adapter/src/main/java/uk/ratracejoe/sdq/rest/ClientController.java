@@ -8,13 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
-import uk.ratracejoe.sdq.service.SdqClientService;
+import uk.ratracejoe.sdq.service.ClientService;
 
 @RestController
 @RequestMapping("/api/client")
 @RequiredArgsConstructor
 public class ClientController {
-  private final SdqClientService clientService;
+  private final ClientService clientService;
 
   @GetMapping
   public List<SdqClient> getAll() throws SdqException {

@@ -47,7 +47,7 @@ gradle-run-tests:
 
 # Run the dependencies required by unit tets
 docker-run-test-deps:
-    docker compose -f local/docker-compose.test.yaml up -d
+    docker compose -f local/docker-compose.test.yaml up --build
 
 # Run the unit tests, which depends on us running containers
 run-tests: docker-run-test-deps gradle-run-tests
@@ -59,7 +59,7 @@ docker-start-app:
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that
 docker-run-deps:
-    docker compose -f local/docker-compose.yaml up -d
+    docker compose -f local/docker-compose.yaml up --build -d
 
 # Stop the application stack
 docker-stop:
@@ -87,8 +87,14 @@ docker-db-migrate:
 # take down the docker stack, but also remove volumes
 docker-clean:
     docker compose -f local/docker-compose.yaml down --volumes
+    docker compose -f local/docker-compose.test.yaml down --volumes
 
 # Connect a shell to the database.
 connect-db:
     echo "Connecting to database"
     docker exec -it {{APPLICATION_NAME}}-db psql -d {{SDQ_DATABASE_NAME}} -U {{SDQ_DATABASE_USERNAME}}
+
+connect-test-db:
+    echo "Connecting to test database"
+    docker exec -it {{APPLICATION_NAME}}-test-db psql -d {{SDQ_DATABASE_NAME}} -U test
+

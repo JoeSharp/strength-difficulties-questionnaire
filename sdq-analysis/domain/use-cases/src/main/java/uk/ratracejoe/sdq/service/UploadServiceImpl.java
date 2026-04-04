@@ -1,31 +1,23 @@
 package uk.ratracejoe.sdq.service;
 
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.SdqFileParser;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.repository.*;
 
+@RequiredArgsConstructor
 public class UploadServiceImpl implements UploadService {
   private final InterventionTypeRepository interventionTypeRepository;
-  private final SdqClientRepository fileRepository;
-  private final SdqService sdqService;
-  private final GboService gboService;
+  private final ClientRepository fileRepository;
+  private final ReportingPeriodRepository reportingPeriodRepository;
+  private final SdqRepository sdqRepository;
+  private final GboRepository gboRepository;
   private final SdqFileParser fileParser;
-
-  public UploadServiceImpl(
-      InterventionTypeRepository interventionTypeRepository,
-      SdqClientRepository fileRepository,
-      SdqService sdqService,
-      GboService gboService,
-      SdqFileParser fileParser) {
-    this.interventionTypeRepository = interventionTypeRepository;
-    this.fileRepository = fileRepository;
-    this.sdqService = sdqService;
-    this.gboService = gboService;
-    this.fileParser = fileParser;
-  }
 
   public ParsedFile ingestFile(String filename, InputStream file) throws SdqException {
     ParsedFile parsedFile = fileParser.parse(filename, file);
@@ -36,8 +28,16 @@ public class UploadServiceImpl implements UploadService {
         .sdqClient()
         .interventionTypes()
         .forEach(it -> interventionTypeRepository.save(clientId, it));
-    parsedFile.sdq().forEach(sdqService::recordResponse);
-    parsedFile.gbo().forEach(gboService::recordResponse);
+    parsedFile.sdq().stream()
+        .map(SdqReportingPeriod::period)
+        .forEach(reportingPeriodRepository::save);
+    parsedFile.sdq().stream()
+        .map(SdqReportingPeriod::sdq)
+        .map(Map::entrySet)
+        .flatMap(Set::stream)
+        .map(Map.Entry::getValue)
+        .forEach(sdqRepository::save);
+    parsedFile.gbo().forEach(gboRepository::save);
 
     return parsedFile;
   }

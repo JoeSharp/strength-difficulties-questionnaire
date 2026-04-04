@@ -6,4 +6,6 @@ databaseChangeLog:
   - include:
       file: changelog/init_intervention_type_table.yaml
   - include:
+      file: changelog/init_reporting_period_table.yaml
+  - include:
       file: changelog/init_sdq_table.yaml

@@ -3,10 +3,10 @@ databaseChangeLog:
       id: 1
       author: Joe Sharp
       labels: init
-      comment: Create initial Goal Based Outcome table
+      comment: Create initial Reporting Period table
       changes:
         - createTable:
-            tableName: gbo
+            tableName: reporting_period
             columns:
               - column:
                   name: client_id
@@ -14,14 +14,10 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: assessor
-                  type: TEXT
+                  name: period_id
+                  type: UUID
+                  constraints:
+                    nullable: false
               - column:
                   name: period_date
                   type: DATE
-              - column:
-                  name: score_index
-                  type: INT
-              - column:
-                  name: score
-                  type: INT

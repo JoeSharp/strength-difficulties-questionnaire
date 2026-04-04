@@ -7,14 +7,14 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
-import uk.ratracejoe.sdq.tables.ClientFileTable;
 
 @RequiredArgsConstructor
-public class SdqClientRepositoryImpl implements SdqClientRepository {
+public class ClientRepositoryImpl implements ClientRepository {
   private final JdbcClient jdbcClient;
 
   public SdqClient createClient(SdqClient client) throws SdqException {
@@ -23,7 +23,7 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
     UUID clientId = Optional.ofNullable(client.clientId()).orElseGet(UUID::randomUUID);
     AtomicInteger paramIndex = new AtomicInteger(1);
     jdbcClient
-        .sql(ClientFileTable.insertSQL())
+        .sql(insertSQL())
         .param(paramIndex.getAndIncrement(), clientId)
         .param(paramIndex.getAndIncrement(), client.codeName())
         .param(paramIndex.getAndIncrement(), dateOfBirth)
@@ -60,7 +60,7 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
 
   @Override
   public DemographicReport getDemographicReport(DemographicField demographic) {
-    String sql = ClientFileTable.getDemographicReportSQL(demographic);
+    String sql = getDemographicReportSQL(demographic);
 
     List<DemographicCount> counts =
         jdbcClient
@@ -75,7 +75,7 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
 
   @Override
   public Optional<SdqClient> getByUUID(UUID fileId) {
-    String sql = ClientFileTable.selectByUUID();
+    String sql = selectByUUID();
 
     return jdbcClient
         .sql(sql)
@@ -85,10 +85,7 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
   }
 
   public List<SdqClient> getAll() throws SdqException {
-    return jdbcClient
-        .sql(ClientFileTable.selectAllSQL())
-        .query((rs, rowNum) -> getFromResultSet(rs))
-        .list();
+    return jdbcClient.sql(selectAllSQL()).query((rs, rowNum) -> getFromResultSet(rs)).list();
   }
 
   private record FilterAndValue(DemographicField field, String value) {}
@@ -102,8 +99,7 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
             .toList();
 
     // Build SQL dynamically based on fields
-    String sql =
-        ClientFileTable.selectFilteredSql(filters.stream().map(FilterAndValue::field).toList());
+    String sql = selectFilteredSql(filters.stream().map(FilterAndValue::field).toList());
 
     JdbcClient.StatementSpec stmt = jdbcClient.sql(sql);
 
@@ -118,40 +114,40 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
   }
 
   private SdqClient getFromResultSet(ResultSet rs) throws SQLException {
-    UUID uuid = rs.getObject(ClientFileTable.FIELD_CLIENT_ID, UUID.class);
-    String codeName = rs.getString(ClientFileTable.FIELD_CODE_NAME);
-    Date dob = rs.getDate(ClientFileTable.FIELD_DOB);
+    UUID uuid = rs.getObject(FIELD_CLIENT_ID, UUID.class);
+    String codeName = rs.getString(FIELD_CODE_NAME);
+    Date dob = rs.getDate(FIELD_DOB);
     Gender gender =
-        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_GENDER))
+        Optional.ofNullable(rs.getString(FIELD_GENDER))
             .map(Gender::valueOf)
             .orElseGet(Gender::defaultValue);
     Council council =
-        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_COUNCIL))
+        Optional.ofNullable(rs.getString(FIELD_COUNCIL))
             .map(Council::valueOf)
             .orElseGet(Council::defaultValue);
     Ethnicity ethnicity =
-        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_ETHNICITY))
+        Optional.ofNullable(rs.getString(FIELD_ETHNICITY))
             .map(Ethnicity::valueOf)
             .orElseGet(Ethnicity::defaultValue);
     EnglishAsAdditionalLanguage eal =
-        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_EAL))
+        Optional.ofNullable(rs.getString(FIELD_EAL))
             .map(EnglishAsAdditionalLanguage::valueOf)
             .orElseGet(EnglishAsAdditionalLanguage::defaultValue);
     DisabilityStatus disabilityStatus =
-        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_DISABILITY_STATUS))
+        Optional.ofNullable(rs.getString(FIELD_DISABILITY_STATUS))
             .map(DisabilityStatus::valueOf)
             .orElseGet(DisabilityStatus::defaultValue);
     DisabilityType disabilityType =
-        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_DISABILITY_TYPE))
+        Optional.ofNullable(rs.getString(FIELD_DISABILITY_TYPE))
             .map(DisabilityType::valueOf)
             .orElseGet(DisabilityType::defaultValue);
     CareExperience careExperience =
-        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_CARE_EXPERIENCE))
+        Optional.ofNullable(rs.getString(FIELD_CARE_EXPERIENCE))
             .map(CareExperience::valueOf)
             .orElseGet(CareExperience::defaultValue);
-    Integer aces = rs.getInt(ClientFileTable.FIELD_ACES);
+    Integer aces = rs.getInt(FIELD_ACES);
     FundingSource fundingSource =
-        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_FUNDING_SOURCE))
+        Optional.ofNullable(rs.getString(FIELD_FUNDING_SOURCE))
             .map(FundingSource::valueOf)
             .orElseGet(FundingSource::defaultValue);
     return new SdqClient(
@@ -171,6 +167,96 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
   }
 
   public int deleteAll() {
-    return jdbcClient.sql(ClientFileTable.deleteAllSQL()).update();
+    return jdbcClient.sql(deleteAllSQL()).update();
+  }
+
+  private static final String TABLE_NAME = "client_file";
+  private static final String FIELD_CLIENT_ID = "client_id";
+  private static final String FIELD_CODE_NAME = "code_name";
+  private static final String FIELD_DOB = "date_of_birth";
+  private static final String FIELD_GENDER = "gender";
+  private static final String FIELD_COUNCIL = "council";
+  private static final String FIELD_ETHNICITY = "ethnicity";
+  private static final String FIELD_EAL = "eal";
+  private static final String FIELD_DISABILITY_STATUS = "disability_status";
+  private static final String FIELD_DISABILITY_TYPE = "disability_type";
+  private static final String FIELD_CARE_EXPERIENCE = "care_experience";
+  private static final String FIELD_ACES = "aces";
+  private static final String FIELD_FUNDING_SOURCE = "funding_source";
+  private static final List<String> FIELDS =
+      List.of(
+          FIELD_CLIENT_ID,
+          FIELD_CODE_NAME,
+          FIELD_DOB,
+          FIELD_GENDER,
+          FIELD_COUNCIL,
+          FIELD_ETHNICITY,
+          FIELD_EAL,
+          FIELD_DISABILITY_STATUS,
+          FIELD_DISABILITY_TYPE,
+          FIELD_CARE_EXPERIENCE,
+          FIELD_ACES,
+          FIELD_FUNDING_SOURCE);
+
+  static String insertSQL() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("INSERT INTO " + TABLE_NAME + " (");
+    String fieldNames = String.join(",", FIELDS);
+    sb.append(fieldNames);
+    sb.append(") VALUES (");
+    String placeholders = FIELDS.stream().map(f -> "?").collect(Collectors.joining(", "));
+    sb.append(placeholders);
+    sb.append(")");
+    return sb.toString();
+  }
+
+  static String demographicColumn(DemographicField field) {
+    return switch (field) {
+      case Gender -> "gender";
+      case Council -> "council";
+      case Ethnicity -> "ethnicity";
+      case EAL -> "eal";
+      case DisabilityStatus -> "disability_status";
+      case DisabilityType -> "disability_type";
+      case CareExperience -> "care_experience";
+      case InterventionType -> "intervention_type";
+      case ACES -> "aces";
+      case FundingSource -> "funding_source";
+    };
+  }
+
+  static String getDemographicReportSQL(DemographicField demographic) {
+    String columnName = demographicColumn(demographic);
+    return String.format(
+        "select %s, count(*) AS count, round(100 * count(*) / (select count(*) from client_file), 2) as percentage FROM client_file GROUP BY %s;",
+        columnName, columnName);
+  }
+
+  static String selectByUUID() {
+    return String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_CLIENT_ID);
+  }
+
+  static String selectAllSQL() {
+    return String.format("SELECT * FROM %s", TABLE_NAME);
+  }
+
+  static String selectFilteredSql(List<DemographicField> fields) {
+    StringBuilder sql = new StringBuilder();
+    sql.append("SELECT * FROM ");
+    sql.append(TABLE_NAME);
+    if (!fields.isEmpty()) {
+      sql.append(
+          String.format(
+              " WHERE %s",
+              fields.stream()
+                  .map(ClientRepositoryImpl::demographicColumn)
+                  .map(column -> String.format("%s = ?", column))
+                  .collect(Collectors.joining(" AND "))));
+    }
+    return sql.toString();
+  }
+
+  static String deleteAllSQL() {
+    return String.format("DELETE FROM %s", TABLE_NAME);
   }
 }

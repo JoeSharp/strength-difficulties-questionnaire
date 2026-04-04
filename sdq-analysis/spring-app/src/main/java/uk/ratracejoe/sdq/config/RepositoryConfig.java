@@ -9,8 +9,8 @@ import uk.ratracejoe.sdq.repository.*;
 public class RepositoryConfig {
 
   @Bean
-  public SdqClientRepository clientFileRepository(JdbcClient jdbcClient) {
-    return new SdqClientRepositoryImpl(jdbcClient);
+  public ClientRepository clientFileRepository(JdbcClient jdbcClient) {
+    return new ClientRepositoryImpl(jdbcClient);
   }
 
   @Bean
@@ -26,5 +26,10 @@ public class RepositoryConfig {
   @Bean
   public SdqRepository sdqRepository(JdbcClient jdbcClient) {
     return new SdqRepositoryImpl(jdbcClient);
+  }
+
+  @Bean
+  public ReportingPeriodRepository reportingPeriodRepository(JdbcClient jdbcClient) {
+    return new ReportingPeriodRepositoryImpl(jdbcClient);
   }
 }

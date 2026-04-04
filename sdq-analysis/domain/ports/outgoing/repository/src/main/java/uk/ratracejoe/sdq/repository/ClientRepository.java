@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.service;
+package uk.ratracejoe.sdq.repository;
 
 import java.util.List;
 import java.util.Map;
@@ -9,14 +9,16 @@ import uk.ratracejoe.sdq.model.DemographicField;
 import uk.ratracejoe.sdq.model.DemographicReport;
 import uk.ratracejoe.sdq.model.SdqClient;
 
-public interface SdqClientService {
-  SdqClient create(SdqClient newClient);
-
-  DemographicReport getDemographicReport(DemographicField demographic);
-
+public interface ClientRepository {
   List<SdqClient> getAll() throws SdqException;
 
   List<SdqClient> getFiltered(Map<DemographicField, String> filters) throws SdqException;
 
-  Optional<SdqClient> getByUUID(UUID uuid) throws SdqException;
+  Optional<SdqClient> getByUUID(UUID fileId) throws SdqException;
+
+  SdqClient createClient(SdqClient sdqClient) throws SdqException;
+
+  DemographicReport getDemographicReport(DemographicField demographic);
+
+  int deleteAll();
 }

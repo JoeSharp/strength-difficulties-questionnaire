@@ -9,7 +9,7 @@ import uk.ratracejoe.sdq.service.*;
 @Configuration
 public class RestConfig {
   @Bean
-  public ClientController clientController(SdqClientService service) {
+  public ClientController clientController(ClientService service) {
     return new ClientController(service);
   }
 
