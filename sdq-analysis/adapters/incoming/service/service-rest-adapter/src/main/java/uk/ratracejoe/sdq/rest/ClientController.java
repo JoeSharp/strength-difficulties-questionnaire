@@ -23,7 +23,8 @@ public class ClientController {
 
   @PostMapping
   public SdqClient create(@RequestBody SdqClient newClient) {
-    return clientService.create(newClient);
+    SdqClient created = clientService.create(newClient);
+    return created;
   }
 
   @PostMapping("/search")

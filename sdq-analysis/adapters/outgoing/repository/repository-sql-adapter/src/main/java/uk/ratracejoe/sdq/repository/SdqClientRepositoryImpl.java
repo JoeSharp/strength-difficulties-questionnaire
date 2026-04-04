@@ -29,31 +29,37 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
         .param(paramIndex.getAndIncrement(), dateOfBirth)
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.gender()).map(Gender::name).orElse(null))
+            Optional.ofNullable(client.gender()).orElseGet(Gender::defaultValue).name())
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.council()).map(Council::name).orElse(null))
+            Optional.ofNullable(client.council()).orElseGet(Council::defaultValue))
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.ethnicity()).map(Ethnicity::name).orElse(null))
+            Optional.ofNullable(client.ethnicity()).orElseGet(Ethnicity::defaultValue).name())
         .param(
             paramIndex.getAndIncrement(),
             Optional.ofNullable(client.englishAdditionalLanguage())
-                .map(EnglishAsAdditionalLanguage::name)
-                .orElse(null))
+                .orElseGet(EnglishAsAdditionalLanguage::defaultValue)
+                .name())
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.disabilityStatus()).map(DisabilityStatus::name).orElse(null))
+            Optional.ofNullable(client.disabilityStatus())
+                .orElseGet(DisabilityStatus::defaultValue)
+                .name())
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.disabilityType()).map(DisabilityType::name).orElse(null))
+            Optional.ofNullable(client.disabilityType())
+                .orElseGet(DisabilityType::defaultValue)
+                .name())
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.careExperience()).map(CareExperience::name).orElse(null))
+            Optional.ofNullable(client.careExperience())
+                .orElseGet(CareExperience::defaultValue)
+                .name())
         .param(paramIndex.getAndIncrement(), client.aces())
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.fundingSource()).map(FundingSource::name).orElse(null))
+            Optional.ofNullable(client.fundingSource()).orElseGet(FundingSource::defaultValue).name())
         .update();
     return getByUUID(clientId).orElseThrow(() -> new SdqException("Failed to create client"));
   }
