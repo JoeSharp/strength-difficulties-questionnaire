@@ -14,11 +14,6 @@ public class RepositoryConfig {
   }
 
   @Bean
-  public DemographicOptionRepository demographicOptionRepository(JdbcClient jdbcClient) {
-    return new DemographicOptionRepositoryImpl(jdbcClient);
-  }
-
-  @Bean
   public GboRepository gboRepository(JdbcClient jdbcClient) {
     return new GboRepositoryImpl(jdbcClient);
   }

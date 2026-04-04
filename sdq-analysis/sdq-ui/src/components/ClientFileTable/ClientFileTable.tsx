@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function UploadFileTable() {
   const {
-    clientFileApi: { files },
+    clientFileApi: { clients: files },
   } = useApiContext();
 
   const navigate = useNavigate();

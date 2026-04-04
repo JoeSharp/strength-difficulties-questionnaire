@@ -19,8 +19,8 @@ public class ServiceConfig {
   }
 
   @Bean
-  public RefDataService refDataService(DemographicOptionRepository demographicOptionRepository) {
-    return new RefDataServiceImpl(demographicOptionRepository);
+  public RefDataService refDataService() {
+    return new RefDataServiceImpl();
   }
 
   @Bean
@@ -30,18 +30,12 @@ public class ServiceConfig {
 
   @Bean
   public UploadService uploadService(
-      DemographicOptionRepository demographicOptionRepository,
       InterventionTypeRepository interventionTypeRepository,
       SdqClientRepository fileRepository,
       SdqService sdqService,
       GboService gboService,
       SdqFileParser fileParser) {
     return new UploadServiceImpl(
-        demographicOptionRepository,
-        interventionTypeRepository,
-        fileRepository,
-        sdqService,
-        gboService,
-        fileParser);
+        interventionTypeRepository, fileRepository, sdqService, gboService, fileParser);
   }
 }

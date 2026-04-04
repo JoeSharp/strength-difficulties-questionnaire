@@ -19,9 +19,9 @@ import uk.ratracejoe.sdq.model.*;
 @RequiredArgsConstructor
 public class SdqApi {
   private static final String REST_URL_UPLOAD = "/api/upload";
-  private static final String REST_URL_CLIENT_FILE = "/api/client";
-  private static final String REST_URL_CLIENT_SDQ = "/api/client/sdq/";
-  private static final String REST_URL_CLIENT_GBO = "/api/client/gbo/";
+  private static final String REST_URL_CLIENT = "/api/client";
+  private static final String REST_URL_SDQ = "/api/sdq/";
+  private static final String REST_URL_GBO = "/api/gbo/";
   private final RestClient restClient;
 
   public SdqApi(int port) {
@@ -42,7 +42,7 @@ public class SdqApi {
   public ResponseEntity<SdqClient> createClient(SdqClient newClient) {
     return restClient
         .post()
-        .uri(REST_URL_CLIENT_FILE)
+        .uri(REST_URL_CLIENT)
         .body(newClient)
         .retrieve()
         .toEntity(SdqClient.class);
@@ -51,7 +51,7 @@ public class SdqApi {
   public ResponseEntity<List<SdqClient>> searchClients(Map<DemographicField, String> filters) {
     return restClient
         .post()
-        .uri(REST_URL_CLIENT_FILE + "/search")
+        .uri(REST_URL_CLIENT + "/search")
         .body(filters)
         .retrieve()
         .toEntity(new ParameterizedTypeReference<>() {});
@@ -60,7 +60,7 @@ public class SdqApi {
   public ResponseEntity<Map<Assessor, List<SdqScore>>> getSdqScores(UUID clientId) {
     return restClient
         .get()
-        .uri(REST_URL_CLIENT_SDQ + clientId)
+        .uri(REST_URL_SDQ + clientId)
         .retrieve()
         .toEntity(new ParameterizedTypeReference<>() {});
   }
@@ -68,7 +68,7 @@ public class SdqApi {
   public ResponseEntity<Map<Assessor, List<GboScore>>> getGboScores(UUID clientId) {
     return restClient
         .get()
-        .uri(REST_URL_CLIENT_GBO + clientId)
+        .uri(REST_URL_GBO + clientId)
         .retrieve()
         .toEntity(new ParameterizedTypeReference<>() {});
   }

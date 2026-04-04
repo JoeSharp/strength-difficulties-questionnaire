@@ -47,8 +47,8 @@ class BulkIngestTest {
     var fileResponse =
         sdqApi.searchClients(
             Map.of(
-                DemographicField.Gender, "Male",
-                DemographicField.Council, "Cheltenham"));
+                DemographicField.Gender, Gender.MALE.name(),
+                DemographicField.Council, Council.CHELTENHAM.name()));
     assertThat(fileResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(fileResponse.getBody()).hasSizeGreaterThanOrEqualTo(1);
     assertThat(fileResponse.getBody()).extracting(SdqClient::codeName).contains("Test File 4.xlsx");

@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.SdqClient;
+import uk.ratracejoe.sdq.model.*;
 
 public class XslxDemographicExtractor {
   public static final String DEMOGRAPHIC_SHEET_NAME = "Demographic Information";
@@ -31,19 +33,49 @@ public class XslxDemographicExtractor {
 
     AtomicInteger cellNum = new AtomicInteger(0);
     Instant dateOfBirth = readDateCell(row, cellNum.getAndIncrement());
-    String gender = readStringCell(row, cellNum.getAndIncrement());
-    String council = readStringCell(row, cellNum.getAndIncrement());
-    String ethnicity = readStringCell(row, cellNum.getAndIncrement());
-    String eal = readStringCell(row, cellNum.getAndIncrement());
-    String disabilityStatus = readStringCell(row, cellNum.getAndIncrement());
-    String disabilityType = readStringCell(row, cellNum.getAndIncrement());
-    String careExperience = readStringCell(row, cellNum.getAndIncrement());
-    List<String> interventionTypes =
+    Gender gender =
+        readStringCell(row, cellNum.getAndIncrement(), Gender::fromDisplay, Gender::defaultValue);
+    Council council =
+        readStringCell(row, cellNum.getAndIncrement(), Council::fromDisplay, Council::defaultValue);
+    Ethnicity ethnicity =
+        readStringCell(
+            row, cellNum.getAndIncrement(), Ethnicity::fromDisplay, Ethnicity::defaultValue);
+    EnglishAsAdditionalLanguage eal =
+        readStringCell(
+            row,
+            cellNum.getAndIncrement(),
+            EnglishAsAdditionalLanguage::fromDisplay,
+            EnglishAsAdditionalLanguage::defaultValue);
+    DisabilityStatus disabilityStatus =
+        readStringCell(
+            row,
+            cellNum.getAndIncrement(),
+            DisabilityStatus::fromDisplay,
+            DisabilityStatus::defaultValue);
+    DisabilityType disabilityType =
+        readStringCell(
+            row,
+            cellNum.getAndIncrement(),
+            DisabilityType::fromDisplay,
+            DisabilityType::defaultValue);
+    CareExperience careExperience =
+        readStringCell(
+            row,
+            cellNum.getAndIncrement(),
+            CareExperience::fromDisplay,
+            CareExperience::defaultValue);
+    List<InterventionType> interventionTypes =
         IntStream.range(0, NUMBER_INTERVENTION_TYPES)
             .mapToObj(i -> readStringCell(row, cellNum.getAndIncrement()))
+            .map(InterventionType::fromDisplay)
             .toList();
     Integer aces = readIntCell(row, cellNum.getAndIncrement());
-    String fundingSource = readStringCell(row, cellNum.getAndIncrement());
+    FundingSource fundingSource =
+        readStringCell(
+            row,
+            cellNum.getAndIncrement(),
+            FundingSource::fromDisplay,
+            FundingSource::defaultValue);
 
     return new SdqClient(
         UUID.randomUUID(),
@@ -70,6 +102,14 @@ public class XslxDemographicExtractor {
 
   private String readStringCell(Row row, int cellNum) {
     return Optional.ofNullable(row.getCell(cellNum)).map(Cell::getStringCellValue).orElse("");
+  }
+
+  private <T> T readStringCell(
+      Row row, int cellNum, Function<String, T> converter, Supplier<T> getDefault) {
+    return Optional.ofNullable(row.getCell(cellNum))
+        .map(Cell::getStringCellValue)
+        .map(converter)
+        .orElseGet(getDefault);
   }
 
   private Integer readIntCell(Row row, int cellNum) {

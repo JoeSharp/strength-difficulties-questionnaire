@@ -18,8 +18,8 @@ import {
 export interface ClientFileApi {
   gbo: GboScoreByAssessor;
   scores: SdqScoreByAssessor;
-  files: ClientFile[];
-  file: ClientFile;
+  clients: ClientFile[];
+  client: ClientFile;
   demographicReport: DemographicReport;
   refresh: () => void;
   getDemographicReport: (demographic: DemographicField) => void;
@@ -31,8 +31,8 @@ export interface ClientFileApi {
 export const EMPTY_FILE_API: ClientFileApi = {
   gbo: EMPTY_GBO,
   scores: EMPTY_SDQ,
-  files: [],
-  file: EMPTY_CLIENT_FILE,
+  clients: [],
+  client: EMPTY_CLIENT_FILE,
   demographicReport: EMPTY_DEMOGRAPHIC_REPORT,
   refresh: () => console.error("default implementation"),
   getDemographicReport: () => console.error("default implementation"),
@@ -42,6 +42,8 @@ export const EMPTY_FILE_API: ClientFileApi = {
 };
 
 const BASE_CLIENT_URL = "/api/client";
+const BASE_SDQ_URL = "/api/sdq";
+const BASE_GBO_URL = "/api/gbo";
 
 function parseFile(file: ClientFile): ClientFile {
   return {
@@ -141,9 +143,9 @@ function useClientFileApi(): ClientFileApi {
       });
   }, []);
 
-  const getScoresByUuid = React.useCallback((fileId: string) => {
+  const getScoresByUuid = React.useCallback((clientId: string) => {
     const jobId = beginJob("Fetching SDQ");
-    fetch(`${BASE_CLIENT_URL}/sdq/${fileId}`)
+    fetch(`${BASE_SDQ_URL}/${clientId}`)
       .then((response) => {
         if (!response.ok) {
           addMessage(
@@ -164,9 +166,9 @@ function useClientFileApi(): ClientFileApi {
       });
   }, []);
 
-  const getGboByUuid = React.useCallback((fileId: string) => {
+  const getGboByUuid = React.useCallback((clientId: string) => {
     const jobId = beginJob("Fetching gbo");
-    fetch(`${BASE_CLIENT_URL}/gbo/${fileId}`)
+    fetch(`${BASE_GBO_URL}/${clientId}`)
       .then((response) => {
         if (!response.ok) {
           addMessage(
@@ -192,8 +194,8 @@ function useClientFileApi(): ClientFileApi {
   }, [fetchFiles]);
 
   return {
-    files,
-    file,
+    clients: files,
+    client: file,
     scores,
     gbo,
     demographicReport,

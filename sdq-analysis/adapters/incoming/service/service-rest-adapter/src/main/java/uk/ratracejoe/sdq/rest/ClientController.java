@@ -8,17 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
-import uk.ratracejoe.sdq.service.GboService;
 import uk.ratracejoe.sdq.service.SdqClientService;
-import uk.ratracejoe.sdq.service.SdqService;
 
 @RestController
 @RequestMapping("/api/client")
 @RequiredArgsConstructor
-public class SdqClientController {
+public class ClientController {
   private final SdqClientService clientService;
-  private final SdqService sdqService;
-  private final GboService gboService;
 
   @GetMapping
   public List<SdqClient> getAll() throws SdqException {
@@ -48,17 +44,5 @@ public class SdqClientController {
   public DemographicReport getDemographicReport(
       @PathVariable("demographic") DemographicField demographic) {
     return clientService.getDemographicReport(demographic);
-  }
-
-  @GetMapping("/sdq/{clientId}")
-  public Map<Assessor, List<SdqScore>> getSdq(@PathVariable("clientId") UUID fileId)
-      throws SdqException {
-    return sdqService.getScores(fileId);
-  }
-
-  @GetMapping("/gbo/{clientId}")
-  public Map<Assessor, List<GboScore>> getGbo(@PathVariable("clientId") UUID fileUuid)
-      throws SdqException {
-    return gboService.getGbo(fileUuid);
   }
 }

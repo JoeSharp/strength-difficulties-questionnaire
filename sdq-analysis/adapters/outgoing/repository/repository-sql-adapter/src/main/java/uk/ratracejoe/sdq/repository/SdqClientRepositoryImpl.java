@@ -10,10 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.DemographicCount;
-import uk.ratracejoe.sdq.model.DemographicField;
-import uk.ratracejoe.sdq.model.DemographicReport;
-import uk.ratracejoe.sdq.model.SdqClient;
+import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.tables.ClientFileTable;
 
 @RequiredArgsConstructor
@@ -30,15 +27,33 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
         .param(paramIndex.getAndIncrement(), clientId)
         .param(paramIndex.getAndIncrement(), client.codeName())
         .param(paramIndex.getAndIncrement(), dateOfBirth)
-        .param(paramIndex.getAndIncrement(), client.gender())
-        .param(paramIndex.getAndIncrement(), client.council())
-        .param(paramIndex.getAndIncrement(), client.ethnicity())
-        .param(paramIndex.getAndIncrement(), client.englishAdditionalLanguage())
-        .param(paramIndex.getAndIncrement(), client.disabilityStatus())
-        .param(paramIndex.getAndIncrement(), client.disabilityType())
-        .param(paramIndex.getAndIncrement(), client.careExperience())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.gender()).map(Gender::name).orElse(null))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.council()).map(Council::name).orElse(null))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.ethnicity()).map(Ethnicity::name).orElse(null))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.englishAdditionalLanguage())
+                .map(EnglishAsAdditionalLanguage::name)
+                .orElse(null))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.disabilityStatus()).map(DisabilityStatus::name).orElse(null))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.disabilityType()).map(DisabilityType::name).orElse(null))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.careExperience()).map(CareExperience::name).orElse(null))
         .param(paramIndex.getAndIncrement(), client.aces())
-        .param(paramIndex.getAndIncrement(), client.fundingSource())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.fundingSource()).map(FundingSource::name).orElse(null))
         .update();
     return getByUUID(clientId).orElseThrow(() -> new SdqException("Failed to create client"));
   }
@@ -106,15 +121,39 @@ public class SdqClientRepositoryImpl implements SdqClientRepository {
     UUID uuid = rs.getObject(ClientFileTable.FIELD_CLIENT_ID, UUID.class);
     String codeName = rs.getString(ClientFileTable.FIELD_CODE_NAME);
     Date dob = rs.getDate(ClientFileTable.FIELD_DOB);
-    String gender = rs.getString(ClientFileTable.FIELD_GENDER);
-    String council = rs.getString(ClientFileTable.FIELD_COUNCIL);
-    String ethnicity = rs.getString(ClientFileTable.FIELD_ETHNICITY);
-    String eal = rs.getString(ClientFileTable.FIELD_EAL);
-    String disabilityStatus = rs.getString(ClientFileTable.FIELD_DISABILITY_STATUS);
-    String disabilityType = rs.getString(ClientFileTable.FIELD_DISABILITY_TYPE);
-    String careExperience = rs.getString(ClientFileTable.FIELD_CARE_EXPERIENCE);
+    Gender gender =
+        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_GENDER))
+            .map(Gender::valueOf)
+            .orElseGet(Gender::defaultValue);
+    Council council =
+        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_COUNCIL))
+            .map(Council::valueOf)
+            .orElseGet(Council::defaultValue);
+    Ethnicity ethnicity =
+        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_ETHNICITY))
+            .map(Ethnicity::valueOf)
+            .orElseGet(Ethnicity::defaultValue);
+    EnglishAsAdditionalLanguage eal =
+        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_EAL))
+            .map(EnglishAsAdditionalLanguage::valueOf)
+            .orElseGet(EnglishAsAdditionalLanguage::defaultValue);
+    DisabilityStatus disabilityStatus =
+        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_DISABILITY_STATUS))
+            .map(DisabilityStatus::valueOf)
+            .orElseGet(DisabilityStatus::defaultValue);
+    DisabilityType disabilityType =
+        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_DISABILITY_TYPE))
+            .map(DisabilityType::valueOf)
+            .orElseGet(DisabilityType::defaultValue);
+    CareExperience careExperience =
+        Optional.ofNullable(rs.getString(ClientFileTable.FIELD_CARE_EXPERIENCE))
+            .map(CareExperience::valueOf)
+            .orElseGet(CareExperience::defaultValue);
     Integer aces = rs.getInt(ClientFileTable.FIELD_ACES);
-    String fundingSource = String.valueOf(rs.getString(ClientFileTable.FIELD_FUNDING_SOURCE));
+    FundingSource fundingSource =
+        Optional.ofNullable(String.valueOf(rs.getString(ClientFileTable.FIELD_FUNDING_SOURCE)))
+            .map(FundingSource::valueOf)
+            .orElseGet(FundingSource::defaultValue);
     return new SdqClient(
         uuid,
         codeName,

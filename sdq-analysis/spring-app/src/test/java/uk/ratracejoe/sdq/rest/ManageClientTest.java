@@ -13,7 +13,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApi;
 import uk.ratracejoe.sdq.SdqDatabaseInitializer;
-import uk.ratracejoe.sdq.model.SdqClient;
+import uk.ratracejoe.sdq.model.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -35,10 +35,10 @@ class ManageClientTest {
         SdqClient.builder()
             .codeName("Dave Lister")
             .dateOfBirth(dob)
-            .council("Elrond")
-            .careExperience("Yep")
-            .disabilityType("Disabled")
-            .disabilityStatus("Yes")
+            .council(Council.CHELTENHAM)
+            .careExperience(CareExperience.YES_ADOPTED)
+            .disabilityType(DisabilityType.LEARNING)
+            .disabilityStatus(DisabilityStatus.DISABILITY)
             .aces(2)
             .build();
     SdqClient created = sdqApi.createClient(toCreate).getBody();

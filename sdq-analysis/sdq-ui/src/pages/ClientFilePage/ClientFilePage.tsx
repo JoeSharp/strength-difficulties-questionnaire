@@ -12,7 +12,7 @@ function ClientFilePage() {
       getFileByUuid,
       getScoresByUuid,
       getGboByUuid,
-      file,
+      client: file,
       scores,
       gbo,
     },
