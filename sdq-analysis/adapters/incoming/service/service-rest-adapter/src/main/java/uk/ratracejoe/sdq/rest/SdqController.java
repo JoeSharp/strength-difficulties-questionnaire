@@ -1,8 +1,9 @@
 package uk.ratracejoe.sdq.rest;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import uk.ratracejoe.sdq.model.SdqSubmission;
 import uk.ratracejoe.sdq.service.SdqService;
 
 @RestController
@@ -10,4 +11,10 @@ import uk.ratracejoe.sdq.service.SdqService;
 @RequiredArgsConstructor
 public class SdqController {
   private final SdqService sdqService;
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  void submitSdq(@RequestBody SdqSubmission sdq) {
+    sdqService.recordResponse(sdq);
+  }
 }

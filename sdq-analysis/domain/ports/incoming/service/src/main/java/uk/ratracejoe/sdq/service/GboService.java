@@ -1,10 +1,8 @@
 package uk.ratracejoe.sdq.service;
 
-import java.util.List;
-import java.util.UUID;
-import uk.ratracejoe.sdq.model.GboScore;
+import uk.ratracejoe.sdq.model.GboSubmission;
 
 public interface GboService {
 
-  void recordResponse(UUID fileId, List<GboScore> gbos);
+  void recordResponse(GboSubmission gbo);
 }

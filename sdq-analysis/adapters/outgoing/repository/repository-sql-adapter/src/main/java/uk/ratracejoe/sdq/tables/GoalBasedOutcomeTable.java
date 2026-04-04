@@ -5,7 +5,6 @@ public interface GoalBasedOutcomeTable {
 
   String FIELD_CLIENT_ID = "client_id";
   String FIELD_ASSESSOR = "assessor";
-  String FIELD_PERIOD_INDEX = "period_index";
   String FIELD_PERIOD_DATE = "period_date";
   String FIELD_SCORE_INDEX = "score_index";
   String FIELD_SCORE = "score";
@@ -18,7 +17,6 @@ public interface GoalBasedOutcomeTable {
             ",",
             FIELD_CLIENT_ID,
             FIELD_ASSESSOR,
-            FIELD_PERIOD_INDEX,
             FIELD_PERIOD_DATE,
             FIELD_SCORE_INDEX,
             FIELD_SCORE);
@@ -34,11 +32,10 @@ public interface GoalBasedOutcomeTable {
 
   static String insertSQL() {
     return String.format(
-        "INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?)",
         TABLE_NAME,
         FIELD_CLIENT_ID,
         FIELD_ASSESSOR,
-        FIELD_PERIOD_INDEX,
         FIELD_PERIOD_DATE,
         FIELD_SCORE_INDEX,
         FIELD_SCORE);

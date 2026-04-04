@@ -11,10 +11,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
-import uk.ratracejoe.sdq.model.Assessor;
-import uk.ratracejoe.sdq.model.SdqScore;
-import uk.ratracejoe.sdq.model.Statement;
-import uk.ratracejoe.sdq.model.StatementResponse;
+import uk.ratracejoe.sdq.model.*;
 
 public class XslxSdqExtractor {
   private static final Logger LOGGER = getLogger(XslxSdqExtractor.class);
@@ -29,7 +26,7 @@ public class XslxSdqExtractor {
           new AssessorRow(Assessor.School, 75),
           new AssessorRow(Assessor.Child, 105));
 
-  public List<SdqScore> parse(UUID fileId, Workbook workbook) {
+  public List<SdqSubmission> parse(UUID fileId, Workbook workbook) {
     return StreamSupport.stream(workbook.spliterator(), false)
         .filter(this::isSDQ)
         .flatMap(sheet -> this.parseSdqPeriod(fileId, sheet))
@@ -64,17 +61,23 @@ public class XslxSdqExtractor {
         .toList();
   }
 
-  private Stream<SdqScore> parseSdqPeriod(UUID fileId, Sheet sheet) {
+  private Stream<SdqSubmission> parseSdqPeriod(UUID clientId, Sheet sheet) {
     Integer periodIndex =
         Integer.parseInt(sheet.getSheetName().replace(SHEET_NAME_PREFIX, "").trim(), 10);
 
     return FIRST_ROWS.stream()
-        .flatMap(
-            a ->
-                getStatementResponses(sheet, a.firstRow()).stream()
-                    .map(
-                        r ->
-                            new SdqScore(
-                                fileId, periodIndex, a.assessor(), r.statement(), r.score())));
+        .map(
+            a -> {
+              List<SdqScore> scores =
+                  getStatementResponses(sheet, a.firstRow()).stream()
+                      .map(r -> new SdqScore(r.statement(), r.score()))
+                      .toList();
+              return SdqSubmission.builder()
+                  .clientId(clientId)
+                  .period(periodIndex)
+                  .assessor(a.assessor())
+                  .scores(scores)
+                  .build();
+            });
   }
 }

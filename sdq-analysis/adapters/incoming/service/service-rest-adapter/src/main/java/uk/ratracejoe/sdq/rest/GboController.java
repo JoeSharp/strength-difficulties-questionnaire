@@ -1,8 +1,9 @@
 package uk.ratracejoe.sdq.rest;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import uk.ratracejoe.sdq.model.GboSubmission;
 import uk.ratracejoe.sdq.service.GboService;
 
 @RestController
@@ -10,4 +11,10 @@ import uk.ratracejoe.sdq.service.GboService;
 @RequiredArgsConstructor
 public class GboController {
   private final GboService gboService;
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  void submitGbo(@RequestBody GboSubmission gbo) {
+    gboService.recordResponse(gbo);
+  }
 }

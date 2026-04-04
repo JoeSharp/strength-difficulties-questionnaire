@@ -1,5 +1,7 @@
 package uk.ratracejoe.sdq;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -19,8 +21,8 @@ import uk.ratracejoe.sdq.model.*;
 public class SdqApi {
   private static final String REST_URL_UPLOAD = "/api/upload";
   private static final String REST_URL_CLIENT = "/api/client";
-  private static final String REST_URL_SDQ = "/api/sdq/";
-  private static final String REST_URL_GBO = "/api/gbo/";
+  private static final String REST_URL_SDQ = "/api/sdq";
+  private static final String REST_URL_GBO = "/api/gbo";
   private final RestClient restClient;
 
   public SdqApi(int port) {
@@ -54,6 +56,18 @@ public class SdqApi {
         .body(filters)
         .retrieve()
         .toEntity(new ParameterizedTypeReference<>() {});
+  }
+
+  public void submitGbo(GboSubmission submission) {
+    var response =
+        restClient.post().uri(REST_URL_GBO).body(submission).retrieve().toBodilessEntity();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+  }
+
+  public void submitSdq(SdqSubmission submission) {
+    var response =
+        restClient.post().uri(REST_URL_SDQ).body(submission).retrieve().toBodilessEntity();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
   }
 
   public static MultiValueMap<String, Object> getFilePost(String paramName, String... filenames) {

@@ -29,15 +29,15 @@ public class UploadServiceImpl implements UploadService {
 
   public ParsedFile ingestFile(String filename, InputStream file) throws SdqException {
     ParsedFile parsedFile = fileParser.parse(filename, file);
-    UUID fileId = parsedFile.sdqClient().clientId();
+    UUID clientId = parsedFile.sdqClient().clientId();
 
     fileRepository.createClient(parsedFile.sdqClient());
     parsedFile
         .sdqClient()
         .interventionTypes()
-        .forEach(it -> interventionTypeRepository.save(fileId, it));
-    sdqService.recordResponse(fileId, parsedFile.sdq());
-    gboService.recordResponse(fileId, parsedFile.gbo());
+        .forEach(it -> interventionTypeRepository.save(clientId, it));
+    parsedFile.sdq().forEach(sdqService::recordResponse);
+    parsedFile.gbo().forEach(gboService::recordResponse);
 
     return parsedFile;
   }

@@ -12,7 +12,7 @@ public class SdqServiceImpl implements SdqService {
     this.sdqRepository = sdqRepository;
   }
 
-  public void recordResponse(UUID fileId, List<SdqScore> sdqs) throws SdqException {
-    sdqs.forEach(sdqRepository::recordResponse);
+  public void recordResponse(SdqSubmission sdq) throws SdqException {
+    sdqRepository.recordResponse(sdq);
   }
 }

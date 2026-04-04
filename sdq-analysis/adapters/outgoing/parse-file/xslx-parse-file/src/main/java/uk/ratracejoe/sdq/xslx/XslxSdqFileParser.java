@@ -12,13 +12,11 @@ import uk.ratracejoe.sdq.model.*;
 public class XslxSdqFileParser implements SdqFileParser {
   private final XslxSdqExtractor xslSdqExtractor;
   private final XslxGboExtractor xslxGboExtractor;
-  private final XslxStructureExtractor structureExtractor;
   private final XslxDemographicExtractor xslDemographicExtractor;
 
   public XslxSdqFileParser() {
     xslSdqExtractor = new XslxSdqExtractor();
     xslxGboExtractor = new XslxGboExtractor();
-    structureExtractor = new XslxStructureExtractor();
     xslDemographicExtractor = new XslxDemographicExtractor();
   }
 
@@ -26,14 +24,12 @@ public class XslxSdqFileParser implements SdqFileParser {
   public ParsedFile parse(String filename, InputStream file) throws SdqException {
     try {
       Workbook workbook = new XSSFWorkbook(file);
-      var demographics = structureExtractor.extractDemographicOptions(workbook);
-      SdqEnumerations structure = new SdqEnumerations(demographics);
 
       SdqClient sdqClient = xslDemographicExtractor.parse(workbook, filename);
-      List<SdqScore> sdq = xslSdqExtractor.parse(sdqClient.clientId(), workbook);
-      List<GboScore> gbo = xslxGboExtractor.parse(sdqClient.clientId(), workbook);
+      List<SdqSubmission> sdq = xslSdqExtractor.parse(sdqClient.clientId(), workbook);
+      List<GboSubmission> gbo = xslxGboExtractor.parse(sdqClient.clientId(), workbook);
 
-      return new ParsedFile(sdqClient, sdq, gbo, structure);
+      return new ParsedFile(sdqClient, sdq, gbo);
     } catch (IOException e) {
       throw new SdqException("Could not parse XLSL Workbook", e);
     }

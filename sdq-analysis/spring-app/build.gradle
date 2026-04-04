@@ -32,6 +32,7 @@ dependencies {
 	implementation project(":adapters:outgoing:parse-file:xslx-parse-file")
 	implementation 'org.postgresql:postgresql'
 	implementation 'com.zaxxer:HikariCP:5.1.0'
+	testImplementation project(":domain:utils")
 }
 
 test {

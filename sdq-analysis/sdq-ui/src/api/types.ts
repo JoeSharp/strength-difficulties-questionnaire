@@ -58,11 +58,15 @@ export const EMPTY_CLIENT_FILE: ClientFile = {
 };
 
 export interface SdqScore {
+  statement: string;
+  score: number;
+}
+
+export interface SdqSubmission {
   clientId: string;
   period: number;
   assessor: Assessor;
-  statement: string;
-  score: number;
+  scores: SdqScore[];
 }
 
 export interface DemographicCount {
@@ -80,12 +84,15 @@ export const EMPTY_DEMOGRAPHIC_REPORT: DemographicReport = {
 };
 
 export interface GboScore {
-  clientId: string;
-  assessor: Assessor;
-  periodIndex: number;
-  periodDate: Date;
   scoreIndex: number;
   score: number;
+}
+
+export interface GboSubmission {
+  clientId: string;
+  assessor: Assessor;
+  periodDate: Date;
+  scores: GboScore[];
 }
 
 export const STATEMENT = [

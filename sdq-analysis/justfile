@@ -85,7 +85,7 @@ docker-db-migrate:
     docker compose -f local/docker-compose.yaml sdq-db-migration
 
 # take down the docker stack, but also remove volumes
-docker-clear-volumes:
+docker-clean:
     docker compose -f local/docker-compose.yaml down --volumes
 
 # Connect a shell to the database.
