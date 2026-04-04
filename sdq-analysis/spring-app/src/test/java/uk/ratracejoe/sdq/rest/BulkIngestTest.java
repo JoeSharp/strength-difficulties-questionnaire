@@ -60,13 +60,5 @@ class BulkIngestTest {
     assertThat(ingestResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(ingestResponse.getBody()).hasSize(1);
     var clientUuid = ingestResponse.getBody().get(0).sdqClient().clientId();
-
-    var sdqResponse = sdqApi.getSdqScores(clientUuid);
-    assertThat(sdqResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(sdqResponse.getBody()).hasSize(4);
-
-    var gboResponse = sdqApi.getGboScores(clientUuid);
-    assertThat(gboResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(gboResponse.getBody()).hasSize(4);
   }
 }

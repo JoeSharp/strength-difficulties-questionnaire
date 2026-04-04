@@ -1,40 +1,37 @@
-import type { Assessor, GboScore } from "@/api/types";
-import Card from "../Card";
-
+import type { GboScore } from "@/api/types";
 interface Props {
-  assessor: Assessor;
   scores: GboScore[];
 }
 
-function GboTable({ assessor, scores }: Props) {
+function GboTable({ scores }: Props) {
   if (scores.length === 0) return <div>No GBO</div>;
 
   return (
     <div>
-      <Card title={`GBO Scores for ${assessor}`}>
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>File</th>
-              <th>Period</th>
-              <th>Goal</th>
-              <th>Score</th>
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Assessor</th>
+            <th>Period</th>
+            <th>Goal</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {scores.map((score) => (
+            <tr key={score.clientId}>
+              <td>{score.clientId}</td>
+              <td>{score.assessor}</td>
+              <td>
+                {score.periodIndex} - {score.periodDate.toISOString()}
+              </td>
+              <th>{score.scoreIndex}</th>
+              <th>{score.score}</th>
             </tr>
-          </thead>
-          <tbody>
-            {scores.map((score) => (
-              <tr key={score.fileId}>
-                <td>{score.fileId}</td>
-                <td>
-                  {score.periodIndex} - {score.periodDate.toISOString()}
-                </td>
-                <th>{score.scoreIndex}</th>
-                <th>{score.score}</th>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

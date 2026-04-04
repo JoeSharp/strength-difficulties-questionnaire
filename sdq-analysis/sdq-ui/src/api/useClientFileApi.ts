@@ -3,47 +3,31 @@ import useInProgressContext from "../context/InProgressContext";
 import useAppNotificationContext from "../context/AppNotificationContext";
 import {
   EMPTY_CLIENT_FILE,
-  EMPTY_GBQ as EMPTY_GBO,
-  EMPTY_SDQ,
   EMPTY_DEMOGRAPHIC_REPORT,
   type DemographicReport,
-  type Assessor,
   type ClientFile,
-  type GboScore,
-  type GboScoreByAssessor,
-  type SdqScoreByAssessor,
   type DemographicField,
 } from "./types";
 
 export interface ClientFileApi {
-  gbo: GboScoreByAssessor;
-  scores: SdqScoreByAssessor;
   clients: ClientFile[];
   client: ClientFile;
   demographicReport: DemographicReport;
   refresh: () => void;
   getDemographicReport: (demographic: DemographicField) => void;
-  getFileByUuid: (uuid: string) => void;
-  getScoresByUuid: (uuid: string) => void;
-  getGboByUuid: (uuid: string) => void;
+  getClientById: (uuid: string) => void;
 }
 
 export const EMPTY_FILE_API: ClientFileApi = {
-  gbo: EMPTY_GBO,
-  scores: EMPTY_SDQ,
   clients: [],
   client: EMPTY_CLIENT_FILE,
   demographicReport: EMPTY_DEMOGRAPHIC_REPORT,
   refresh: () => console.error("default implementation"),
   getDemographicReport: () => console.error("default implementation"),
-  getFileByUuid: () => console.error("default implementation"),
-  getScoresByUuid: () => console.error("default implementation"),
-  getGboByUuid: () => console.error("default implementation"),
+  getClientById: () => console.error("default implementation"),
 };
 
 const BASE_CLIENT_URL = "/api/client";
-const BASE_SDQ_URL = "/api/sdq";
-const BASE_GBO_URL = "/api/gbo";
 
 function parseFile(file: ClientFile): ClientFile {
   return {
@@ -51,28 +35,14 @@ function parseFile(file: ClientFile): ClientFile {
     dateOfBirth: new Date(file.dateOfBirth),
   };
 }
-function parseGbo(gbo: GboScore): GboScore {
-  return {
-    ...gbo,
-    periodDate: new Date(gbo.periodDate),
-  };
-}
-
-function parseGboSummary(gboSummary: GboScoreByAssessor): GboScoreByAssessor {
-  return Object.entries(gboSummary)
-    .map(([assessor, gbos]) => [assessor, gbos.map(parseGbo)])
-    .reduce((acc, [k, v]) => ({ ...acc, [k as Assessor]: v }), EMPTY_GBO);
-}
 
 function useClientFileApi(): ClientFileApi {
-  const [gbo, setGbo] = React.useState<GboScoreByAssessor>(EMPTY_GBO);
-  const [scores, setScores] = React.useState<SdqScoreByAssessor>(EMPTY_SDQ);
-  const [files, setFiles] = React.useState<ClientFile[]>([]);
+  const [clients, setFiles] = React.useState<ClientFile[]>([]);
   const [demographicReport, setDemographicReport] =
     React.useState<DemographicReport>(EMPTY_DEMOGRAPHIC_REPORT);
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
-  const [file, setFile] = React.useState<ClientFile>(EMPTY_CLIENT_FILE);
+  const [client, setFile] = React.useState<ClientFile>(EMPTY_CLIENT_FILE);
 
   const getDemographicReport = React.useCallback((tableName: string) => {
     const jobId = beginJob("Fetching demographc report");
@@ -143,67 +113,17 @@ function useClientFileApi(): ClientFileApi {
       });
   }, []);
 
-  const getScoresByUuid = React.useCallback((clientId: string) => {
-    const jobId = beginJob("Fetching SDQ");
-    fetch(`${BASE_SDQ_URL}/${clientId}`)
-      .then((response) => {
-        if (!response.ok) {
-          addMessage(
-            "danger",
-            response.status,
-            "Failed to fetch SDQ: " + response.statusText,
-          );
-          throw new Error("Network response was not ok");
-        }
-
-        return response.json();
-      })
-      .then((r) => {
-        setScores(r);
-      })
-      .finally(() => {
-        endJob(jobId);
-      });
-  }, []);
-
-  const getGboByUuid = React.useCallback((clientId: string) => {
-    const jobId = beginJob("Fetching gbo");
-    fetch(`${BASE_GBO_URL}/${clientId}`)
-      .then((response) => {
-        if (!response.ok) {
-          addMessage(
-            "danger",
-            response.status,
-            "Failed to fetch gbo: " + response.statusText,
-          );
-          throw new Error("Network response was not ok");
-        }
-
-        return response.json();
-      })
-      .then((r) => {
-        setGbo(parseGboSummary(r));
-      })
-      .finally(() => {
-        endJob(jobId);
-      });
-  }, []);
-
   React.useEffect(() => {
     fetchFiles();
   }, [fetchFiles]);
 
   return {
-    clients: files,
-    client: file,
-    scores,
-    gbo,
+    clients,
+    client,
     demographicReport,
     refresh: fetchFiles,
     getDemographicReport,
-    getFileByUuid,
-    getScoresByUuid,
-    getGboByUuid,
+    getClientById: getFileByUuid,
   };
 }
 

@@ -1,38 +1,36 @@
-import { type Assessor, type SdqScore } from "@/api/types";
-import Card from "../Card";
+import { type SdqScore } from "@/api/types";
 
 interface Props {
-  assessor: Assessor;
   scores: SdqScore[];
 }
 
-function SdqScoresTable({ assessor, scores }: Props) {
+function SdqScoresTable({ scores }: Props) {
   return (
     <div>
-      <Card title={`SDQ Scores for ${assessor}`}>
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>File</th>
-              <th>Period</th>
-              <th>Assessor</th>
-              <th>Statement</th>
-              <th>Score</th>
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Assessor</th>
+            <th>Period</th>
+            <th>Assessor</th>
+            <th>Statement</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {scores.map((score) => (
+            <tr key={score.clientId}>
+              <td>{score.clientId}</td>
+              <td>{score.assessor}</td>
+              <td>{score.period}</td>
+              <td>{score.assessor}</td>
+              <td>{score.statement}</td>
+              <td>{score.score}</td>
             </tr>
-          </thead>
-          <tbody>
-            {scores.map((score) => (
-              <tr key={score.fileId}>
-                <td>{score.fileId}</td>
-                <td>{score.period}</td>
-                <td>{score.assessor}</td>
-                <td>{score.statement}</td>
-                <td>{score.score}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

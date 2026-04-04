@@ -58,7 +58,7 @@ export const EMPTY_CLIENT_FILE: ClientFile = {
 };
 
 export interface SdqScore {
-  fileId: string;
+  clientId: string;
   period: number;
   assessor: Assessor;
   statement: string;
@@ -80,28 +80,13 @@ export const EMPTY_DEMOGRAPHIC_REPORT: DemographicReport = {
 };
 
 export interface GboScore {
-  fileId: string;
+  clientId: string;
+  assessor: Assessor;
   periodIndex: number;
   periodDate: Date;
   scoreIndex: number;
   score: number;
 }
-
-export type SdqScoreByAssessor = Record<Assessor, SdqScore[]>;
-export type GboScoreByAssessor = Record<Assessor, GboScore[]>;
-
-export const EMPTY_SDQ: SdqScoreByAssessor = {
-  Parent1: [],
-  Parent2: [],
-  Child: [],
-  School: [],
-};
-export const EMPTY_GBQ: GboScoreByAssessor = {
-  Parent1: [],
-  Parent2: [],
-  Child: [],
-  School: [],
-};
 
 export const STATEMENT = [
   "CONSIDERATE",

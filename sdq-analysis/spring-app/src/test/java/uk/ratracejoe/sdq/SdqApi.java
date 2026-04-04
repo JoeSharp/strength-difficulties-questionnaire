@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -53,22 +52,6 @@ public class SdqApi {
         .post()
         .uri(REST_URL_CLIENT + "/search")
         .body(filters)
-        .retrieve()
-        .toEntity(new ParameterizedTypeReference<>() {});
-  }
-
-  public ResponseEntity<Map<Assessor, List<SdqScore>>> getSdqScores(UUID clientId) {
-    return restClient
-        .get()
-        .uri(REST_URL_SDQ + clientId)
-        .retrieve()
-        .toEntity(new ParameterizedTypeReference<>() {});
-  }
-
-  public ResponseEntity<Map<Assessor, List<GboScore>>> getGboScores(UUID clientId) {
-    return restClient
-        .get()
-        .uri(REST_URL_GBO + clientId)
         .retrieve()
         .toEntity(new ParameterizedTypeReference<>() {});
   }

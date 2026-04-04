@@ -1,30 +1,18 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import useApiContext from "@/context/ApiContext";
-import SdqScoresTable from "@/components/SdqScoresTable";
-import GboTable from "@/components/GboTable";
-import type { Assessor } from "@/api/types";
 
 function ClientFilePage() {
   const { id } = useParams();
   const {
-    clientFileApi: {
-      getFileByUuid,
-      getScoresByUuid,
-      getGboByUuid,
-      client: file,
-      scores,
-      gbo,
-    },
+    clientFileApi: { getClientById, client: file },
   } = useApiContext();
 
   React.useEffect(() => {
     if (!!id) {
-      getFileByUuid(id);
-      getScoresByUuid(id);
-      getGboByUuid(id);
+      getClientById(id);
     }
-  }, [id, getFileByUuid, getScoresByUuid]);
+  }, [id, getClientById]);
 
   return (
     <div>
@@ -51,22 +39,6 @@ function ClientFilePage() {
         <dt>Funding Source</dt>
         <dd>{file.fundingSource}</dd>
       </dl>
-      <h3>SDQ Scores</h3>
-      {Object.entries(scores).map(([assessor, scoreValues]) => (
-        <SdqScoresTable
-          key={assessor}
-          assessor={assessor as Assessor}
-          scores={scoreValues}
-        />
-      ))}
-      <h3>GBO Scores</h3>
-      {Object.entries(gbo).map(([assessor, gboValues]) => (
-        <GboTable
-          key={assessor}
-          assessor={assessor as Assessor}
-          scores={gboValues}
-        />
-      ))}
     </div>
   );
 }
