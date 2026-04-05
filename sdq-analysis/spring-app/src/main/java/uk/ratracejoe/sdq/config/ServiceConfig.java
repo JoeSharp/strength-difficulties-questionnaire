@@ -29,8 +29,9 @@ public class ServiceConfig {
   }
 
   @Bean
-  public SdqService sdqService(SdqRepository sdqRepository) {
-    return new SdqServiceImpl(sdqRepository);
+  public SdqService sdqService(
+      SdqRepository sdqRepository, ReportingPeriodRepository reportingPeriodRepository) {
+    return new SdqServiceImpl(sdqRepository, reportingPeriodRepository);
   }
 
   @Bean

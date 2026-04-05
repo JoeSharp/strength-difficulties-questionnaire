@@ -9,5 +9,5 @@ public interface ReportingPeriodRepository {
 
   List<ReportingPeriod> getForClient(UUID clientId);
 
-  void deleteAll();
+  int deleteAll();
 }

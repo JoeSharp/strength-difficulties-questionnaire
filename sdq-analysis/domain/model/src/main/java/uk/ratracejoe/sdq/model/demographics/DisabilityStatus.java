@@ -1,22 +1,22 @@
-package uk.ratracejoe.sdq.model;
+package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum EnglishAsAdditionalLanguage {
-  YES("Yes"),
-  NO("No"),
+public enum DisabilityStatus {
+  DISABILITY("Disability"),
+  NO_DISABILITY("No Disability"),
   PREFER_NOT_TO_SAY("Prefer Not To Say");
 
   final String display;
 
-  public static EnglishAsAdditionalLanguage defaultValue() {
+  public static DisabilityStatus defaultValue() {
     return PREFER_NOT_TO_SAY;
   }
 
-  public static EnglishAsAdditionalLanguage fromDisplay(String value) {
-    for (EnglishAsAdditionalLanguage g : values()) {
+  public static DisabilityStatus fromDisplay(String value) {
+    for (DisabilityStatus g : values()) {
       if (Objects.equals(g.display, value)) {
         return g;
       }

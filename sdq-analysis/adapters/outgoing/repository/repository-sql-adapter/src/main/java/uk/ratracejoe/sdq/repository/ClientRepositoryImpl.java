@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.demographics.*;
 
 @RequiredArgsConstructor
 public class ClientRepositoryImpl implements ClientRepository {

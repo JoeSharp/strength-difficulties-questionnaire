@@ -1,9 +1,14 @@
 package uk.ratracejoe.sdq.rest;
 
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import uk.ratracejoe.sdq.model.SdqSubmission;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.ReportingPeriod;
+import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
+import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 import uk.ratracejoe.sdq.service.SdqService;
 
 @RestController
@@ -16,5 +21,22 @@ public class SdqController {
   @ResponseStatus(HttpStatus.CREATED)
   void submitSdq(@RequestBody SdqSubmission sdq) {
     sdqService.recordResponse(sdq);
+  }
+
+  @GetMapping("/{clientId}/reportingPeriods")
+  public List<ReportingPeriod> getReportingPeriods(@PathVariable("clientId") UUID clientId) {
+    return sdqService.getReportingPeriods(clientId);
+  }
+
+  @GetMapping("/{periodId}/{assessor}")
+  public SdqSubmission getSubmission(
+      @PathVariable("periodId") UUID periodId, @PathVariable("assessor") Assessor assessor) {
+    return sdqService.getSubmission(periodId, assessor);
+  }
+
+  @GetMapping("/{periodId}/{assessor}/summary")
+  public SdqSubmissionSummary getSubmissionSummary(
+      @PathVariable("periodId") UUID periodId, @PathVariable("assessor") Assessor assessor) {
+    return sdqService.getSubmissionSummary(periodId, assessor);
   }
 }

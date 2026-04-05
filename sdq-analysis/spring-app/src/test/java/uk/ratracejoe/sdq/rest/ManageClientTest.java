@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,9 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApi;
 import uk.ratracejoe.sdq.SdqDatabaseInitializer;
 import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.demographics.*;
+import uk.ratracejoe.sdq.model.gbo.GboScore;
+import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.utils.PeriodSupplier;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -48,19 +52,17 @@ class ManageClientTest {
     SdqClient created = sdqApi.createClient(toCreate).getBody();
 
     Supplier<Instant> tenDayPeriod = PeriodSupplier.periodicDays(10);
-    Stream.of(10, 15, 25, 50).map(score -> new GboScore(1, score)).forEach(score -> {});
-
-    /*
-           .map(score ->
-             GboSubmission.builder()
-                     .clientId(created.clientId())
-                     .assessor(Assessor.School)
-                     .period(tenDayPeriod.get())
-                     .scores(List.of(score))
-                     .build()
-           )
-                   .forEach(sdqApi::submitGbo);
-    */
+    Stream.of(10, 15, 25, 50)
+        .map(score -> GboScore.builder().scoreIndex(1).score(score).build())
+        .map(
+            gbo ->
+                GboSubmission.builder()
+                    .clientId(created.clientId())
+                    .assessor(Assessor.School)
+                    .period(tenDayPeriod.get())
+                    .scores(List.of(gbo))
+                    .build())
+        .forEach(sdqApi::submitGbo);
     assertThat(created.codeName()).isEqualTo(toCreate.codeName());
   }
 }

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -16,6 +17,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.demographics.DemographicField;
+import uk.ratracejoe.sdq.model.gbo.GboSubmission;
+import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
+import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
 @RequiredArgsConstructor
 public class SdqApi {
@@ -38,6 +43,31 @@ public class SdqApi {
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .retrieve()
         .toEntity(new ParameterizedTypeReference<>() {});
+  }
+
+  public ResponseEntity<List<ReportingPeriod>> getSdqReportingPeriods(UUID clientId) {
+    return restClient
+        .get()
+        .uri(REST_URL_SDQ + "/{clientId}/reportingPeriods", clientId)
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<>() {});
+  }
+
+  public ResponseEntity<SdqSubmission> getSdqSubmission(UUID periodId, Assessor assessor) {
+    return restClient
+        .get()
+        .uri(REST_URL_SDQ + "/{periodId}/{assessor}", periodId, assessor)
+        .retrieve()
+        .toEntity(SdqSubmission.class);
+  }
+
+  public ResponseEntity<SdqSubmissionSummary> getSdqSubmissionSummary(
+      UUID periodId, Assessor assessor) {
+    return restClient
+        .get()
+        .uri(REST_URL_SDQ + "/{periodId}/{assessor}/summary", periodId, assessor)
+        .retrieve()
+        .toEntity(SdqSubmissionSummary.class);
   }
 
   public ResponseEntity<SdqClient> createClient(SdqClient newClient) {

@@ -8,6 +8,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import uk.ratracejoe.sdq.SdqFileParser;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.gbo.GboSubmission;
+import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 
 public class XslxSdqFileParser implements SdqFileParser {
   private final XslxSdqExtractor xslSdqExtractor;

@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.demographics.*;
 
 public class XslxDemographicExtractor {
   public static final String DEMOGRAPHIC_SHEET_NAME = "Demographic Information";

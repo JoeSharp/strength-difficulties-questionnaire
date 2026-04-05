@@ -1,6 +1,6 @@
 package uk.ratracejoe.sdq.service;
 
-import uk.ratracejoe.sdq.model.GboSubmission;
+import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 
 public interface GboService {
 

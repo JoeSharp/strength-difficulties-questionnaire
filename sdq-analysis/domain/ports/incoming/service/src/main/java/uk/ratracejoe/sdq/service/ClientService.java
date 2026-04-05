@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.DemographicField;
-import uk.ratracejoe.sdq.model.DemographicReport;
 import uk.ratracejoe.sdq.model.SdqClient;
+import uk.ratracejoe.sdq.model.demographics.DemographicField;
+import uk.ratracejoe.sdq.model.demographics.DemographicReport;
 
 public interface ClientService {
   SdqClient create(SdqClient newClient);

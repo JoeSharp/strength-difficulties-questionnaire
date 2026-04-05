@@ -59,5 +59,11 @@ public class ReportingPeriodRepositoryImpl implements ReportingPeriodRepository 
   }
 
   @Override
-  public void deleteAll() {}
+  public int deleteAll() {
+    return jdbcClient.sql(deleteAllSQL()).update();
+  }
+
+  private static String deleteAllSQL() {
+    return String.format("DELETE FROM %s", TABLE_NAME);
+  }
 }

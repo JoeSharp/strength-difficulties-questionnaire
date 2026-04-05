@@ -8,7 +8,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.DemographicField;
+import uk.ratracejoe.sdq.model.demographics.DemographicField;
 
 class XslxStructureExtractorTest {
   @Test

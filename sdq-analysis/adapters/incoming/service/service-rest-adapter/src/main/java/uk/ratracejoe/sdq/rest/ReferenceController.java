@@ -7,8 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.ratracejoe.sdq.dto.ReferenceInfoDTO;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.demographics.DemographicField;
+import uk.ratracejoe.sdq.model.sdq.Category;
+import uk.ratracejoe.sdq.model.sdq.Posture;
+import uk.ratracejoe.sdq.model.sdq.Statement;
 import uk.ratracejoe.sdq.service.RefDataService;
 
 @RestController
@@ -42,9 +46,9 @@ public class ReferenceController {
   }
 
   @GetMapping
-  public ReferenceInfo refInfo() throws SdqException {
+  public ReferenceInfoDTO refInfo() throws SdqException {
     Map<DemographicField, List<String>> demographicOptions = refDataService.getDemographicOptions();
-    return new ReferenceInfo(
+    return new ReferenceInfoDTO(
         describe(Category.class),
         describe(Statement.class),
         describe(Posture.class),

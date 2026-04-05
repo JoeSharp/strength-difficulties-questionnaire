@@ -2,7 +2,7 @@ package uk.ratracejoe.sdq.service;
 
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.GboSubmission;
+import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.repository.GboRepository;
 
 @RequiredArgsConstructor

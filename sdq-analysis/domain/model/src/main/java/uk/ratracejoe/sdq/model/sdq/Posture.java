@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.model;
+package uk.ratracejoe.sdq.model.sdq;
 
 public enum Posture {
   Internalising,

@@ -20,11 +20,5 @@ databaseChangeLog:
                   name: statement
                   type: TEXT
               - column:
-                  name: category
-                  type: TEXT
-              - column:
-                  name: posture
-                  type: TEXT
-              - column:
                   name: score
                   type: INT

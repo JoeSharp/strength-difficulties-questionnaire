@@ -13,8 +13,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
-import uk.ratracejoe.sdq.model.GboScore;
-import uk.ratracejoe.sdq.model.GboSubmission;
+import uk.ratracejoe.sdq.model.gbo.GboScore;
+import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 
 public class XslxGboExtractor {
 

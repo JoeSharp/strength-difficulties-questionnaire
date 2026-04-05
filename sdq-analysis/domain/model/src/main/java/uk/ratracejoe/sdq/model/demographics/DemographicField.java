@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.model;
+package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Optional;
 import java.util.stream.Stream;

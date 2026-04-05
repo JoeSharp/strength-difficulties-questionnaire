@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.demographics.*;
 
 public class RefDataServiceImpl implements RefDataService {
 

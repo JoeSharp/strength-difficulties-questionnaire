@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.SdqFileParser;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 import uk.ratracejoe.sdq.repository.*;
 
 @RequiredArgsConstructor

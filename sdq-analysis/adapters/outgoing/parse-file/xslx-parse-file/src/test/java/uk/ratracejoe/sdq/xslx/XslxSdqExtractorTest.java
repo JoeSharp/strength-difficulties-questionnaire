@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
-import uk.ratracejoe.sdq.model.SdqReportingPeriod;
+import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 
 class XslxSdqExtractorTest {
   @Test

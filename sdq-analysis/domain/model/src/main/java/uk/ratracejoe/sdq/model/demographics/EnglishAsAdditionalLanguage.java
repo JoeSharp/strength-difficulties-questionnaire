@@ -1,24 +1,22 @@
-package uk.ratracejoe.sdq.model;
+package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum Gender {
-  MALE("Male"),
-  FEMALE("Female"),
-  NON_BINARY("Non-binary"),
-  OTHER("Other"),
+public enum EnglishAsAdditionalLanguage {
+  YES("Yes"),
+  NO("No"),
   PREFER_NOT_TO_SAY("Prefer Not To Say");
 
   final String display;
 
-  public static Gender defaultValue() {
+  public static EnglishAsAdditionalLanguage defaultValue() {
     return PREFER_NOT_TO_SAY;
   }
 
-  public static Gender fromDisplay(String value) {
-    for (Gender g : values()) {
+  public static EnglishAsAdditionalLanguage fromDisplay(String value) {
+    for (EnglishAsAdditionalLanguage g : values()) {
       if (Objects.equals(g.display, value)) {
         return g;
       }

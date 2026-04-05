@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.model;
+package uk.ratracejoe.sdq.model.sdq;
 
 public enum Statement {
   CONSIDERATE(Category.ProSocial, false),
@@ -30,7 +30,7 @@ public enum Statement {
   final Category category;
   final boolean isTruePositive;
 
-  private Statement(Category category, boolean isTruePositive) {
+  Statement(Category category, boolean isTruePositive) {
     this.category = category;
     this.isTruePositive = isTruePositive;
   }

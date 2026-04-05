@@ -4,7 +4,7 @@ import java.sql.Date;
 import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import uk.ratracejoe.sdq.model.GboSubmission;
+import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 
 @RequiredArgsConstructor
 public class GboRepositoryImpl implements GboRepository {

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.demographics.DemographicField;
+import uk.ratracejoe.sdq.model.demographics.DemographicReport;
 import uk.ratracejoe.sdq.service.ClientService;
 
 @RestController
@@ -23,8 +25,7 @@ public class ClientController {
 
   @PostMapping
   public SdqClient create(@RequestBody SdqClient newClient) {
-    SdqClient created = clientService.create(newClient);
-    return created;
+    return clientService.create(newClient);
   }
 
   @PostMapping("/search")

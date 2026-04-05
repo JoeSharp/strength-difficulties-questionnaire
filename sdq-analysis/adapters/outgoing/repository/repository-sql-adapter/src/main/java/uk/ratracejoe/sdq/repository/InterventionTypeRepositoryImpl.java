@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.entity.InterventionTypeEntity;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.InterventionType;
+import uk.ratracejoe.sdq.model.demographics.InterventionType;
 
 @RequiredArgsConstructor
 public class InterventionTypeRepositoryImpl implements InterventionTypeRepository {

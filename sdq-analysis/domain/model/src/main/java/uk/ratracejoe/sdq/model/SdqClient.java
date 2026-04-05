@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
+import uk.ratracejoe.sdq.model.demographics.*;
 
 @Builder
 public record SdqClient(

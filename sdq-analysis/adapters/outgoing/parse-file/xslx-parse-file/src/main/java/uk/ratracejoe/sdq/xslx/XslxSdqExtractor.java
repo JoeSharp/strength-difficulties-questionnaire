@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.sdq.*;
 
 public class XslxSdqExtractor {
   private static final Logger LOGGER = getLogger(XslxSdqExtractor.class);
