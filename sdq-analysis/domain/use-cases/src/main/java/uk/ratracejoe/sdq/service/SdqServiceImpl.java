@@ -1,8 +1,6 @@
 package uk.ratracejoe.sdq.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
@@ -29,25 +27,25 @@ public class SdqServiceImpl implements SdqService {
   @Override
   public SdqSubmissionSummary getSubmissionSummary(UUID periodId, Assessor assessor) {
     SdqSubmission submission = getSubmission(periodId, assessor);
-    Map<Category, Integer> scoresByCategory =
-        submission.scores().stream()
-            .collect(
-                Collectors.groupingBy(
-                    s -> s.statement().category(), Collectors.summingInt(SdqScore::score)));
-    Map<Posture, Integer> scoresByPosture =
-        submission.scores().stream()
-            .collect(
-                Collectors.groupingBy(
-                    s -> s.statement().category().posture(),
-                    Collectors.summingInt(SdqScore::score)));
+    Map<Category, Integer> byCategory = new EnumMap<>(Category.class);
+    Map<Posture, Integer> byPosture = new EnumMap<>(Posture.class);
+
+    for (SdqScore s : submission.scores()) {
+      Category c = s.statement().category();
+      Posture p = c.posture();
+      int score = s.score();
+
+      byCategory.merge(c, score, Integer::sum);
+      byPosture.merge(p, score, Integer::sum);
+    }
     int totalDifficulties =
         submission.scores().stream()
             .filter(score -> !Category.ProSocial.equals(score.statement().category()))
             .mapToInt(SdqScore::score)
             .sum();
     return SdqSubmissionSummary.builder()
-        .categorySubTotals(scoresByCategory)
-        .postureSubTotals(scoresByPosture)
+        .categorySubTotals(byCategory)
+        .postureSubTotals(byPosture)
         .totalDifficulties(totalDifficulties)
         .build();
   }
