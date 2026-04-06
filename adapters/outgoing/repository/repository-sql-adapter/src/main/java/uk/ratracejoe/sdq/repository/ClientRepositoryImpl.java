@@ -212,24 +212,24 @@ public class ClientRepositoryImpl implements ClientRepository {
 
   static String demographicColumn(DemographicField field) {
     return switch (field) {
-      case Gender -> "gender";
-      case Council -> "council";
-      case Ethnicity -> "ethnicity";
-      case EAL -> "eal";
-      case DisabilityStatus -> "disability_status";
-      case DisabilityType -> "disability_type";
-      case CareExperience -> "care_experience";
-      case InterventionType -> "intervention_type";
-      case ACES -> "aces";
-      case FundingSource -> "funding_source";
+      case Gender -> ClientRepositoryImpl.FIELD_GENDER;
+      case Council -> ClientRepositoryImpl.FIELD_COUNCIL;
+      case Ethnicity -> ClientRepositoryImpl.FIELD_ETHNICITY;
+      case EAL -> ClientRepositoryImpl.FIELD_EAL;
+      case DisabilityStatus -> ClientRepositoryImpl.FIELD_DISABILITY_STATUS;
+      case DisabilityType -> ClientRepositoryImpl.FIELD_DISABILITY_TYPE;
+      case CareExperience -> ClientRepositoryImpl.FIELD_CARE_EXPERIENCE;
+      case ACES -> ClientRepositoryImpl.FIELD_ACES;
+      case FundingSource -> ClientRepositoryImpl.FIELD_FUNDING_SOURCE;
+      default -> "foo";
     };
   }
 
   static String getDemographicReportSQL(DemographicField demographic) {
     String columnName = demographicColumn(demographic);
     return String.format(
-        "select %s, count(*) AS count, round(100 * count(*) / (select count(*) from client_file), 2) as percentage FROM client_file GROUP BY %s;",
-        columnName, columnName);
+        "select %s, count(*) AS count, round(100 * count(*) / (select count(*) from %s), 2) as percentage FROM %s GROUP BY %s;",
+        ClientRepositoryImpl.TABLE_NAME, ClientRepositoryImpl.TABLE_NAME, columnName, columnName);
   }
 
   static String selectFilteredSql(List<DemographicField> fields) {

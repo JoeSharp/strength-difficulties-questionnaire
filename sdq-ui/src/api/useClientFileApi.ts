@@ -92,7 +92,7 @@ function useClientFileApi(): ClientFileApi {
 
   const getFileByUuid = React.useCallback((uuid: string) => {
     const jobId = beginJob("Fetching file");
-    fetch(`${BASE_CLIENT_URL}/byId/${uuid}`)
+    fetch(`${BASE_CLIENT_URL}/${uuid}`)
       .then((response) => {
         if (!response.ok) {
           addMessage(

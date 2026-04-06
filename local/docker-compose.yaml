@@ -114,9 +114,6 @@ services:
 networks:
   sdq:
     driver: bridge
-    ipam:
-      config:
-        - subnet: ${LOCAL_STACK_CIDR}
 
 volumes:
   sdq_data:
