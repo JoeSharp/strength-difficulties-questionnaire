@@ -1,6 +1,6 @@
 package uk.ratracejoe.sdq.service;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ public class ReportingPeriodServiceImpl implements ReportingPeriodService {
   private final ReportingPeriodRepository repository;
 
   @Override
-  public ReportingPeriod startPeriod(UUID clientId, Instant period) {
+  public ReportingPeriod startPeriod(UUID clientId, LocalDate period) {
     ReportingPeriod created =
         ReportingPeriod.builder()
             .periodId(UUID.randomUUID())

@@ -41,12 +41,14 @@ public class ServiceConfig {
       ReportingPeriodRepository reportingPeriodRepository,
       SdqRepository sdqRepository,
       GboRepository gboRepository,
+      GoalRepository goalRepository,
       ClientFileParser fileParser) {
     return new UploadServiceImpl(
         interventionTypeRepository,
         fileRepository,
         reportingPeriodRepository,
         sdqRepository,
+        goalRepository,
         gboRepository,
         fileParser);
   }

@@ -18,6 +18,7 @@ public class UploadServiceImpl implements UploadService {
   private final ClientRepository fileRepository;
   private final ReportingPeriodRepository reportingPeriodRepository;
   private final SdqRepository sdqRepository;
+  private final GoalRepository goalRepository;
   private final GboRepository gboRepository;
   private final ClientFileParser fileParser;
 
@@ -42,6 +43,7 @@ public class UploadServiceImpl implements UploadService {
                   .forEach(sdqRepository::save);
             });
 
+    Optional.of(parsedFile.goals()).ifPresent(goals -> goals.forEach(goalRepository::save));
     Optional.ofNullable(parsedFile.gbo()).ifPresent(gbo -> gbo.forEach(gboRepository::save));
 
     return parsedFile;

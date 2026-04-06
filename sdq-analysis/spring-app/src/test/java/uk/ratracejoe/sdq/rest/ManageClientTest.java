@@ -2,9 +2,7 @@ package uk.ratracejoe.sdq.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -38,7 +36,7 @@ class ManageClientTest {
 
   @Test
   void processGbos() {
-    Instant dob = ZonedDateTime.now(ZoneId.systemDefault()).minusYears(20).toInstant();
+    LocalDate dob = LocalDate.now().minusYears(20);
     SdqClient toCreate =
         SdqClient.builder()
             .codeName("Dave Lister")
@@ -58,7 +56,7 @@ class ManageClientTest {
                 Goal.builder().clientId(created.clientId()).description("Get exercise").build())
             .getBody();
 
-    Supplier<Instant> tenDayPeriod = PeriodSupplier.periodicDays(10);
+    Supplier<LocalDate> tenDayPeriod = PeriodSupplier.periodicDays(10);
     Stream.of(10, 15, 25, 50)
         .map(score -> GboScore.builder().goalId(goal.goalId()).score(score).build())
         .map(

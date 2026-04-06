@@ -3,8 +3,6 @@ package uk.ratracejoe.sdq.repository;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -19,15 +17,13 @@ public class ClientRepositoryImpl implements ClientRepository {
   private final JdbcClient jdbcClient;
 
   public SdqClient createClient(SdqClient client) throws SdqException {
-    LocalDate localDate = LocalDate.ofInstant(client.dateOfBirth(), ZoneId.systemDefault());
-    Date dateOfBirth = Date.valueOf(localDate);
     UUID clientId = Optional.ofNullable(client.clientId()).orElseGet(UUID::randomUUID);
     AtomicInteger paramIndex = new AtomicInteger(1);
     jdbcClient
         .sql(insertSQL())
         .param(paramIndex.getAndIncrement(), clientId)
         .param(paramIndex.getAndIncrement(), client.codeName())
-        .param(paramIndex.getAndIncrement(), dateOfBirth)
+        .param(paramIndex.getAndIncrement(), Date.valueOf(client.dateOfBirth()))
         .param(
             paramIndex.getAndIncrement(),
             Optional.ofNullable(client.gender()).map(Gender::name).orElse(null))
@@ -157,7 +153,7 @@ public class ClientRepositoryImpl implements ClientRepository {
     return new SdqClient(
         uuid,
         codeName,
-        RepositoryUtils.toInstant(dob),
+        dob.toLocalDate(),
         gender,
         council,
         ethnicity,

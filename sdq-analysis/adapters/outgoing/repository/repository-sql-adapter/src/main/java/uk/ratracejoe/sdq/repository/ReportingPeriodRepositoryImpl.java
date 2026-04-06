@@ -1,9 +1,6 @@
 package uk.ratracejoe.sdq.repository;
 
 import java.sql.Date;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,9 +26,7 @@ public class ReportingPeriodRepositoryImpl implements ReportingPeriodRepository 
                 TABLE_NAME, FIELD_PERIOD_ID, FIELD_CLIENT_ID, FIELD_PERIOD_DATE))
         .param(paramIndex.getAndIncrement(), period.periodId())
         .param(paramIndex.getAndIncrement(), period.clientId())
-        .param(
-            paramIndex.getAndIncrement(),
-            Date.valueOf(period.period()))
+        .param(paramIndex.getAndIncrement(), Date.valueOf(period.period()))
         .update();
   }
 
@@ -44,11 +39,12 @@ public class ReportingPeriodRepositoryImpl implements ReportingPeriodRepository 
                 FIELD_PERIOD_ID, FIELD_CLIENT_ID, FIELD_PERIOD_DATE, TABLE_NAME, FIELD_CLIENT_ID))
         .param(1, clientId)
         .query(
-            (rs, rowNum) -> ReportingPeriod.builder()
-                .period(rs.getDate(FIELD_PERIOD_DATE).toLocalDate())
-                .clientId(rs.getObject(FIELD_CLIENT_ID, UUID.class))
-                .periodId(rs.getObject(FIELD_PERIOD_ID, UUID.class))
-                .build())
+            (rs, rowNum) ->
+                ReportingPeriod.builder()
+                    .period(rs.getDate(FIELD_PERIOD_DATE).toLocalDate())
+                    .clientId(rs.getObject(FIELD_CLIENT_ID, UUID.class))
+                    .periodId(rs.getObject(FIELD_PERIOD_ID, UUID.class))
+                    .build())
         .list();
   }
 

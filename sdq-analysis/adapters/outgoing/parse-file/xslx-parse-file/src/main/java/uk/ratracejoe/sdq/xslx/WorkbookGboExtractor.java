@@ -59,10 +59,10 @@ public class WorkbookGboExtractor {
 
   private LocalDate extractDate(Row row) {
     return Optional.ofNullable(row.getCell(FIRST_SCORE_COLUMN - 1))
-            .filter(c -> c.getCellType() != CellType.BLANK)
-            .map(Cell::getLocalDateTimeCellValue)
-            .map(LocalDateTime::toLocalDate)
-            .orElse(null);
+        .filter(c -> c.getCellType() != CellType.BLANK)
+        .map(Cell::getLocalDateTimeCellValue)
+        .map(LocalDateTime::toLocalDate)
+        .orElse(null);
   }
 
   private List<GboParsedScore> extractScores(Row row) {

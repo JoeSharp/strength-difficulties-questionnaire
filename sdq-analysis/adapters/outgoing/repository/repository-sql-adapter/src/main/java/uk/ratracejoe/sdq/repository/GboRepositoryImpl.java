@@ -1,7 +1,5 @@
 package uk.ratracejoe.sdq.repository;
 
-import java.sql.Date;
-import java.time.ZoneId;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -23,21 +21,20 @@ public class GboRepositoryImpl implements GboRepository {
         String.format(
             "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
             TABLE_NAME, FIELD_GOAL_ID, FIELD_PERIOD_DATE, FIELD_ASSESSOR, FIELD_SCORE);
-    AtomicInteger paramIndex = new AtomicInteger(1);
 
     domain
         .scores()
         .forEach(
-            score ->
-                jdbcClient
-                    .sql(sql)
-                    .param(paramIndex.getAndIncrement(), score.goalId())
-                    .param(
-                        paramIndex.getAndIncrement(),
-                        Date.valueOf(domain.period().atZone(ZoneId.systemDefault()).toLocalDate()))
-                    .param(paramIndex.getAndIncrement(), domain.assessor().name())
-                    .param(paramIndex.getAndIncrement(), score.score())
-                    .update());
+            score -> {
+              AtomicInteger paramIndex = new AtomicInteger(1);
+              jdbcClient
+                  .sql(sql)
+                  .param(paramIndex.getAndIncrement(), score.goalId())
+                  .param(paramIndex.getAndIncrement(), domain.period())
+                  .param(paramIndex.getAndIncrement(), domain.assessor().name())
+                  .param(paramIndex.getAndIncrement(), score.score())
+                  .update();
+            });
   }
 
   @Override
