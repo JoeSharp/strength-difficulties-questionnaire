@@ -11,11 +11,11 @@ import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.Ethnicity;
 import uk.ratracejoe.sdq.model.demographics.Gender;
 
-class XslxDemographicExtractorTest {
+class WorkbookDemographicExtractorTest {
   @Test
   void parseTestFile() throws SdqException, IOException {
     // Given
-    XslxDemographicExtractor extractor = new XslxDemographicExtractor();
+    WorkbookDemographicExtractor extractor = new WorkbookDemographicExtractor();
     Workbook workbook = workbookLoaded();
 
     // When

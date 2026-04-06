@@ -17,7 +17,7 @@ import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.*;
 
-public class XslxDemographicExtractor {
+public class WorkbookDemographicExtractor {
   public static final String DEMOGRAPHIC_SHEET_NAME = "Demographic Information";
   private static final int ROW_NUMBER_ANSWERS = 1;
   private static final int NUMBER_INTERVENTION_TYPES = 4;

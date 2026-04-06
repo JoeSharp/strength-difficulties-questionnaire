@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.sdq.*;
 
-public class XslxSdqExtractor {
-  private static final Logger LOGGER = getLogger(XslxSdqExtractor.class);
+public class WorkbookSdqExtractor {
+  private static final Logger LOGGER = getLogger(WorkbookSdqExtractor.class);
 
   private static final String SHEET_NAME_PREFIX = "SDQ Period";
   private static final int[] COL_SCORES = {4, 5, 6};
@@ -27,10 +27,10 @@ public class XslxSdqExtractor {
           new AssessorRow(Assessor.School, 75),
           new AssessorRow(Assessor.Child, 105));
 
-  public List<SdqReportingPeriod> parse(UUID fileId, Workbook workbook) {
+  public List<SdqReportingPeriod> parse(UUID clientId, Workbook workbook) {
     return StreamSupport.stream(workbook.spliterator(), false)
         .filter(this::isSDQ)
-        .map(sheet -> this.parseSdqPeriod(fileId, sheet))
+        .map(sheet -> this.parseSdqPeriod(clientId, sheet))
         .toList();
   }
 

@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import uk.ratracejoe.sdq.SdqFileParser;
+import uk.ratracejoe.sdq.ClientFileParser;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
@@ -19,7 +19,7 @@ public class UploadServiceImpl implements UploadService {
   private final ReportingPeriodRepository reportingPeriodRepository;
   private final SdqRepository sdqRepository;
   private final GboRepository gboRepository;
-  private final SdqFileParser fileParser;
+  private final ClientFileParser fileParser;
 
   public ParsedFile ingestFile(String filename, InputStream file) throws SdqException {
     ParsedFile parsedFile = fileParser.parse(filename, file);

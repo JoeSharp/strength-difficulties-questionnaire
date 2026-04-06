@@ -17,13 +17,13 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
   private static final String FIELD_CLIENT_ID = "client_id";
   private static final String FIELD_INTERVENTION_TYPE = "intervention_type";
 
-  public void save(UUID fileId, InterventionType interventionType) {
+  public void save(UUID clientId, InterventionType interventionType) {
     jdbcClient
         .sql(
             String.format(
                 "INSERT INTO %s (%s, %s) VALUES (? ,?) ON CONFLICT DO NOTHING",
                 TABLE_NAME, FIELD_CLIENT_ID, FIELD_INTERVENTION_TYPE))
-        .param(1, fileId)
+        .param(1, clientId)
         .param(2, interventionType.name())
         .update();
   }
@@ -33,20 +33,20 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
     return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
   }
 
-  public List<InterventionTypeEntity> getByFile(UUID fileId) throws SdqException {
+  public List<InterventionTypeEntity> getByFile(UUID clientId) throws SdqException {
     return jdbcClient
         .sql(
             String.format(
                 "SELECT %s FROM %s WHERE %s = ?",
                 FIELD_INTERVENTION_TYPE, TABLE_NAME, FIELD_CLIENT_ID))
-        .param(1, fileId)
+        .param(1, clientId)
         .query(
             (rs, rowNum) -> {
               InterventionType interventionType =
                   Optional.ofNullable(rs.getString(FIELD_INTERVENTION_TYPE))
                       .map(InterventionType::valueOf)
                       .orElseGet(InterventionType::defaultValue);
-              return new InterventionTypeEntity(fileId, interventionType);
+              return new InterventionTypeEntity(clientId, interventionType);
             })
         .list();
   }

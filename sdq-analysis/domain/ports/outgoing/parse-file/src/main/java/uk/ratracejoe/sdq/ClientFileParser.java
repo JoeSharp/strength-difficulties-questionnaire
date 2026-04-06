@@ -4,6 +4,6 @@ import java.io.InputStream;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.ParsedFile;
 
-public interface SdqFileParser {
+public interface ClientFileParser {
   ParsedFile parse(String filename, InputStream file) throws SdqException;
 }

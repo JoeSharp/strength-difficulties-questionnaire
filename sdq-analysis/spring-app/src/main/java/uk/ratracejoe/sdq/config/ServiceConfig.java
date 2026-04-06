@@ -2,7 +2,7 @@ package uk.ratracejoe.sdq.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.ratracejoe.sdq.SdqFileParser;
+import uk.ratracejoe.sdq.ClientFileParser;
 import uk.ratracejoe.sdq.repository.*;
 import uk.ratracejoe.sdq.service.*;
 
@@ -41,7 +41,7 @@ public class ServiceConfig {
       ReportingPeriodRepository reportingPeriodRepository,
       SdqRepository sdqRepository,
       GboRepository gboRepository,
-      SdqFileParser fileParser) {
+      ClientFileParser fileParser) {
     return new UploadServiceImpl(
         interventionTypeRepository,
         fileRepository,

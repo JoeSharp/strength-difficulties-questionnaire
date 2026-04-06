@@ -10,16 +10,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
 import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 
-class XslxSdqExtractorTest {
+class WorkbookSdqExtractorTest {
   @Test
   void sdqExtracted() throws IOException {
     // Given
-    UUID fileId = UUID.randomUUID();
-    XslxSdqExtractor extractor = new XslxSdqExtractor();
+    UUID clientId = UUID.randomUUID();
+    WorkbookSdqExtractor extractor = new WorkbookSdqExtractor();
     Workbook workbook = workbookLoaded();
 
     // When
-    List<SdqReportingPeriod> result = extractor.parse(fileId, workbook);
+    List<SdqReportingPeriod> result = extractor.parse(clientId, workbook);
 
     // Then
     assertThat(result).hasSize(9);

@@ -75,12 +75,12 @@ public class ClientRepositoryImpl implements ClientRepository {
   }
 
   @Override
-  public Optional<SdqClient> getByUUID(UUID fileId) {
+  public Optional<SdqClient> getByUUID(UUID clientId) {
     String sql = String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_CLIENT_ID);
 
     return jdbcClient
         .sql(sql)
-        .param(1, fileId) // positional parameter
+        .param(1, clientId) // positional parameter
         .query((rs, rowNum) -> getFromResultSet(rs))
         .optional();
   }

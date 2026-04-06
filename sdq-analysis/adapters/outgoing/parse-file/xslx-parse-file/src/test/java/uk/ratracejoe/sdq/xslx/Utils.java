@@ -11,7 +11,7 @@ public class Utils {
   public static final String XLSX_TEST_FILE = "MasterDataRecordFor28_6.xlsx";
 
   public static InputStream workbookStream() {
-    return XslxDemographicExtractor.class.getClassLoader().getResourceAsStream(XLSX_TEST_FILE);
+    return WorkbookDemographicExtractor.class.getClassLoader().getResourceAsStream(XLSX_TEST_FILE);
   }
 
   public static Workbook workbookLoaded() throws IOException {
