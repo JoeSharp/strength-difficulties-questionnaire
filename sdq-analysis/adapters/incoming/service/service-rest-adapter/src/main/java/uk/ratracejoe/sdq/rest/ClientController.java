@@ -33,7 +33,7 @@ public class ClientController {
     return clientService.getFiltered(filters);
   }
 
-  @GetMapping("/byId/{clientId}")
+  @GetMapping("/{clientId}")
   public ResponseEntity<SdqClient> getByUUID(@PathVariable("clientId") UUID uuid)
       throws SdqException {
     return clientService

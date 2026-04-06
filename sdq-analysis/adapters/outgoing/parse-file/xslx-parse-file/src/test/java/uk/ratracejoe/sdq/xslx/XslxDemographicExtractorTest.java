@@ -8,6 +8,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
+import uk.ratracejoe.sdq.model.demographics.Ethnicity;
+import uk.ratracejoe.sdq.model.demographics.Gender;
 
 class XslxDemographicExtractorTest {
   @Test
@@ -21,8 +23,8 @@ class XslxDemographicExtractorTest {
 
     // Then
     assertThat(file).extracting(SdqClient::codeName).isEqualTo(Utils.XLSX_TEST_FILE);
-    assertThat(file).extracting(SdqClient::gender).isEqualTo("Male");
-    assertThat(file).extracting(SdqClient::ethnicity).isEqualTo("White British");
+    assertThat(file).extracting(SdqClient::gender).isEqualTo(Gender.MALE);
+    assertThat(file).extracting(SdqClient::ethnicity).isEqualTo(Ethnicity.WHITE_BRITISH);
     assertThat(file).extracting(SdqClient::aces).isEqualTo(3);
   }
 }

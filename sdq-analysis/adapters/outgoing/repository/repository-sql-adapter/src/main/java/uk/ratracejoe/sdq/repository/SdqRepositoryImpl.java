@@ -29,7 +29,14 @@ public class SdqRepositoryImpl implements SdqRepository {
             score -> {
               AtomicInteger paramIndex = new AtomicInteger(1);
               jdbcClient
-                  .sql(insertSQL())
+                  .sql(
+                      String.format(
+                          "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
+                          TABLE_NAME,
+                          FIELD_PERIOD_ID,
+                          FIELD_ASSESSOR,
+                          FIELD_STATEMENT,
+                          FIELD_SCORE))
                   .param(paramIndex.getAndIncrement(), sdq.periodId())
                   .param(paramIndex.getAndIncrement(), sdq.assessor().name())
                   .param(paramIndex.getAndIncrement(), score.statement().name())
@@ -48,28 +55,15 @@ public class SdqRepositoryImpl implements SdqRepository {
   }
 
   public int deleteAll() throws SdqException {
-    return jdbcClient.sql(deleteAllSQL()).update();
-  }
-
-  private static String insertSQL() {
-    return String.format(
-        "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
-        TABLE_NAME, FIELD_PERIOD_ID, FIELD_ASSESSOR, FIELD_STATEMENT, FIELD_SCORE);
-  }
-
-  private static String getByPeriodAndAssessorIdSQL() {
-    return String.format(
-        "SELECT %s, %s FROM %s WHERE %s = ? AND %s = ?",
-        FIELD_STATEMENT, FIELD_SCORE, TABLE_NAME, FIELD_PERIOD_ID, FIELD_ASSESSOR);
-  }
-
-  private static String deleteAllSQL() {
-    return String.format("DELETE FROM %s", TABLE_NAME);
+    return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
   }
 
   private List<SdqScore> getScores(UUID periodId, Assessor assessor) {
     return jdbcClient
-        .sql(getByPeriodAndAssessorIdSQL())
+        .sql(
+            String.format(
+                "SELECT %s, %s FROM %s WHERE %s = ? AND %s = ?",
+                FIELD_STATEMENT, FIELD_SCORE, TABLE_NAME, FIELD_PERIOD_ID, FIELD_ASSESSOR))
         .param(1, periodId)
         .param(2, assessor.name())
         .query(

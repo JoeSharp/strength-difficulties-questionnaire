@@ -19,6 +19,7 @@ import org.springframework.web.client.RestClient;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
+import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
@@ -27,7 +28,7 @@ public class SdqApi {
   private static final String REST_URL_UPLOAD = "/api/upload";
   private static final String REST_URL_CLIENT = "/api/client";
   private static final String REST_URL_SDQ = "/api/sdq";
-  private static final String REST_URL_GBO = "/api/gbo";
+  private static final String REST_URL_GOAL = "/api/goal";
   private final RestClient restClient;
 
   public SdqApi(int port) {
@@ -88,9 +89,20 @@ public class SdqApi {
         .toEntity(new ParameterizedTypeReference<>() {});
   }
 
+  public ResponseEntity<Goal> createGoal(Goal goal) {
+    var response = restClient.post().uri(REST_URL_GOAL).body(goal).retrieve().toEntity(Goal.class);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    return response;
+  }
+
   public void submitGbo(GboSubmission submission) {
     var response =
-        restClient.post().uri(REST_URL_GBO).body(submission).retrieve().toBodilessEntity();
+        restClient
+            .post()
+            .uri(REST_URL_GOAL + "/score")
+            .body(submission)
+            .retrieve()
+            .toBodilessEntity();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
   }
 

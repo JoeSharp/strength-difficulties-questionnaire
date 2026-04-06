@@ -19,6 +19,11 @@ public class RepositoryConfig {
   }
 
   @Bean
+  public GoalRepository goalRepository(JdbcClient jdbcClient) {
+    return new GoalRepositoryImpl(jdbcClient);
+  }
+
+  @Bean
   public InterventionTypeRepository interventionTypeRepository(JdbcClient jdbcClient) {
     return new InterventionTypeRepositoryImpl(jdbcClient);
   }

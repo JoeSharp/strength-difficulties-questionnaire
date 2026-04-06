@@ -6,10 +6,10 @@ databaseChangeLog:
       comment: Create initial Goal Based Outcome table
       changes:
         - createTable:
-            tableName: gbo
+            tableName: gbo_score
             columns:
               - column:
-                  name: client_id
+                  name: goal_id
                   type: UUID
                   constraints:
                     nullable: false
@@ -20,8 +20,19 @@ databaseChangeLog:
                   name: period_date
                   type: DATE
               - column:
-                  name: score_index
-                  type: INT
-              - column:
                   name: score
                   type: INT
+        # Composite primary key
+        - addPrimaryKey:
+            tableName: gbo_score
+            columnNames: goal_id, assessor, period_date
+            constraintName: pk_gbo_score
+
+        # Foreign key to goal(goal_id)
+        - addForeignKeyConstraint:
+            baseTableName: gbo_score
+            baseColumnNames: goal_id
+            referencedTableName: goal
+            referencedColumnNames: goal_id
+            constraintName: fk_goal_score
+            onDelete: CASCADE

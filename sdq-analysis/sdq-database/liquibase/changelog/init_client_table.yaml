@@ -6,7 +6,7 @@ databaseChangeLog:
       comment: Create initial Client File table
       changes:
         - createTable:
-            tableName: client_file
+            tableName: client
             columns:
               - column:
                   name: client_id

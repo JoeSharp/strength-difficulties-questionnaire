@@ -43,10 +43,12 @@ run-ui-dev: install-ui
 
 # Run the backend unit tests
 gradle-run-tests:
-    ./gradlew :spring-app:test
+    ./gradlew test --info
 
-# Run the dependencies required by unit tets
+# Run the dependencies required by unit tests
+# Always clean them out first
 docker-run-test-deps:
+    docker compose -f local/docker-compose.test.yaml down --volumes
     docker compose -f local/docker-compose.test.yaml up --build
 
 # Run the unit tests, which depends on us running containers

@@ -14,8 +14,8 @@ public class ServiceConfig {
   }
 
   @Bean
-  public GboService gboService(GboRepository repository) {
-    return new GboServiceImpl(repository);
+  public GoalService gboService(GboRepository repository, GoalRepository goalRepository) {
+    return new GoalServiceImpl(repository, goalRepository);
   }
 
   @Bean

@@ -8,7 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import uk.ratracejoe.sdq.SdqFileParser;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
-import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 
 public class XslxSdqFileParser implements SdqFileParser {
@@ -29,9 +28,9 @@ public class XslxSdqFileParser implements SdqFileParser {
 
       SdqClient sdqClient = xslDemographicExtractor.parse(workbook, filename);
       List<SdqReportingPeriod> sdq = xslSdqExtractor.parse(sdqClient.clientId(), workbook);
-      List<GboSubmission> gbo = xslxGboExtractor.parse(sdqClient.clientId(), workbook);
+      List<GboParsedPeriod> gboPeriods = xslxGboExtractor.parse(workbook);
 
-      return new ParsedFile(sdqClient, sdq, gbo);
+      return ParsedFile.builder().sdqClient(sdqClient).sdq(sdq).build();
     } catch (IOException e) {
       throw new SdqException("Could not parse XLSL Workbook", e);
     }

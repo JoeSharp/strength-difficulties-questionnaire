@@ -1,7 +1,6 @@
 package uk.ratracejoe.sdq.service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;

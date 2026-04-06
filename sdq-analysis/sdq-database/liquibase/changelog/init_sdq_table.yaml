@@ -22,3 +22,18 @@ databaseChangeLog:
               - column:
                   name: score
                   type: INT
+
+        # Composite primary key
+        - addPrimaryKey:
+            tableName: sdq
+            columnNames: period_id, assessor, statement
+            constraintName: pk_sdq
+
+        # Foreign key to reporting_period(period_id)
+        - addForeignKeyConstraint:
+            baseTableName: sdq
+            baseColumnNames: period_id
+            referencedTableName: reporting_period
+            referencedColumnNames: period_id
+            constraintName: fk_sdq_reporting_period
+            onDelete: CASCADE

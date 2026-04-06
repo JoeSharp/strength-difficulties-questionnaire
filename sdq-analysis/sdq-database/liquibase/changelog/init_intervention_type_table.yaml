@@ -18,3 +18,12 @@ databaseChangeLog:
                   type: TEXT
                   constraints:
                     nullable: false
+
+        # Foreign key to client(client_id)
+        - addForeignKeyConstraint:
+            baseTableName: intervention_type
+            baseColumnNames: client_id
+            referencedTableName: client
+            referencedColumnNames: client_id
+            constraintName: fk_client_intervention_type
+            onDelete: CASCADE

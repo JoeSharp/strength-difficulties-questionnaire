@@ -76,7 +76,7 @@ public class ClientRepositoryImpl implements ClientRepository {
 
   @Override
   public Optional<SdqClient> getByUUID(UUID fileId) {
-    String sql = selectByUUID();
+    String sql = String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_CLIENT_ID);
 
     return jdbcClient
         .sql(sql)
@@ -86,7 +86,10 @@ public class ClientRepositoryImpl implements ClientRepository {
   }
 
   public List<SdqClient> getAll() throws SdqException {
-    return jdbcClient.sql(selectAllSQL()).query((rs, rowNum) -> getFromResultSet(rs)).list();
+    return jdbcClient
+        .sql(String.format("SELECT * FROM %s", TABLE_NAME))
+        .query((rs, rowNum) -> getFromResultSet(rs))
+        .list();
   }
 
   private record FilterAndValue(DemographicField field, String value) {}
@@ -168,10 +171,10 @@ public class ClientRepositoryImpl implements ClientRepository {
   }
 
   public int deleteAll() {
-    return jdbcClient.sql(deleteAllSQL()).update();
+    return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
   }
 
-  private static final String TABLE_NAME = "client_file";
+  private static final String TABLE_NAME = "client";
   private static final String FIELD_CLIENT_ID = "client_id";
   private static final String FIELD_CODE_NAME = "code_name";
   private static final String FIELD_DOB = "date_of_birth";
@@ -233,14 +236,6 @@ public class ClientRepositoryImpl implements ClientRepository {
         columnName, columnName);
   }
 
-  static String selectByUUID() {
-    return String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_CLIENT_ID);
-  }
-
-  static String selectAllSQL() {
-    return String.format("SELECT * FROM %s", TABLE_NAME);
-  }
-
   static String selectFilteredSql(List<DemographicField> fields) {
     StringBuilder sql = new StringBuilder();
     sql.append("SELECT * FROM ");
@@ -255,9 +250,5 @@ public class ClientRepositoryImpl implements ClientRepository {
                   .collect(Collectors.joining(" AND "))));
     }
     return sql.toString();
-  }
-
-  static String deleteAllSQL() {
-    return String.format("DELETE FROM %s", TABLE_NAME);
   }
 }

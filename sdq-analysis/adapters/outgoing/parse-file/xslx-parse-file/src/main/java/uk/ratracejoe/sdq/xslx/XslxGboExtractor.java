@@ -13,8 +13,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
-import uk.ratracejoe.sdq.model.gbo.GboScore;
-import uk.ratracejoe.sdq.model.gbo.GboSubmission;
+import uk.ratracejoe.sdq.model.GboParsedPeriod;
+import uk.ratracejoe.sdq.model.GboParsedScore;
 
 public class XslxGboExtractor {
 
@@ -29,11 +29,11 @@ public class XslxGboExtractor {
           new AssessorRow(Assessor.School, 58),
           new AssessorRow(Assessor.Child, 81));
 
-  public List<GboSubmission> parse(UUID clientId, Workbook workbook) {
+  public List<GboParsedPeriod> parse(Workbook workbook) {
     return StreamSupport.stream(workbook.spliterator(), false)
         .filter(this::isGBO)
         .findFirst()
-        .map(sheet -> this.parseGbo(clientId, sheet))
+        .map(sheet -> this.parseGbo(sheet))
         .orElseThrow(() -> new SdqException("Could not find Goal Based Outcomes Sheet"));
   }
 
@@ -41,30 +41,25 @@ public class XslxGboExtractor {
     return sheet.getSheetName().equals(SHEET_NAME);
   }
 
-  private List<GboSubmission> parseGbo(UUID clientId, Sheet sheet) {
+  private List<GboParsedPeriod> parseGbo(Sheet sheet) {
     return FIRST_ROWS.stream()
-        .flatMap(d -> getGboPeriods(clientId, d.assessor(), sheet, d.firstRow()))
+        .flatMap(d -> getGboPeriods(d.assessor(), sheet, d.firstRow()))
         .toList();
   }
 
-  private Stream<GboSubmission> getGboPeriods(
-      UUID clientId, Assessor assessor, Sheet sheet, int startRow) {
+  private Stream<GboParsedPeriod> getGboPeriods(Assessor assessor, Sheet sheet, int startRow) {
     return IntStream.range(1, NUMBER_PERIODS_EXPECTED + 1)
-        .mapToObj(i -> extractPeriod(clientId, assessor, sheet.getRow(startRow + i - 1)));
+        .mapToObj(i -> extractPeriod(assessor, sheet.getRow(startRow + i - 1)));
   }
 
-  private GboSubmission extractPeriod(UUID clientId, Assessor assessor, Row row) {
+  private GboParsedPeriod extractPeriod(Assessor assessor, Row row) {
     Instant periodDate = extractDate(row);
-    List<GboScore> scores =
+    List<GboParsedScore> scores =
         extractScores(row).entrySet().stream()
-            .map(e -> new GboScore(e.getKey(), e.getValue()))
+            .map(e -> GboParsedScore.builder().index(e.getKey()).score(e.getValue()).build())
             .toList();
-    return GboSubmission.builder()
-        .clientId(clientId)
-        .assessor(assessor)
-        .period(periodDate)
-        .scores(scores)
-        .build();
+
+    return GboParsedPeriod.builder().period(periodDate).assessor(assessor).scores(scores).build();
   }
 
   private Instant extractDate(Row row) {

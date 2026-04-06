@@ -3,31 +3,31 @@ databaseChangeLog:
       id: 1
       author: Joe Sharp
       labels: init
-      comment: Create initial Reporting Period table
+      comment: Create initial Goal table
       changes:
         - createTable:
-            tableName: reporting_period
+            tableName: goal
             columns:
               - column:
-                  name: period_id
+                  name: goal_id
                   type: UUID
                   constraints:
-                    primaryKey: true
                     nullable: false
+                    primaryKey: true
               - column:
                   name: client_id
                   type: UUID
                   constraints:
                     nullable: false
               - column:
-                  name: period_date
-                  type: DATE
+                  name: description
+                  type: TEXT
 
         # Foreign key to client(client_id)
         - addForeignKeyConstraint:
-            baseTableName: reporting_period
+            baseTableName: goal
             baseColumnNames: client_id
             referencedTableName: client
             referencedColumnNames: client_id
-            constraintName: fk_client_reporting_period
+            constraintName: fk_client_goal
             onDelete: CASCADE

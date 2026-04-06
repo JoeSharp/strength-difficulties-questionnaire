@@ -2,6 +2,8 @@ databaseChangeLog:
   - include:
       file: changelog/init_client_table.yaml
   - include:
+      file: changelog/init_goal_table.yaml
+  - include:
       file: changelog/init_goal_based_outcome_table.yaml
   - include:
       file: changelog/init_intervention_type_table.yaml

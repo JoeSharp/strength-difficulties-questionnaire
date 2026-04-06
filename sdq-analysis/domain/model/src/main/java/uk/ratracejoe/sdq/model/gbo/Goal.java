@@ -4,4 +4,4 @@ import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record GboScore(UUID goalId, Integer score) {}
+public record Goal(UUID clientId, UUID goalId, String description) {}

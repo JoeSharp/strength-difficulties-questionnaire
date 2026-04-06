@@ -20,6 +20,7 @@ import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.*;
 import uk.ratracejoe.sdq.model.gbo.GboScore;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
+import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.utils.PeriodSupplier;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -51,9 +52,15 @@ class ManageClientTest {
             .build();
     SdqClient created = sdqApi.createClient(toCreate).getBody();
 
+    Goal goal =
+        sdqApi
+            .createGoal(
+                Goal.builder().clientId(created.clientId()).description("Get exercise").build())
+            .getBody();
+
     Supplier<Instant> tenDayPeriod = PeriodSupplier.periodicDays(10);
     Stream.of(10, 15, 25, 50)
-        .map(score -> GboScore.builder().scoreIndex(1).score(score).build())
+        .map(score -> GboScore.builder().goalId(goal.goalId()).score(score).build())
         .map(
             gbo ->
                 GboSubmission.builder()
