@@ -229,7 +229,7 @@ public class ClientRepositoryImpl implements ClientRepository {
     String columnName = demographicColumn(demographic);
     return String.format(
         "select %s, count(*) AS count, round(100 * count(*) / (select count(*) from %s), 2) as percentage FROM %s GROUP BY %s;",
-        ClientRepositoryImpl.TABLE_NAME, ClientRepositoryImpl.TABLE_NAME, columnName, columnName);
+        columnName, ClientRepositoryImpl.TABLE_NAME, ClientRepositoryImpl.TABLE_NAME, columnName);
   }
 
   static String selectFilteredSql(List<DemographicField> fields) {
