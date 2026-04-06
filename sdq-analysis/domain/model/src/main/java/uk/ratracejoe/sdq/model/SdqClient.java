@@ -1,6 +1,6 @@
 package uk.ratracejoe.sdq.model;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import uk.ratracejoe.sdq.model.demographics.*;
 public record SdqClient(
     UUID clientId,
     String codeName,
-    Instant dateOfBirth,
+    LocalDate dateOfBirth,
     Gender gender,
     Council council,
     Ethnicity ethnicity,

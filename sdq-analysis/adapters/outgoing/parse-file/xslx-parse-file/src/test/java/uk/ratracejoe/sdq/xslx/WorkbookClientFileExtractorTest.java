@@ -1,12 +1,18 @@
 package uk.ratracejoe.sdq.xslx;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static uk.ratracejoe.sdq.xslx.Utils.workbookLoaded;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
+import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ParsedFile;
+import uk.ratracejoe.sdq.model.gbo.GboScore;
+import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 
 class WorkbookClientFileExtractorTest {
   @Test
@@ -20,5 +26,22 @@ class WorkbookClientFileExtractorTest {
 
     // Then
     assertThat(result.goals()).hasSize(4);
+    List<GboSubmission> schoolSubmissions =
+        result.gbo().stream()
+            .filter(b -> Assessor.School.equals(b.assessor()))
+            .sorted(Comparator.comparing(GboSubmission::period))
+            .toList();
+    assertThat(schoolSubmissions.getFirst())
+        .extracting(GboSubmission::scores, list(GboScore.class))
+        .extracting(GboScore::score)
+        .containsExactly(2, 4, 8, 5);
+    assertThat(schoolSubmissions.getFirst())
+        .extracting(GboSubmission::period)
+        .satisfies(
+            d -> {
+              assertThat(d.getYear()).isEqualTo(2025);
+              assertThat(d.getMonthValue()).isEqualTo(8);
+              assertThat(d.getDayOfMonth()).isEqualTo(11);
+            });
   }
 }

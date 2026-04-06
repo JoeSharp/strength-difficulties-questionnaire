@@ -31,7 +31,7 @@ public class ReportingPeriodRepositoryImpl implements ReportingPeriodRepository 
         .param(paramIndex.getAndIncrement(), period.clientId())
         .param(
             paramIndex.getAndIncrement(),
-            Date.valueOf(period.period().atZone(ZoneId.systemDefault()).toLocalDate()))
+            Date.valueOf(period.period()))
         .update();
   }
 
@@ -44,15 +44,11 @@ public class ReportingPeriodRepositoryImpl implements ReportingPeriodRepository 
                 FIELD_PERIOD_ID, FIELD_CLIENT_ID, FIELD_PERIOD_DATE, TABLE_NAME, FIELD_CLIENT_ID))
         .param(1, clientId)
         .query(
-            (rs, rowNum) -> {
-              LocalDate date = rs.getDate(FIELD_PERIOD_DATE).toLocalDate();
-              Instant periodDate = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
-              return ReportingPeriod.builder()
-                  .period(periodDate)
-                  .clientId(rs.getObject(FIELD_CLIENT_ID, UUID.class))
-                  .periodId(rs.getObject(FIELD_PERIOD_ID, UUID.class))
-                  .build();
-            })
+            (rs, rowNum) -> ReportingPeriod.builder()
+                .period(rs.getDate(FIELD_PERIOD_DATE).toLocalDate())
+                .clientId(rs.getObject(FIELD_CLIENT_ID, UUID.class))
+                .periodId(rs.getObject(FIELD_PERIOD_ID, UUID.class))
+                .build())
         .list();
   }
 

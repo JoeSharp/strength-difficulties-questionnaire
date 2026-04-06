@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.xslx;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -49,18 +50,19 @@ public class WorkbookGboExtractor {
   }
 
   private GboParsedPeriod extractPeriod(Assessor assessor, Row row) {
-    Instant periodDate = extractDate(row);
+    LocalDate periodDate = extractDate(row);
     if (Objects.isNull(periodDate)) return null;
     List<GboParsedScore> scores = extractScores(row);
 
     return GboParsedPeriod.builder().period(periodDate).assessor(assessor).scores(scores).build();
   }
 
-  private Instant extractDate(Row row) {
+  private LocalDate extractDate(Row row) {
     return Optional.ofNullable(row.getCell(FIRST_SCORE_COLUMN - 1))
-        .map(Cell::getDateCellValue)
-        .map(Date::toInstant)
-        .orElse(null);
+            .filter(c -> c.getCellType() != CellType.BLANK)
+            .map(Cell::getLocalDateTimeCellValue)
+            .map(LocalDateTime::toLocalDate)
+            .orElse(null);
   }
 
   private List<GboParsedScore> extractScores(Row row) {

@@ -2,7 +2,7 @@ package uk.ratracejoe.sdq.xslx;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
@@ -64,9 +64,6 @@ public class WorkbookSdqExtractor {
 
   private SdqReportingPeriod parseSdqPeriod(UUID clientId, Sheet sheet) {
     UUID periodId = UUID.randomUUID();
-    // Integer periodIndex =
-    //    Integer.parseInt(sheet.getSheetName().replace(SHEET_NAME_PREFIX, "").trim(), 10);
-
     Map<Assessor, SdqSubmission> sdq = new EnumMap<>(Assessor.class);
 
     for (var firstRow : FIRST_ROWS) {
@@ -86,7 +83,7 @@ public class WorkbookSdqExtractor {
         .period(
             ReportingPeriod.builder()
                 .periodId(periodId)
-                .period(Instant.now()) // Figure out the right value later!
+                .period(LocalDate.now()) // Figure out the right value later!
                 .clientId(clientId)
                 .build())
         .sdq(sdq)

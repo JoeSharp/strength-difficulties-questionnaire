@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.xslx;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -9,10 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.*;
@@ -33,7 +31,7 @@ public class WorkbookDemographicExtractor {
                 () -> new SdqException("Could not find answers row within demographic sheet"));
 
     AtomicInteger cellNum = new AtomicInteger(0);
-    Instant dateOfBirth = readDateCell(row, cellNum.getAndIncrement());
+    LocalDate dateOfBirth = readDateCell(row, cellNum.getAndIncrement());
     Gender gender =
         readStringCell(row, cellNum.getAndIncrement(), Gender::fromDisplay, Gender::defaultValue);
     Council council =
@@ -94,11 +92,15 @@ public class WorkbookDemographicExtractor {
         fundingSource);
   }
 
-  private Instant readDateCell(Row row, int cellNum) {
-    return Optional.ofNullable(row.getCell(cellNum))
-        .map(Cell::getDateCellValue)
-        .map(Date::toInstant)
-        .orElse(null);
+  private LocalDate readDateCell(Row row, int cellNum) {
+    Cell cell = row.getCell(cellNum);
+    if (cell == null || cell.getCellType() == CellType.BLANK) {
+      return null;
+    }
+
+    Date date = cell.getDateCellValue();
+
+    return date.toInstant().atZone(ZoneOffset.UTC).toLocalDate();
   }
 
   private String readStringCell(Row row, int cellNum) {
