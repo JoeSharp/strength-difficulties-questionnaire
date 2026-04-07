@@ -56,7 +56,7 @@ run-tests: docker-run-test-deps gradle-run-tests
 
 # Run the entire system up within Docker
 docker-start-app:
-    docker compose -f local/docker-compose.yaml --profile include-app up --build -d
+    docker compose -f local/docker-compose.yaml --profile include-app up -d
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that

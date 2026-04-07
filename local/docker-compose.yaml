@@ -1,4 +1,19 @@
 services:
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    networks:
+      - sdq
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - sdq-service
+      - auth
 
   sdq-service:
     build:
@@ -13,9 +28,10 @@ services:
       SDQ_DATABASE_URL: jdbc:postgresql://${APPLICATION_NAME}-db:5432/${SDQ_DATABASE_NAME}
       SDQ_DATABASE_USERNAME: ${SDQ_DATABASE_USERNAME}
       SDQ_DATABASE_PASSWORD: ${SDQ_DATABASE_PASSWORD}
-      OAUTH2_ISSUER_URI: http://${APPLICATION_NAME}-auth.${LOCAL_STACK_HOST}.sslip.io:8085/realms/ratracejoe
+      OAUTH2_ISSUER_URI: https://auth.home.joesharpcs.co.uk/realms/ratracejoe
       SDQ_CLIENT_ID: ${SDQ_CLIENT_ID}
       SDQ_CLIENT_SECRET: ${SDQ_CLIENT_SECRET}
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
     ports:
       # Required when running the UI in dev mode on top of the service in docker
       - "8080:8080"
@@ -96,6 +112,9 @@ services:
       KC_DB_URL: jdbc:postgresql://auth-db:5432/${KEYCLOAK_DATABASE_NAME}
       KC_DB_USERNAME: ${KEYCLOAK_DATABASE_USERNAME}
       KC_DB_PASSWORD: ${KEYCLOAK_DATABASE_PASSWORD}
+      KC_HOSTNAME: auth.home.joesharpcs.co.uk
+      KC_HOSTNAME_STRICT_HTTPS: true
+      KC_PROXY: edge
     depends_on:
       auth-db:
         condition: service_healthy
@@ -118,3 +137,5 @@ networks:
 volumes:
   sdq_data:
   sdq_auth_data:
+  caddy_data:
+  caddy_config:
