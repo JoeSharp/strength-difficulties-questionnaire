@@ -1,0 +1,16 @@
+sdq.home.joesharpcs.co.uk {
+    reverse_proxy sdq-service:8080 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-For {remote_host}
+    }
+}
+
+auth.home.joesharpcs.co.uk {
+    reverse_proxy auth:8080 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Host {host}
+    }
+}
+
