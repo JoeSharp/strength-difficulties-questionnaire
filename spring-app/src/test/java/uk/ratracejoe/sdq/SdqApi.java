@@ -71,28 +71,49 @@ public class SdqApi {
         .toEntity(SdqSubmissionSummary.class);
   }
 
-  public ResponseEntity<SdqClient> createClient(SdqClient newClient) {
+  public SdqClient createClient(SdqClient newClient) {
     return restClient
         .post()
         .uri(REST_URL_CLIENT)
         .body(newClient)
         .retrieve()
-        .toEntity(SdqClient.class);
+        .toEntity(SdqClient.class)
+        .getBody();
   }
 
-  public ResponseEntity<List<SdqClient>> searchClients(Map<DemographicField, String> filters) {
+  public SdqClient getClient(UUID clientId) {
+    return restClient
+        .get()
+        .uri(String.format("%s/%s", REST_URL_CLIENT, clientId))
+        .retrieve()
+        .toEntity(SdqClient.class)
+        .getBody();
+  }
+
+  public SdqClient updateClient(SdqClient client) {
+    return restClient
+        .put()
+        .uri(REST_URL_CLIENT)
+        .body(client)
+        .retrieve()
+        .toEntity(SdqClient.class)
+        .getBody();
+  }
+
+  public List<SdqClient> searchClients(Map<DemographicField, String> filters) {
     return restClient
         .post()
         .uri(REST_URL_CLIENT + "/search")
         .body(filters)
         .retrieve()
-        .toEntity(new ParameterizedTypeReference<>() {});
+        .toEntity(new ParameterizedTypeReference<List<SdqClient>>() {})
+        .getBody();
   }
 
-  public ResponseEntity<Goal> createGoal(Goal goal) {
+  public Goal createGoal(Goal goal) {
     var response = restClient.post().uri(REST_URL_GOAL).body(goal).retrieve().toEntity(Goal.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    return response;
+    return response.getBody();
   }
 
   public List<Goal> getGoalsForClient(UUID clientId) {

@@ -70,14 +70,13 @@ public class GoalRepositoryImpl implements GoalRepository {
   }
 
   @Override
-  public Goal update(Goal goal) {
-    jdbcClient
+  public int update(Goal goal) {
+    return jdbcClient
         .sql(
             String.format(
                 "UPDATE %s SET %s = ? WHERE %s = ?", TABLE_NAME, FIELD_DESCRIPTION, FIELD_GOAL_ID))
         .param(1, goal.description())
         .param(2, goal.goalId())
         .update();
-    return get(goal.goalId());
   }
 }

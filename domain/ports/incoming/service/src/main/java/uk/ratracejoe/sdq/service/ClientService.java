@@ -2,7 +2,6 @@ package uk.ratracejoe.sdq.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
@@ -18,5 +17,7 @@ public interface ClientService {
 
   List<SdqClient> getFiltered(Map<DemographicField, String> filters) throws SdqException;
 
-  Optional<SdqClient> getByUUID(UUID uuid) throws SdqException;
+  SdqClient getByUUID(UUID uuid) throws SdqException;
+
+  SdqClient update(SdqClient client);
 }

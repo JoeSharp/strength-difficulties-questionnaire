@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.*;
@@ -28,17 +27,19 @@ public class ClientController {
     return clientService.create(newClient);
   }
 
+  @PutMapping
+  public SdqClient update(@RequestBody SdqClient client) {
+    return clientService.update(client);
+  }
+
   @PostMapping("/search")
   public List<SdqClient> getFiltered(@RequestBody Map<DemographicField, String> filters) {
     return clientService.getFiltered(filters);
   }
 
   @GetMapping("/{clientId}")
-  public ResponseEntity<SdqClient> getByUUID(@PathVariable UUID uuid) throws SdqException {
-    return clientService
-        .getByUUID(uuid)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+  public SdqClient getByUUID(@PathVariable UUID clientId) throws SdqException {
+    return clientService.getByUUID(clientId);
   }
 
   @GetMapping("/demographic_report/{demographic}")

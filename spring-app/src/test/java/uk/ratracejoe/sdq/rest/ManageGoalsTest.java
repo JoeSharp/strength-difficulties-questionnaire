@@ -48,13 +48,11 @@ class ManageGoalsTest {
             .fundingSource(FundingSource.EHCP)
             .aces(2)
             .build();
-    SdqClient client = sdqApi.createClient(toCreate).getBody();
+    SdqClient client = sdqApi.createClient(toCreate);
 
     Goal goal =
-        sdqApi
-            .createGoal(
-                Goal.builder().clientId(client.clientId()).description("Get exercise").build())
-            .getBody();
+        sdqApi.createGoal(
+            Goal.builder().clientId(client.clientId()).description("Get exercise").build());
 
     Supplier<LocalDate> tenDayPeriod = PeriodSupplier.periodicDays(10);
     Stream.of(10, 15, 25, 50)
@@ -85,8 +83,8 @@ class ManageGoalsTest {
                 .goalId(goal.goalId())
                 .description("Eat Chocolate")
                 .build());
-    assertThat(updated).isNotNull();
     Goal afterUpdate = sdqApi.getGoal(goal.goalId());
+    assertThat(updated).isEqualTo(afterUpdate);
     assertThat(afterUpdate).extracting(Goal::description).isEqualTo("Eat Chocolate");
   }
 }

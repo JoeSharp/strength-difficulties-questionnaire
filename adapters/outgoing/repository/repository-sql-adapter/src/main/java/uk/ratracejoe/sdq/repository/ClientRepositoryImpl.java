@@ -52,7 +52,7 @@ public class ClientRepositoryImpl implements ClientRepository {
             paramIndex.getAndIncrement(),
             Optional.ofNullable(client.fundingSource()).map(FundingSource::name).orElse(null))
         .update();
-    return getByUUID(clientId).orElseThrow(() -> new SdqException("Failed to create client"));
+    return get(clientId);
   }
 
   @Override
@@ -71,14 +71,14 @@ public class ClientRepositoryImpl implements ClientRepository {
   }
 
   @Override
-  public Optional<SdqClient> getByUUID(UUID clientId) {
+  public SdqClient get(UUID clientId) {
     String sql = String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_CLIENT_ID);
 
     return jdbcClient
         .sql(sql)
         .param(1, clientId) // positional parameter
         .query((rs, rowNum) -> getFromResultSet(rs))
-        .optional();
+        .single();
   }
 
   public List<SdqClient> getAll() throws SdqException {
@@ -170,6 +170,54 @@ public class ClientRepositoryImpl implements ClientRepository {
     return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
   }
 
+  @Override
+  public int update(SdqClient client) {
+    SdqClient existing = get(client.clientId());
+
+    AtomicInteger paramIndex = new AtomicInteger(1);
+    return jdbcClient
+        .sql(updateSQL())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.codeName()).orElseGet(existing::codeName))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.dateOfBirth()).orElseGet(existing::dateOfBirth))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.gender()).orElseGet(existing::gender).name())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.council()).orElseGet(existing::council).name())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.ethnicity()).orElseGet(existing::ethnicity).name())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.englishAdditionalLanguage())
+                .orElseGet(existing::englishAdditionalLanguage)
+                .name())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.disabilityStatus())
+                .orElseGet(existing::disabilityStatus)
+                .name())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.disabilityType()).orElseGet(existing::disabilityType).name())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.careExperience()).orElseGet(existing::careExperience).name())
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.aces()).orElseGet(existing::aces))
+        .param(
+            paramIndex.getAndIncrement(),
+            Optional.ofNullable(client.fundingSource()).orElseGet(existing::fundingSource).name())
+        .param(paramIndex.getAndIncrement(), client.clientId())
+        .update();
+  }
+
   private static final String TABLE_NAME = "client";
   private static final String FIELD_CLIENT_ID = "client_id";
   private static final String FIELD_CODE_NAME = "code_name";
@@ -197,6 +245,23 @@ public class ClientRepositoryImpl implements ClientRepository {
           FIELD_CARE_EXPERIENCE,
           FIELD_ACES,
           FIELD_FUNDING_SOURCE);
+
+  static String updateSQL() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("UPDATE " + TABLE_NAME + " SET ");
+    String fieldNames =
+        String.join(
+            ",",
+            FIELDS.stream()
+                .filter(f -> !FIELD_CLIENT_ID.equals(f))
+                .map(f -> String.format("%s = ?", f))
+                .toList());
+    sb.append(fieldNames);
+    sb.append(" WHERE ");
+    sb.append(FIELD_CLIENT_ID);
+    sb.append("  = ?");
+    return sb.toString();
+  }
 
   static String insertSQL() {
     StringBuilder sb = new StringBuilder();

@@ -2,7 +2,6 @@ package uk.ratracejoe.sdq.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
@@ -36,7 +35,13 @@ public class ClientServiceImpl implements ClientService {
   }
 
   @Override
-  public Optional<SdqClient> getByUUID(UUID uuid) throws SdqException {
-    return clientRepository.getByUUID(uuid);
+  public SdqClient getByUUID(UUID uuid) throws SdqException {
+    return clientRepository.get(uuid);
+  }
+
+  @Override
+  public SdqClient update(SdqClient client) {
+    clientRepository.update(client);
+    return clientRepository.get(client.clientId());
   }
 }

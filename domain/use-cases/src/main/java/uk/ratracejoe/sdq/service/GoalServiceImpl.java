@@ -38,7 +38,8 @@ public class GoalServiceImpl implements GoalService {
 
   @Override
   public Goal updateGoal(Goal goal) {
-    return goalRepository.update(goal);
+    goalRepository.update(goal);
+    return goalRepository.get(goal.goalId());
   }
 
   @Override

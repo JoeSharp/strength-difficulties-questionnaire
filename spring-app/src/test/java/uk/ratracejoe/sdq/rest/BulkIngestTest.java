@@ -54,9 +54,8 @@ class BulkIngestTest {
             Map.of(
                 DemographicField.Gender, Gender.MALE.name(),
                 DemographicField.Council, Council.CHELTENHAM.name()));
-    assertThat(fileResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(fileResponse.getBody()).hasSizeGreaterThanOrEqualTo(1);
-    assertThat(fileResponse.getBody()).extracting(SdqClient::codeName).contains("Test File 4.xlsx");
+    assertThat(fileResponse).hasSizeGreaterThanOrEqualTo(1);
+    assertThat(fileResponse).extracting(SdqClient::codeName).contains("Test File 4.xlsx");
   }
 
   @Test

@@ -11,7 +11,7 @@ public interface GoalRepository {
 
   int deleteAll();
 
-  Goal update(Goal goal);
+  int update(Goal goal);
 
   Goal get(UUID goalId);
 }
