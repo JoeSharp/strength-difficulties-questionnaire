@@ -24,19 +24,18 @@ public class SdqController {
   }
 
   @GetMapping("/{clientId}/reportingPeriods")
-  public List<ReportingPeriod> getReportingPeriods(@PathVariable("clientId") UUID clientId) {
+  public List<ReportingPeriod> getReportingPeriods(@PathVariable UUID clientId) {
     return sdqService.getReportingPeriods(clientId);
   }
 
   @GetMapping("/{periodId}/{assessor}")
-  public SdqSubmission getSubmission(
-      @PathVariable("periodId") UUID periodId, @PathVariable("assessor") Assessor assessor) {
+  public SdqSubmission getSubmission(@PathVariable UUID periodId, @PathVariable Assessor assessor) {
     return sdqService.getSubmission(periodId, assessor);
   }
 
   @GetMapping("/{periodId}/{assessor}/summary")
   public SdqSubmissionSummary getSubmissionSummary(
-      @PathVariable("periodId") UUID periodId, @PathVariable("assessor") Assessor assessor) {
+      @PathVariable UUID periodId, @PathVariable Assessor assessor) {
     return sdqService.getSubmissionSummary(periodId, assessor);
   }
 }

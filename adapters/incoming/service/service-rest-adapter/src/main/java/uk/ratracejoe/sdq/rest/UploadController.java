@@ -20,11 +20,11 @@ public class UploadController {
   private final UploadService uploadService;
 
   @PostMapping
-  public List<ParsedFile> uploadFiles(@RequestParam("sdqFiles") List<MultipartFile> files)
+  public List<ParsedFile> uploadFiles(@RequestParam List<MultipartFile> sdqFiles)
       throws SdqException {
     List<ParsedFile> results = new ArrayList<>();
     try {
-      for (MultipartFile file : files) {
+      for (MultipartFile file : sdqFiles) {
         var parsed = uploadService.ingestFile(file.getOriginalFilename(), file.getInputStream());
         results.add(parsed);
       }

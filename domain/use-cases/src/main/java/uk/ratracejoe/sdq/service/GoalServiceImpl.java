@@ -1,5 +1,6 @@
 package uk.ratracejoe.sdq.service;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
@@ -28,5 +29,20 @@ public class GoalServiceImpl implements GoalService {
   @Override
   public void recordGoalScore(GboSubmission gbo) throws SdqException {
     gboRepository.save(gbo);
+  }
+
+  @Override
+  public List<Goal> getGoalsForClient(UUID clientId) {
+    return goalRepository.getForClient(clientId);
+  }
+
+  @Override
+  public Goal updateGoal(Goal goal) {
+    return goalRepository.update(goal);
+  }
+
+  @Override
+  public Goal getGoal(UUID goalId) {
+    return goalRepository.get(goalId);
   }
 }

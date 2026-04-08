@@ -34,8 +34,7 @@ public class ClientController {
   }
 
   @GetMapping("/{clientId}")
-  public ResponseEntity<SdqClient> getByUUID(@PathVariable("clientId") UUID uuid)
-      throws SdqException {
+  public ResponseEntity<SdqClient> getByUUID(@PathVariable UUID uuid) throws SdqException {
     return clientService
         .getByUUID(uuid)
         .map(ResponseEntity::ok)
@@ -43,8 +42,7 @@ public class ClientController {
   }
 
   @GetMapping("/demographic_report/{demographic}")
-  public DemographicReport getDemographicReport(
-      @PathVariable("demographic") DemographicField demographic) {
+  public DemographicReport getDemographicReport(@PathVariable DemographicField demographic) {
     return clientService.getDemographicReport(demographic);
   }
 }

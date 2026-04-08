@@ -23,7 +23,7 @@ import uk.ratracejoe.sdq.utils.PeriodSupplier;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class ManageClientTest {
+class ManageGoalsTest {
   @Autowired private SdqDatabaseInitializer sdqDatabaseInitializer;
   private SdqApi sdqApi;
   @LocalServerPort int port;
@@ -35,7 +35,7 @@ class ManageClientTest {
   }
 
   @Test
-  void processGbos() {
+  void buildGoals() {
     LocalDate dob = LocalDate.now().minusYears(20);
     SdqClient toCreate =
         SdqClient.builder()
@@ -48,12 +48,12 @@ class ManageClientTest {
             .fundingSource(FundingSource.EHCP)
             .aces(2)
             .build();
-    SdqClient created = sdqApi.createClient(toCreate).getBody();
+    SdqClient client = sdqApi.createClient(toCreate).getBody();
 
     Goal goal =
         sdqApi
             .createGoal(
-                Goal.builder().clientId(created.clientId()).description("Get exercise").build())
+                Goal.builder().clientId(client.clientId()).description("Get exercise").build())
             .getBody();
 
     Supplier<LocalDate> tenDayPeriod = PeriodSupplier.periodicDays(10);
@@ -62,12 +62,31 @@ class ManageClientTest {
         .map(
             gbo ->
                 GboSubmission.builder()
-                    .clientId(created.clientId())
+                    .clientId(client.clientId())
                     .assessor(Assessor.School)
                     .period(tenDayPeriod.get())
                     .scores(List.of(gbo))
                     .build())
         .forEach(sdqApi::submitGbo);
-    assertThat(created.codeName()).isEqualTo(toCreate.codeName());
+    assertThat(client.codeName()).isEqualTo(toCreate.codeName());
+
+    List<Goal> goals = sdqApi.getGoalsForClient(client.clientId());
+    assertThat(goals)
+        .satisfiesOnlyOnce(
+            g -> {
+              assertThat(g.clientId()).isEqualTo(client.clientId());
+              assertThat(g.description()).isEqualTo(goal.description());
+            });
+
+    Goal updated =
+        sdqApi.updateGoal(
+            Goal.builder()
+                .clientId(client.clientId())
+                .goalId(goal.goalId())
+                .description("Eat Chocolate")
+                .build());
+    assertThat(updated).isNotNull();
+    Goal afterUpdate = sdqApi.getGoal(goal.goalId());
+    assertThat(afterUpdate).extracting(Goal::description).isEqualTo("Eat Chocolate");
   }
 }

@@ -95,6 +95,37 @@ public class SdqApi {
     return response;
   }
 
+  public List<Goal> getGoalsForClient(UUID clientId) {
+    return restClient
+        .get()
+        .uri(String.format("%s/forClient/%s", REST_URL_GOAL, clientId))
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<List<Goal>>() {})
+        .getBody();
+  }
+
+  public Goal updateGoal(Goal goal) {
+    return restClient.put().uri(REST_URL_GOAL).body(goal).retrieve().toEntity(Goal.class).getBody();
+  }
+
+  public Goal getGoal(UUID goalId) {
+    return restClient
+        .get()
+        .uri(String.format("%s/%s", REST_URL_GOAL, goalId))
+        .retrieve()
+        .toEntity(Goal.class)
+        .getBody();
+  }
+
+  public List<GboSubmission> getSubmissionsForGoal(UUID clientId, UUID goalId) {
+    return restClient
+        .get()
+        .uri(String.format("%s/%s/scores/%s", REST_URL_GOAL, clientId, goalId))
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<List<GboSubmission>>() {})
+        .getBody();
+  }
+
   public void submitGbo(GboSubmission submission) {
     var response =
         restClient

@@ -10,4 +10,8 @@ public interface GoalRepository {
   List<Goal> getForClient(UUID clientId);
 
   int deleteAll();
+
+  Goal update(Goal goal);
+
+  Goal get(UUID goalId);
 }
