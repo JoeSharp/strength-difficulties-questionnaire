@@ -11,7 +11,6 @@ import uk.ratracejoe.sdq.model.GboParsedPeriod;
 import uk.ratracejoe.sdq.model.GboParsedScore;
 import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.SdqClient;
-import uk.ratracejoe.sdq.model.gbo.GboScore;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
@@ -57,22 +56,17 @@ public class WorkbookClientFileExtractor {
     List<Goal> goals = goalIndices.stream().map(goalsByIndex::get).toList();
     List<GboSubmission> gbo =
         parsedGbo.stream()
-            .map(
+            .flatMap(
                 p ->
-                    GboSubmission.builder()
-                        .clientId(sdqClient.clientId())
-                        .period(p.period())
-                        .assessor(p.assessor())
-                        .scores(
-                            p.scores().stream()
-                                .map(
-                                    s ->
-                                        GboScore.builder()
-                                            .goalId(goalsByIndex.get(s.index()).goalId())
-                                            .score(s.score())
-                                            .build())
-                                .toList())
-                        .build())
+                    p.scores().stream()
+                        .map(
+                            s ->
+                                GboSubmission.builder()
+                                    .period(p.period())
+                                    .assessor(p.assessor())
+                                    .goalId(goalsByIndex.get(s.index()).goalId())
+                                    .score(s.score())
+                                    .build()))
             .toList();
 
     return ParsedFile.builder().goals(goals).gbo(gbo).sdqClient(sdqClient).sdq(sdq).build();

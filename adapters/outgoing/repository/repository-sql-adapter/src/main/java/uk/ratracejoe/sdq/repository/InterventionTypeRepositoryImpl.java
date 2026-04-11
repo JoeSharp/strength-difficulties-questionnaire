@@ -29,8 +29,28 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
   }
 
   @Override
+  public List<InterventionType> getForClient(UUID clientId) {
+    return jdbcClient
+        .sql(
+            String.format(
+                "SELECT %s FROM %s WHERE %s = ?",
+                FIELD_INTERVENTION_TYPE, TABLE_NAME, FIELD_CLIENT_ID))
+        .param(1, clientId)
+        .query(InterventionType.class)
+        .list();
+  }
+
+  @Override
   public int deleteAll() {
     return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
+  }
+
+  @Override
+  public int deleteForClient(UUID clientId) {
+    return jdbcClient
+        .sql(String.format("DELETE FROM %s WHERE %s = ?", TABLE_NAME, FIELD_CLIENT_ID))
+        .param(1, clientId)
+        .update();
   }
 
   public List<InterventionTypeEntity> getByFile(UUID clientId) throws SdqException {

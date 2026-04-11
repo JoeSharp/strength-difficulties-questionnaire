@@ -1,11 +1,9 @@
 package uk.ratracejoe.sdq.model.gbo;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import uk.ratracejoe.sdq.model.Assessor;
 
 @Builder
-public record GboSubmission(
-    UUID clientId, LocalDate period, Assessor assessor, List<GboScore> scores) {}
+public record GboSubmission(UUID goalId, LocalDate period, Assessor assessor, Integer score) {}

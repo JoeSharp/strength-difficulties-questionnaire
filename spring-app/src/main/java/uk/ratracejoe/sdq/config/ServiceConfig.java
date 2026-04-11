@@ -9,8 +9,9 @@ import uk.ratracejoe.sdq.service.*;
 @Configuration
 public class ServiceConfig {
   @Bean
-  public ClientService clientFileService(ClientRepository repository) {
-    return new ClientServiceImpl(repository);
+  public ClientService clientFileService(
+      ClientRepository clientRepository, InterventionTypeRepository interventionTypeRepository) {
+    return new ClientServiceImpl(clientRepository, interventionTypeRepository);
   }
 
   @Bean

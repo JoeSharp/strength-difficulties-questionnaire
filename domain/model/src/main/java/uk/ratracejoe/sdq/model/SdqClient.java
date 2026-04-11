@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
+import lombok.With;
 import uk.ratracejoe.sdq.model.demographics.*;
 
 @Builder
@@ -18,6 +19,6 @@ public record SdqClient(
     DisabilityStatus disabilityStatus,
     DisabilityType disabilityType,
     CareExperience careExperience,
-    List<InterventionType> interventionTypes,
+    @With List<InterventionType> interventionTypes,
     Integer aces,
     FundingSource fundingSource) {}

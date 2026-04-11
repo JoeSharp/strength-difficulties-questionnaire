@@ -16,7 +16,6 @@ import uk.ratracejoe.sdq.SdqApi;
 import uk.ratracejoe.sdq.SdqDatabaseInitializer;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.*;
-import uk.ratracejoe.sdq.model.gbo.GboScore;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.utils.PeriodSupplier;
@@ -56,14 +55,13 @@ class ManageGoalsTest {
 
     Supplier<LocalDate> tenDayPeriod = PeriodSupplier.periodicDays(10);
     Stream.of(10, 15, 25, 50)
-        .map(score -> GboScore.builder().goalId(goal.goalId()).score(score).build())
         .map(
-            gbo ->
+            score ->
                 GboSubmission.builder()
-                    .clientId(client.clientId())
+                    .goalId(goal.goalId())
                     .assessor(Assessor.School)
                     .period(tenDayPeriod.get())
-                    .scores(List.of(gbo))
+                    .score(score)
                     .build())
         .forEach(sdqApi::submitGbo);
     assertThat(client.codeName()).isEqualTo(toCreate.codeName());

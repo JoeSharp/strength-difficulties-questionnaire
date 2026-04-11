@@ -22,19 +22,14 @@ public class GboRepositoryImpl implements GboRepository {
             "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
             TABLE_NAME, FIELD_GOAL_ID, FIELD_PERIOD_DATE, FIELD_ASSESSOR, FIELD_SCORE);
 
-    domain
-        .scores()
-        .forEach(
-            score -> {
-              AtomicInteger paramIndex = new AtomicInteger(1);
-              jdbcClient
-                  .sql(sql)
-                  .param(paramIndex.getAndIncrement(), score.goalId())
-                  .param(paramIndex.getAndIncrement(), domain.period())
-                  .param(paramIndex.getAndIncrement(), domain.assessor().name())
-                  .param(paramIndex.getAndIncrement(), score.score())
-                  .update();
-            });
+    AtomicInteger paramIndex = new AtomicInteger(1);
+    jdbcClient
+        .sql(sql)
+        .param(paramIndex.getAndIncrement(), domain.goalId())
+        .param(paramIndex.getAndIncrement(), domain.period())
+        .param(paramIndex.getAndIncrement(), domain.assessor().name())
+        .param(paramIndex.getAndIncrement(), domain.score())
+        .update();
   }
 
   @Override
