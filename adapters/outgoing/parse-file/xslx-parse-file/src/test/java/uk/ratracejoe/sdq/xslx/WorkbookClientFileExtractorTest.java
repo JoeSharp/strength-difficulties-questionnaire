@@ -1,7 +1,6 @@
 package uk.ratracejoe.sdq.xslx;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static uk.ratracejoe.sdq.xslx.Utils.workbookLoaded;
 
 import java.io.IOException;
@@ -11,7 +10,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ParsedFile;
-import uk.ratracejoe.sdq.model.gbo.GboScore;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 
 class WorkbookClientFileExtractorTest {
@@ -31,10 +29,9 @@ class WorkbookClientFileExtractorTest {
             .filter(b -> Assessor.School.equals(b.assessor()))
             .sorted(Comparator.comparing(GboSubmission::period))
             .toList();
-    assertThat(schoolSubmissions.getFirst())
-        .extracting(GboSubmission::scores, list(GboScore.class))
-        .extracting(GboScore::score)
-        .containsExactly(2, 4, 8, 5);
+    assertThat(schoolSubmissions)
+        .extracting(GboSubmission::score)
+        .containsExactly(2, 4, 8, 5, 3, 5, 9, 2);
     assertThat(schoolSubmissions.getFirst())
         .extracting(GboSubmission::period)
         .satisfies(
