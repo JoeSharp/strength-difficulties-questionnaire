@@ -8,7 +8,13 @@ SDQ_DATABASE_NAME := env_var("SDQ_DATABASE_NAME")
 SDQ_DATABASE_USERNAME := env_var("SDQ_DATABASE_USERNAME")
 
 # Default task
-default: docker-start-app
+default: docker-run-app
+
+# Run the whole application locally in Docker
+start: docker-run-app
+
+# Stop the application
+stop: docker-stop-all
 
 # Install UI dependencies
 install-ui:
@@ -49,19 +55,19 @@ gradle-run-tests:
 # Always clean them out first
 docker-run-test-deps:
     docker compose -f local/docker-compose.test.yaml down --volumes
-    docker compose -f local/docker-compose.test.yaml up --build
+    docker compose -f local/docker-compose.test.yaml up --build --wait
 
 # Run the unit tests, which depends on us running containers
 run-tests: docker-run-test-deps gradle-run-tests
 
 # Run the entire system up within Docker
-docker-start-app:
-    docker compose -f local/docker-compose.yaml --profile include-app up --build -d
+docker-run-app:
+    docker compose -f local/docker-compose.yaml --profile include-app up --build -d --wait
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that
 docker-run-deps:
-    docker compose -f local/docker-compose.yaml up --build -d
+    docker compose -f local/docker-compose.yaml up --build -d --wait
 
 # Stop the application stack
 docker-stop:

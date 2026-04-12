@@ -1,43 +1,40 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import useApiContext from "@/context/ApiContext";
+import useClient from "../../api/ClientApi";
+import InProgressSpinner from "../../components/InProgressSpinner";
 
 function ClientFilePage() {
   const { id } = useParams();
-  const {
-    clientFileApi: { getClientById, client: file },
-  } = useApiContext();
+  const { data: client } = useClient(id);
 
-  React.useEffect(() => {
-    if (!!id) {
-      getClientById(id);
-    }
-  }, [id, getClientById]);
+  if (!client) {
+    return <InProgressSpinner />;
+  }
 
   return (
     <div>
       <h2>Client file {id}</h2>
       <dl className="two-columns">
         <dt>Gender</dt>
-        <dd>{file.gender}</dd>
+        <dd>{client.gender}</dd>
         <dt>Council</dt>
-        <dd>{file.council}</dd>
+        <dd>{client.council}</dd>
         <dt>Ethnicity</dt>
-        <dd>{file.ethnicity}</dd>
+        <dd>{client.ethnicity}</dd>
         <dt>EAL</dt>
-        <dd>{file.englishAdditionalLanguage}</dd>
+        <dd>{client.englishAdditionalLanguage}</dd>
         <dt>Disability</dt>
         <dd>
-          {file.disabilityStatus} - {file.disabilityType}
+          {client.disabilityStatus} - {client.disabilityType}
         </dd>
         <dt>Care Experience</dt>
-        <dd>{file.careExperience}</dd>
+        <dd>{client.careExperience}</dd>
         <dt>Intervention Types</dt>
-        <dd>{file.interventionTypes.join(",")}</dd>
+        <dd>{client.interventionTypes.join(",")}</dd>
         <dt>ACES</dt>
-        <dd>{file.aces}</dd>
+        <dd>{client.aces}</dd>
         <dt>Funding Source</dt>
-        <dd>{file.fundingSource}</dd>
+        <dd>{client.fundingSource}</dd>
       </dl>
     </div>
   );

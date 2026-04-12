@@ -1,6 +1,6 @@
 import React from "react";
-import type { DemographicField } from "@/api/types";
-import useApiContext from "@/context/ApiContext";
+import type { DemographicField } from "@/api/ReferenceApi/referenceApi";
+import useReference from "../../api/ReferenceApi";
 
 interface Props {
   demographic: DemographicField;
@@ -9,11 +9,7 @@ interface Props {
 }
 
 function DemographicPicker({ demographic, value, onChange }: Props) {
-  const {
-    referenceApi: {
-      referenceInfo: { demographicFields },
-    },
-  } = useApiContext();
+  const { demographicFields } = useReference();
 
   const options = React.useMemo(() => {
     return (
