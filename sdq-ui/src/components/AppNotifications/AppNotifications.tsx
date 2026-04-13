@@ -26,7 +26,7 @@ function AppNotifications() {
     <div className="notification-bell">
       <button
         id="bellBtn"
-        className="btn btn-light position-relative"
+        className="form-button"
         onClick={() => setShow((p) => !p)}
       >
         🔔

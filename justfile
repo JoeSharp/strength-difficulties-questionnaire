@@ -60,6 +60,10 @@ docker-run-test-deps:
 # Run the unit tests, which depends on us running containers
 run-tests: docker-run-test-deps gradle-run-tests
 
+# Run the app images as they are
+docker-run-app-no-build:
+    docker compose -f local/docker-compose.yaml --profile include-app up -d --wait
+
 # Run the entire system up within Docker
 docker-run-app:
     docker compose -f local/docker-compose.yaml --profile include-app up --build -d --wait

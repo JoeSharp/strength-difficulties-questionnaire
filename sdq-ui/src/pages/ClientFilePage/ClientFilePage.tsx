@@ -1,6 +1,5 @@
-import React from "react";
 import { useParams } from "react-router-dom";
-import useClient from "../../api/ClientApi";
+import useClient from "../../api/ClientApi/useClient";
 import InProgressSpinner from "../../components/InProgressSpinner";
 
 function ClientFilePage() {

@@ -1,11 +1,8 @@
 import React from "react";
-import useApiContext from "@/context/ApiContext";
+import useUploadApi from "../../api/UploadApi/useUploadApi";
 
 function FileUploadForm() {
-  const {
-    refresh,
-    uploadApi: { onSubmitFile, lastFile },
-  } = useApiContext();
+  const { onSubmitFile } = useUploadApi();
 
   const onClickSubmit: React.FormEventHandler<HTMLFormElement> =
     React.useCallback(
@@ -13,9 +10,9 @@ function FileUploadForm() {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
-        onSubmitFile(formData).then(() => refresh());
+        onSubmitFile(formData);
       },
-      [onSubmitFile, refresh],
+      [onSubmitFile],
     );
 
   return (
@@ -31,9 +28,6 @@ function FileUploadForm() {
         </div>
         <input className="form-button" type="submit" value="Upload File(s)" />
       </form>
-      {lastFile && (
-        <p>File uploaded with name {lastFile.clientFile.codeName}</p>
-      )}
     </>
   );
 }

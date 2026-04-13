@@ -12,7 +12,9 @@ function AppNotification({ message, onDismiss }: Props) {
       role="alert"
     >
       <strong>HTTP Status: {message.status}</strong> {message.message}
-      <button type="button" className="btn-close" onClick={onDismiss} />
+      <button type="button" onClick={onDismiss}>
+        X
+      </button>
     </div>
   );
 }

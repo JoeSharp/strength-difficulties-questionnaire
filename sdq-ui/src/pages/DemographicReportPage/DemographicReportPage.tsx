@@ -1,6 +1,9 @@
 import React from "react";
-import useApiContext from "@/context/ApiContext";
-import { DEMOGRAPHIC_FIELDS, type DemographicField } from "@/api/types";
+import {
+  DEMOGRAPHIC_FIELDS,
+  type DemographicField,
+} from "@/api/ReferenceApi/referenceApi";
+import useDemographicReport from "../../api/ClientApi/useDemographicReport";
 
 const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
   value: field,
@@ -8,19 +11,17 @@ const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
 }));
 
 function DemographicReportPage() {
-  const {
-    clientFileApi: { demographicReport, getDemographicReport },
-  } = useApiContext();
-
   const [demographicName, setDemographicName] =
     React.useState<DemographicField>("Gender");
+  const { demographicReport, refresh } = useDemographicReport(demographicName);
+
   const onDemographicNameChange: React.ChangeEventHandler<HTMLSelectElement> =
     React.useCallback((e) => {
       setDemographicName(e.target.value as DemographicField);
     }, []);
   const onClickFetch = React.useCallback(() => {
-    getDemographicReport(demographicName);
-  }, [demographicName, getDemographicReport]);
+    refresh();
+  }, [refresh]);
 
   return (
     <div>

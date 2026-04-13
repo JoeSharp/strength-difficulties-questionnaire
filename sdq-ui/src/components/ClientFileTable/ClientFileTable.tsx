@@ -1,12 +1,10 @@
 import React from "react";
-import useApiContext from "@/context/ApiContext";
 
 import { useNavigate } from "react-router-dom";
+import useClients from "../../api/ClientApi/useClients";
 
 function UploadFileTable() {
-  const {
-    clientFileApi: { clients: files },
-  } = useApiContext();
+  const { clients } = useClients();
 
   const navigate = useNavigate();
   const [nameToSearch, setNameToSearch] = React.useState<string>("");
@@ -15,9 +13,9 @@ function UploadFileTable() {
       setNameToSearch(value);
     }, []);
 
-  const filteredFiles = React.useMemo(
-    () => files.filter((f) => f.codeName.includes(nameToSearch)),
-    [nameToSearch, files],
+  const filteredClients = React.useMemo(
+    () => clients.filter((f) => f.codeName.includes(nameToSearch)),
+    [nameToSearch, clients],
   );
 
   return (
@@ -41,14 +39,14 @@ function UploadFileTable() {
           </tr>
         </thead>
         <tbody>
-          {filteredFiles.map((file) => (
+          {filteredClients.map((client) => (
             <tr
-              key={file.clientId}
+              key={client.clientId}
               className="clickable"
-              onClick={() => navigate(`/client/${file.clientId}`)}
+              onClick={() => navigate(`/client/${client.clientId}`)}
             >
-              <td>{file.codeName}</td>
-              <td>{file.dateOfBirth.toISOString().slice(0, 7)}</td>
+              <td>{client.codeName}</td>
+              <td>{client.dateOfBirth.toISOString().slice(0, 7)}</td>
             </tr>
           ))}
         </tbody>

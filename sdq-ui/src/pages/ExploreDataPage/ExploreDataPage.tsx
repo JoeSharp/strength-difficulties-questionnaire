@@ -1,11 +1,11 @@
 import React from "react";
 
+import DemographicPicker from "@/components/DemographicPicker";
 import {
   DEMOGRAPHIC_FIELDS,
   EMPTY_DEMOGRAPHIC_FILTER,
   type DemographicFilter,
-} from "@/api/types";
-import DemographicPicker from "@/components/DemographicPicker";
+} from "@/api/ReferenceApi/referenceApi";
 
 function ExploreDataPage() {
   const [filter, setFilter] = React.useState<DemographicFilter>(
