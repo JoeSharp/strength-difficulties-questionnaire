@@ -16,12 +16,6 @@ import uk.ratracejoe.sdq.model.sdq.Statement;
 public class SdqRepositoryImpl implements SdqRepository {
   private final JdbcClient jdbcClient;
 
-  private static final String TABLE_NAME = "sdq";
-  private static final String FIELD_PERIOD_ID = "period_id";
-  private static final String FIELD_ASSESSOR = "assessor";
-  private static final String FIELD_STATEMENT = "statement";
-  private static final String FIELD_SCORE = "score";
-
   @Override
   public void save(SdqSubmission sdq) throws SdqException {
     sdq.scores()
@@ -30,13 +24,7 @@ public class SdqRepositoryImpl implements SdqRepository {
               AtomicInteger paramIndex = new AtomicInteger(1);
               jdbcClient
                   .sql(
-                      String.format(
-                          "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
-                          TABLE_NAME,
-                          FIELD_PERIOD_ID,
-                          FIELD_ASSESSOR,
-                          FIELD_STATEMENT,
-                          FIELD_SCORE))
+                      "INSERT INTO sdq (period_id, assessor, statement, score) VALUES (?, ?, ?, ?)")
                   .param(paramIndex.getAndIncrement(), sdq.periodId())
                   .param(paramIndex.getAndIncrement(), sdq.assessor().name())
                   .param(paramIndex.getAndIncrement(), score.statement().name())
@@ -55,15 +43,12 @@ public class SdqRepositoryImpl implements SdqRepository {
   }
 
   public int deleteAll() throws SdqException {
-    return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
+    return jdbcClient.sql("DELETE FROM sdq").update();
   }
 
   private List<SdqScore> getScores(UUID periodId, Assessor assessor) {
     return jdbcClient
-        .sql(
-            String.format(
-                "SELECT %s, %s FROM %s WHERE %s = ? AND %s = ?",
-                FIELD_STATEMENT, FIELD_SCORE, TABLE_NAME, FIELD_PERIOD_ID, FIELD_ASSESSOR))
+        .sql("SELECT statement, score FROM sdq WHERE period_id = ? AND assessor = ?")
         .param(1, periodId)
         .param(2, assessor.name())
         .query(

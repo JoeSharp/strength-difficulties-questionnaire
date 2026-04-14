@@ -1,3 +1,4 @@
+name: sdq-test
 services:
 
   sdq-test-db:

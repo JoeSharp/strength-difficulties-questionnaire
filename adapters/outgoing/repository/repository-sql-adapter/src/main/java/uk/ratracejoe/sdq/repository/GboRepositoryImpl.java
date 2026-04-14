@@ -9,22 +9,15 @@ import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 public class GboRepositoryImpl implements GboRepository {
   private final JdbcClient jdbcClient;
 
-  private static final String TABLE_NAME = "gbo_score";
-
-  private static final String FIELD_GOAL_ID = "goal_id";
-  private static final String FIELD_ASSESSOR = "assessor";
-  private static final String FIELD_PERIOD_DATE = "period_date";
-  private static final String FIELD_SCORE = "score";
+  public static final String FIELD_GOAL_ID = "goal_id";
+  public static final String FIELD_ASSESSOR = "assessor";
+  public static final String FIELD_PERIOD_DATE = "period_date";
+  public static final String FIELD_SCORE = "score";
 
   public void save(GboSubmission domain) {
-    String sql =
-        String.format(
-            "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
-            TABLE_NAME, FIELD_GOAL_ID, FIELD_PERIOD_DATE, FIELD_ASSESSOR, FIELD_SCORE);
-
     AtomicInteger paramIndex = new AtomicInteger(1);
     jdbcClient
-        .sql(sql)
+        .sql("INSERT INTO gbo_score (goal_id, period_date, assessor, score) VALUES (?, ?, ?, ?)")
         .param(paramIndex.getAndIncrement(), domain.goalId())
         .param(paramIndex.getAndIncrement(), domain.period())
         .param(paramIndex.getAndIncrement(), domain.assessor().name())
@@ -34,6 +27,6 @@ public class GboRepositoryImpl implements GboRepository {
 
   @Override
   public int deleteAll() {
-    return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
+    return jdbcClient.sql("DELETE FROM gbo_score").update();
   }
 }

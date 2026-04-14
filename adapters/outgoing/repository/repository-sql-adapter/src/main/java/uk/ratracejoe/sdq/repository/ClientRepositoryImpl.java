@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
@@ -26,31 +27,44 @@ public class ClientRepositoryImpl implements ClientRepository {
         .param(paramIndex.getAndIncrement(), Date.valueOf(client.dateOfBirth()))
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.gender()).map(Gender::name).orElse(null))
+            Optional.ofNullable(client).map(SdqClient::gender).map(Gender::name).orElse(null))
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.council()).map(Council::name).orElse(null))
+            Optional.ofNullable(client).map(SdqClient::council).map(Council::name).orElse(null))
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.ethnicity()).map(Ethnicity::name).orElse(null))
+            Optional.ofNullable(client).map(SdqClient::ethnicity).map(Ethnicity::name).orElse(null))
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.englishAdditionalLanguage())
+            Optional.ofNullable(client)
+                .map(SdqClient::englishAdditionalLanguage)
                 .map(EnglishAsAdditionalLanguage::name)
                 .orElse(null))
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.disabilityStatus()).map(DisabilityStatus::name).orElse(null))
+            Optional.ofNullable(client)
+                .map(SdqClient::disabilityStatus)
+                .map(DisabilityStatus::name)
+                .orElse(null))
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.disabilityType()).map(DisabilityType::name).orElse(null))
+            Optional.ofNullable(client)
+                .map(SdqClient::disabilityType)
+                .map(DisabilityType::name)
+                .orElse(null))
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.careExperience()).map(CareExperience::name).orElse(null))
+            Optional.ofNullable(client)
+                .map(SdqClient::careExperience)
+                .map(CareExperience::name)
+                .orElse(null))
         .param(paramIndex.getAndIncrement(), client.aces())
         .param(
             paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.fundingSource()).map(FundingSource::name).orElse(null))
+            Optional.ofNullable(client)
+                .map(SdqClient::fundingSource)
+                .map(FundingSource::name)
+                .orElse(null))
         .update();
     return get(clientId);
   }
@@ -72,10 +86,8 @@ public class ClientRepositoryImpl implements ClientRepository {
 
   @Override
   public SdqClient get(UUID clientId) {
-    String sql = String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, FIELD_CLIENT_ID);
-
     return jdbcClient
-        .sql(sql)
+        .sql("SELECT * FROM client WHERE client_id=?")
         .param(1, clientId) // positional parameter
         .query((rs, rowNum) -> getFromResultSet(rs))
         .single();
@@ -83,7 +95,7 @@ public class ClientRepositoryImpl implements ClientRepository {
 
   public List<SdqClient> getAll() throws SdqException {
     return jdbcClient
-        .sql(String.format("SELECT * FROM %s", TABLE_NAME))
+        .sql("SELECT * FROM client")
         .query((rs, rowNum) -> getFromResultSet(rs))
         .list();
   }
@@ -114,40 +126,40 @@ public class ClientRepositoryImpl implements ClientRepository {
   }
 
   private SdqClient getFromResultSet(ResultSet rs) throws SQLException {
-    UUID uuid = rs.getObject(FIELD_CLIENT_ID, UUID.class);
-    String codeName = rs.getString(FIELD_CODE_NAME);
-    Date dob = rs.getDate(FIELD_DOB);
+    UUID uuid = rs.getObject("client_id", UUID.class);
+    String codeName = rs.getString("code_name");
+    Date dob = rs.getDate("date_of_birth");
     Gender gender =
-        Optional.ofNullable(rs.getString(FIELD_GENDER))
+        Optional.ofNullable(rs.getString("gender"))
             .map(Gender::valueOf)
             .orElseGet(Gender::defaultValue);
     Council council =
-        Optional.ofNullable(rs.getString(FIELD_COUNCIL))
+        Optional.ofNullable(rs.getString("council"))
             .map(Council::valueOf)
             .orElseGet(Council::defaultValue);
     Ethnicity ethnicity =
-        Optional.ofNullable(rs.getString(FIELD_ETHNICITY))
+        Optional.ofNullable(rs.getString("ethnicity"))
             .map(Ethnicity::valueOf)
             .orElseGet(Ethnicity::defaultValue);
     EnglishAsAdditionalLanguage eal =
-        Optional.ofNullable(rs.getString(FIELD_EAL))
+        Optional.ofNullable(rs.getString("eal"))
             .map(EnglishAsAdditionalLanguage::valueOf)
             .orElseGet(EnglishAsAdditionalLanguage::defaultValue);
     DisabilityStatus disabilityStatus =
-        Optional.ofNullable(rs.getString(FIELD_DISABILITY_STATUS))
+        Optional.ofNullable(rs.getString("disability_status"))
             .map(DisabilityStatus::valueOf)
             .orElseGet(DisabilityStatus::defaultValue);
     DisabilityType disabilityType =
-        Optional.ofNullable(rs.getString(FIELD_DISABILITY_TYPE))
+        Optional.ofNullable(rs.getString("disability_type"))
             .map(DisabilityType::valueOf)
             .orElseGet(DisabilityType::defaultValue);
     CareExperience careExperience =
-        Optional.ofNullable(rs.getString(FIELD_CARE_EXPERIENCE))
+        Optional.ofNullable(rs.getString("care_experience"))
             .map(CareExperience::valueOf)
             .orElseGet(CareExperience::defaultValue);
-    Integer aces = rs.getInt(FIELD_ACES);
+    Integer aces = rs.getInt("aces");
     FundingSource fundingSource =
-        Optional.ofNullable(rs.getString(FIELD_FUNDING_SOURCE))
+        Optional.ofNullable(rs.getString("funding_source"))
             .map(FundingSource::valueOf)
             .orElseGet(FundingSource::defaultValue);
     return new SdqClient(
@@ -167,7 +179,7 @@ public class ClientRepositoryImpl implements ClientRepository {
   }
 
   public int deleteAll() {
-    return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
+    return jdbcClient.sql("DELETE FROM client").update();
   }
 
   @Override
@@ -218,58 +230,42 @@ public class ClientRepositoryImpl implements ClientRepository {
         .update();
   }
 
-  private static final String TABLE_NAME = "client";
-  private static final String FIELD_CLIENT_ID = "client_id";
-  private static final String FIELD_CODE_NAME = "code_name";
-  private static final String FIELD_DOB = "date_of_birth";
-  private static final String FIELD_GENDER = "gender";
-  private static final String FIELD_COUNCIL = "council";
-  private static final String FIELD_ETHNICITY = "ethnicity";
-  private static final String FIELD_EAL = "eal";
-  private static final String FIELD_DISABILITY_STATUS = "disability_status";
-  private static final String FIELD_DISABILITY_TYPE = "disability_type";
-  private static final String FIELD_CARE_EXPERIENCE = "care_experience";
-  private static final String FIELD_ACES = "aces";
-  private static final String FIELD_FUNDING_SOURCE = "funding_source";
-  private static final List<String> FIELDS =
+  private static final List<String> UPDATE_FIELDS =
       List.of(
-          FIELD_CLIENT_ID,
-          FIELD_CODE_NAME,
-          FIELD_DOB,
-          FIELD_GENDER,
-          FIELD_COUNCIL,
-          FIELD_ETHNICITY,
-          FIELD_EAL,
-          FIELD_DISABILITY_STATUS,
-          FIELD_DISABILITY_TYPE,
-          FIELD_CARE_EXPERIENCE,
-          FIELD_ACES,
-          FIELD_FUNDING_SOURCE);
+          "code_name",
+          "date_of_birth",
+          "gender",
+          "council",
+          "ethnicity",
+          "eal",
+          "disability_status",
+          "disability_type",
+          "care_experience",
+          "aces",
+          "funding_source");
+
+  private static final List<String> QUERY_FIELDS =
+      Stream.concat(Stream.of("client_id"), UPDATE_FIELDS.stream()).toList();
 
   static String updateSQL() {
     StringBuilder sb = new StringBuilder();
-    sb.append("UPDATE " + TABLE_NAME + " SET ");
+    sb.append("UPDATE client SET ");
     String fieldNames =
-        String.join(
-            ",",
-            FIELDS.stream()
-                .filter(f -> !FIELD_CLIENT_ID.equals(f))
-                .map(f -> String.format("%s = ?", f))
-                .toList());
+        String.join(",", UPDATE_FIELDS.stream().map(f -> String.format("%s = ?", f)).toList());
     sb.append(fieldNames);
     sb.append(" WHERE ");
-    sb.append(FIELD_CLIENT_ID);
+    sb.append("client_id");
     sb.append("  = ?");
     return sb.toString();
   }
 
   static String insertSQL() {
     StringBuilder sb = new StringBuilder();
-    sb.append("INSERT INTO " + TABLE_NAME + " (");
-    String fieldNames = String.join(",", FIELDS);
+    sb.append("INSERT INTO client (");
+    String fieldNames = String.join(",", QUERY_FIELDS);
     sb.append(fieldNames);
     sb.append(") VALUES (");
-    String placeholders = FIELDS.stream().map(f -> "?").collect(Collectors.joining(", "));
+    String placeholders = QUERY_FIELDS.stream().map(f -> "?").collect(Collectors.joining(", "));
     sb.append(placeholders);
     sb.append(")");
     return sb.toString();
@@ -277,15 +273,15 @@ public class ClientRepositoryImpl implements ClientRepository {
 
   static String demographicColumn(DemographicField field) {
     return switch (field) {
-      case Gender -> ClientRepositoryImpl.FIELD_GENDER;
-      case Council -> ClientRepositoryImpl.FIELD_COUNCIL;
-      case Ethnicity -> ClientRepositoryImpl.FIELD_ETHNICITY;
-      case EAL -> ClientRepositoryImpl.FIELD_EAL;
-      case DisabilityStatus -> ClientRepositoryImpl.FIELD_DISABILITY_STATUS;
-      case DisabilityType -> ClientRepositoryImpl.FIELD_DISABILITY_TYPE;
-      case CareExperience -> ClientRepositoryImpl.FIELD_CARE_EXPERIENCE;
-      case ACES -> ClientRepositoryImpl.FIELD_ACES;
-      case FundingSource -> ClientRepositoryImpl.FIELD_FUNDING_SOURCE;
+      case Gender -> "gender";
+      case Council -> "council";
+      case Ethnicity -> "ethnicity";
+      case EAL -> "eal";
+      case DisabilityStatus -> "disability_status";
+      case DisabilityType -> "disability_type";
+      case CareExperience -> "care_experience";
+      case ACES -> "aces";
+      case FundingSource -> "funding_source";
       default -> "foo";
     };
   }
@@ -293,14 +289,13 @@ public class ClientRepositoryImpl implements ClientRepository {
   static String getDemographicReportSQL(DemographicField demographic) {
     String columnName = demographicColumn(demographic);
     return String.format(
-        "select %s, count(*) AS count, round(100 * count(*) / (select count(*) from %s), 2) as percentage FROM %s GROUP BY %s;",
-        columnName, ClientRepositoryImpl.TABLE_NAME, ClientRepositoryImpl.TABLE_NAME, columnName);
+        "select %s, count(*) AS count, round(100 * count(*) / (select count(*) from client), 2) as percentage FROM client GROUP BY %s;",
+        columnName, columnName);
   }
 
   static String selectFilteredSql(List<DemographicField> fields) {
     StringBuilder sql = new StringBuilder();
-    sql.append("SELECT * FROM ");
-    sql.append(TABLE_NAME);
+    sql.append("SELECT * FROM client ");
     if (!fields.isEmpty()) {
       sql.append(
           String.format(

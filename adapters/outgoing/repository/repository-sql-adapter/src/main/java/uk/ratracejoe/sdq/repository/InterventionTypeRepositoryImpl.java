@@ -13,16 +13,10 @@ import uk.ratracejoe.sdq.model.demographics.InterventionType;
 public class InterventionTypeRepositoryImpl implements InterventionTypeRepository {
   private final JdbcClient jdbcClient;
 
-  private static final String TABLE_NAME = "intervention_type";
-  private static final String FIELD_CLIENT_ID = "client_id";
-  private static final String FIELD_INTERVENTION_TYPE = "intervention_type";
-
   public void save(UUID clientId, InterventionType interventionType) {
     jdbcClient
         .sql(
-            String.format(
-                "INSERT INTO %s (%s, %s) VALUES (? ,?) ON CONFLICT DO NOTHING",
-                TABLE_NAME, FIELD_CLIENT_ID, FIELD_INTERVENTION_TYPE))
+            "INSERT INTO intervention_type (client_id, intervention_type) VALUES (? ,?) ON CONFLICT DO NOTHING")
         .param(1, clientId)
         .param(2, interventionType.name())
         .update();
@@ -31,10 +25,7 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
   @Override
   public List<InterventionType> getForClient(UUID clientId) {
     return jdbcClient
-        .sql(
-            String.format(
-                "SELECT %s FROM %s WHERE %s = ?",
-                FIELD_INTERVENTION_TYPE, TABLE_NAME, FIELD_CLIENT_ID))
+        .sql("SELECT intervention_type FROM intervention_type WHERE client_id = ?")
         .param(1, clientId)
         .query(InterventionType.class)
         .list();
@@ -42,28 +33,25 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
 
   @Override
   public int deleteAll() {
-    return jdbcClient.sql(String.format("DELETE FROM %s", TABLE_NAME)).update();
+    return jdbcClient.sql("DELETE FROM intervention_type").update();
   }
 
   @Override
   public int deleteForClient(UUID clientId) {
     return jdbcClient
-        .sql(String.format("DELETE FROM %s WHERE %s = ?", TABLE_NAME, FIELD_CLIENT_ID))
+        .sql("DELETE FROM intervention_type WHERE client_id = ?")
         .param(1, clientId)
         .update();
   }
 
   public List<InterventionTypeEntity> getByFile(UUID clientId) throws SdqException {
     return jdbcClient
-        .sql(
-            String.format(
-                "SELECT %s FROM %s WHERE %s = ?",
-                FIELD_INTERVENTION_TYPE, TABLE_NAME, FIELD_CLIENT_ID))
+        .sql("SELECT intervention_type FROM intervention_type WHERE client_id = ?")
         .param(1, clientId)
         .query(
             (rs, rowNum) -> {
               InterventionType interventionType =
-                  Optional.ofNullable(rs.getString(FIELD_INTERVENTION_TYPE))
+                  Optional.ofNullable(rs.getString("intervention_type"))
                       .map(InterventionType::valueOf)
                       .orElseGet(InterventionType::defaultValue);
               return new InterventionTypeEntity(clientId, interventionType);
