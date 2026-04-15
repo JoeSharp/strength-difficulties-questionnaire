@@ -25,17 +25,19 @@ class GoalAnalyticTests {
 
   @Autowired private GoalRepository goalRepository;
 
+  private SdqApi sdqApi;
+
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeEach() {
     sdqDatabaseInitializer.resetAndMigrate();
-    SdqApi sdqApi = new SdqApi(port);
-    sdqApi.ingestFile("Test File 4.xlsx");
+    sdqApi = new SdqApi(port);
   }
 
   @Test
   void getGoalsByAssessor() {
+    sdqApi.ingestFile("Test File 4.xlsx");
     List<GoalProgress> result =
         goalRepository.getGoalsByAssessor(
             Assessor.School, LocalDate.of(2024, 8, 1), LocalDate.of(2025, 11, 1));
@@ -45,14 +47,23 @@ class GoalAnalyticTests {
 
   @Test
   void getGoalsWithProgress() {
+    sdqApi.ingestFile(
+        "Test File 1.xlsx",
+        "Test File 4.xlsx",
+        "Test File 5.xlsx",
+        "Test File 6.xlsx",
+        "Test File 7.xlsx",
+        "Test File 8.xlsx",
+        "Test File 9.xlsx",
+        "Test File 10.xlsx");
     List<GoalProgress> result =
         goalRepository.getGoalsWithProgress(
             Assessor.School,
             List.of(new DemographicFilter(DemographicField.Gender, List.of(Gender.MALE.name()))),
-            1,
+            3,
             LocalDate.of(2024, 5, 1),
             LocalDate.of(2025, 11, 1));
 
-    assertThat(result).hasSizeGreaterThan(3);
+    assertThat(result).hasSize(1);
   }
 }

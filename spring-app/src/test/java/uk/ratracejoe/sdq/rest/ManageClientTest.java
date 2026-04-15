@@ -18,7 +18,7 @@ import uk.ratracejoe.sdq.model.demographics.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class ManageClientTest {
+class ManageClientTest {
   @Autowired private SdqDatabaseInitializer sdqDatabaseInitializer;
   private SdqApi sdqApi;
   @LocalServerPort int port;
