@@ -8,6 +8,24 @@ import uk.ratracejoe.sdq.service.*;
 
 @Configuration
 public class ServiceConfig {
+
+  @Bean
+  public AdminService adminService(
+      ClientRepository clientRepository,
+      SdqRepository sdqRepository,
+      GboRepository gboRepository,
+      GoalRepository goalRepository,
+      InterventionTypeRepository interventionTypeRepository,
+      ReportingPeriodRepository reportingPeriodRepository) {
+    return new AdminServiceImpl(
+        clientRepository,
+        sdqRepository,
+        gboRepository,
+        goalRepository,
+        interventionTypeRepository,
+        reportingPeriodRepository);
+  }
+
   @Bean
   public ClientService clientFileService(
       ClientRepository clientRepository, InterventionTypeRepository interventionTypeRepository) {

@@ -48,10 +48,11 @@ public class ReferenceController {
   @GetMapping
   public ReferenceInfoDTO refInfo() throws SdqException {
     Map<DemographicField, List<String>> demographicOptions = refDataService.getDemographicOptions();
-    return new ReferenceInfoDTO(
-        describe(Category.class),
-        describe(Statement.class),
-        describe(Posture.class),
-        demographicOptions);
+    return ReferenceInfoDTO.builder()
+        .categories(describe(Category.class))
+        .statements(describe(Statement.class))
+        .postures(describe(Posture.class))
+        .demographicFields(demographicOptions)
+        .build();
   }
 }

@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApi;
-import uk.ratracejoe.sdq.SdqDatabaseInitializer;
+import uk.ratracejoe.sdq.dto.GoalQueryDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
@@ -21,7 +21,6 @@ import uk.ratracejoe.sdq.model.gbo.GoalProgress;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class GoalAnalyticTests {
-  @Autowired private SdqDatabaseInitializer sdqDatabaseInitializer;
 
   @Autowired private GoalRepository goalRepository;
 
@@ -31,8 +30,8 @@ class GoalAnalyticTests {
 
   @BeforeEach
   void beforeEach() {
-    sdqDatabaseInitializer.resetAndMigrate();
     sdqApi = new SdqApi(port);
+    sdqApi.clearDatabase();
   }
 
   @Test
@@ -56,14 +55,21 @@ class GoalAnalyticTests {
         "Test File 8.xlsx",
         "Test File 9.xlsx",
         "Test File 10.xlsx");
-    List<GoalProgress> result =
-        goalRepository.getGoalsWithProgress(
-            Assessor.School,
-            List.of(new DemographicFilter(DemographicField.Gender, List.of(Gender.MALE.name()))),
-            3,
-            LocalDate.of(2024, 5, 1),
-            LocalDate.of(2025, 11, 1));
 
+    List<GoalProgress> result =
+        sdqApi
+            .getGoalsWithProgress(
+                GoalQueryDTO.builder()
+                    .assessor(Assessor.School)
+                    .filters(
+                        List.of(
+                            new DemographicFilter(
+                                DemographicField.Gender, List.of(Gender.MALE.name()))))
+                    .minProgress(3)
+                    .from(LocalDate.of(2024, 5, 1))
+                    .to(LocalDate.of(2025, 11, 1))
+                    .build())
+            .getBody();
     assertThat(result).hasSize(1);
   }
 }

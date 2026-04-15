@@ -4,13 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApi;
-import uk.ratracejoe.sdq.SdqDatabaseInitializer;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.Council;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
@@ -22,16 +20,14 @@ import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class BulkIngestTest {
-  @Autowired private SdqDatabaseInitializer sdqDatabaseInitializer;
-
   private SdqApi sdqApi;
 
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeAll() {
-    sdqDatabaseInitializer.resetAndMigrate();
     sdqApi = new SdqApi(port);
+    sdqApi.clearDatabase();
   }
 
   @Test

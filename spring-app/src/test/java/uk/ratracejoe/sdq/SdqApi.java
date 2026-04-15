@@ -15,15 +15,18 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import uk.ratracejoe.sdq.dto.GoalQueryDTO;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
+import uk.ratracejoe.sdq.model.gbo.GoalProgress;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
 @RequiredArgsConstructor
 public class SdqApi {
+  private static final String REST_URL_ADMIN = "/api/admin";
   private static final String REST_URL_UPLOAD = "/api/upload";
   private static final String REST_URL_CLIENT = "/api/client";
   private static final String REST_URL_SDQ = "/api/sdq";
@@ -34,6 +37,10 @@ public class SdqApi {
     this.restClient = RestClient.builder().baseUrl("http://localhost:" + port).build();
   }
 
+  public ResponseEntity<Void> clearDatabase() {
+    return restClient.delete().uri(REST_URL_ADMIN).retrieve().toBodilessEntity();
+  }
+
   public ResponseEntity<List<ParsedFile>> ingestFile(String... filenames) {
     var ingestFileRequest = getFilePost("sdqFiles", filenames);
     return restClient
@@ -41,6 +48,16 @@ public class SdqApi {
         .uri(REST_URL_UPLOAD)
         .body(ingestFileRequest)
         .contentType(MediaType.MULTIPART_FORM_DATA)
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<>() {});
+  }
+
+  public ResponseEntity<List<GoalProgress>> getGoalsWithProgress(GoalQueryDTO query) {
+    return restClient
+        .post()
+        .uri(REST_URL_GOAL + "/query")
+        .body(query)
+        .contentType(MediaType.APPLICATION_JSON)
         .retrieve()
         .toEntity(new ParameterizedTypeReference<>() {});
   }

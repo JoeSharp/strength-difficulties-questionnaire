@@ -1,11 +1,15 @@
 package uk.ratracejoe.sdq.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
+import uk.ratracejoe.sdq.model.gbo.GoalProgress;
 import uk.ratracejoe.sdq.repository.GboRepository;
 import uk.ratracejoe.sdq.repository.GoalRepository;
 
@@ -34,6 +38,16 @@ public class GoalServiceImpl implements GoalService {
   @Override
   public List<Goal> getGoalsForClient(UUID clientId) {
     return goalRepository.getForClient(clientId);
+  }
+
+  @Override
+  public List<GoalProgress> getGoalsWithProgress(
+      Assessor assessor,
+      List<DemographicFilter> filters,
+      int minProgress,
+      LocalDate from,
+      LocalDate to) {
+    return goalRepository.getGoalsWithProgress(assessor, filters, minProgress, from, to);
   }
 
   @Override

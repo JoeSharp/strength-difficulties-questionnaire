@@ -7,26 +7,23 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApi;
-import uk.ratracejoe.sdq.SdqDatabaseInitializer;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ManageClientTest {
-  @Autowired private SdqDatabaseInitializer sdqDatabaseInitializer;
   private SdqApi sdqApi;
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeAll() {
-    sdqDatabaseInitializer.resetAndMigrate();
     sdqApi = new SdqApi(port);
+    sdqApi.clearDatabase();
   }
 
   @Test

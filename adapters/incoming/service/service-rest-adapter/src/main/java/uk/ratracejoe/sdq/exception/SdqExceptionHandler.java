@@ -12,13 +12,21 @@ public class SdqExceptionHandler {
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ErrorResponseDTO> handleIllegalArgument(IllegalArgumentException ex) {
-    ErrorResponseDTO error = new ErrorResponseDTO(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    ErrorResponseDTO error =
+        ErrorResponseDTO.builder()
+            .message(ex.getMessage())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .build();
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(HttpClientErrorException.BadRequest.class)
   public ResponseEntity<ErrorResponseDTO> handleBadRequest(HttpClientErrorException.BadRequest ex) {
-    ErrorResponseDTO error = new ErrorResponseDTO(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    ErrorResponseDTO error =
+        ErrorResponseDTO.builder()
+            .message(ex.getMessage())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .build();
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
 }

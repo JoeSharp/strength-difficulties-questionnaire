@@ -8,12 +8,10 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApi;
-import uk.ratracejoe.sdq.SdqDatabaseInitializer;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.*;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
@@ -23,14 +21,13 @@ import uk.ratracejoe.sdq.utils.PeriodSupplier;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ManageGoalsTest {
-  @Autowired private SdqDatabaseInitializer sdqDatabaseInitializer;
   private SdqApi sdqApi;
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeAll() {
-    sdqDatabaseInitializer.resetAndMigrate();
     sdqApi = new SdqApi(port);
+    sdqApi.clearDatabase();
   }
 
   @Test
