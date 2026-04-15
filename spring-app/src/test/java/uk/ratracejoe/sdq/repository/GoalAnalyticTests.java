@@ -35,15 +35,24 @@ class GoalAnalyticTests {
   }
 
   @Test
-  void getProgress() {
+  void getGoalsByAssessor() {
+    List<GoalProgress> result =
+        goalRepository.getGoalsByAssessor(
+            Assessor.School, LocalDate.of(2024, 8, 1), LocalDate.of(2025, 11, 1));
+
+    assertThat(result).hasSize(3);
+  }
+
+  @Test
+  void getGoalsWithProgress() {
     List<GoalProgress> result =
         goalRepository.getGoalsWithProgress(
             Assessor.School,
             List.of(new DemographicFilter(DemographicField.Gender, List.of(Gender.MALE.name()))),
             1,
-            LocalDate.of(2025, 5, 1),
-            LocalDate.of(2025, 10, 1));
+            LocalDate.of(2024, 5, 1),
+            LocalDate.of(2025, 11, 1));
 
-    assertThat(result).hasSizeGreaterThan(1);
+    assertThat(result).hasSizeGreaterThan(3);
   }
 }
