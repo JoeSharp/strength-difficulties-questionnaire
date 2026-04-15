@@ -1,13 +1,13 @@
 package uk.ratracejoe.sdq.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
+import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.demographics.DemographicReport;
 import uk.ratracejoe.sdq.model.demographics.InterventionType;
 import uk.ratracejoe.sdq.repository.*;
@@ -37,7 +37,7 @@ public class ClientServiceImpl implements ClientService {
   }
 
   @Override
-  public List<SdqClient> getFiltered(Map<DemographicField, String> filters) throws SdqException {
+  public List<SdqClient> getFiltered(List<DemographicFilter> filters) throws SdqException {
     return clientRepository.getFiltered(filters).stream().map(this::withInterventionTypes).toList();
   }
 

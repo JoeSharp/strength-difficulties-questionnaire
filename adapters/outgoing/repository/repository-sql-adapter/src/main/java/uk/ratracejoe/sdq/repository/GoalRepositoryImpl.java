@@ -1,12 +1,14 @@
 package uk.ratracejoe.sdq.repository;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import uk.ratracejoe.sdq.model.demographics.Gender;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.gbo.GoalProgress;
 
@@ -61,9 +63,20 @@ public class GoalRepositoryImpl implements GoalRepository {
   }
 
   @Override
-  public List<GoalProgress> getGoalsWithProgress(int minProgress, LocalDate from, LocalDate to) {
+  public List<GoalProgress> getGoalsWithProgress(
+      Assessor assessor,
+      List<DemographicFilter> filters,
+      int minProgress,
+      LocalDate from,
+      LocalDate to) {
+    StringBuilder whereClause = new StringBuilder();
+    if (!filters.isEmpty()) {
+      whereClause.append(" WHERE ");
+      whereClause.append(ClientRepositoryImpl.filterSelectWhere("c", filters));
+    }
     String sql =
-        """
+        String.format(
+            """
     WITH scored AS (
             SELECT
             g.client_id as client_id,
@@ -81,22 +94,25 @@ public class GoalRepositoryImpl implements GoalRepository {
             ) AS last_score
             FROM gbo_score o
             JOIN goal g ON g.goal_id = o.goal_id
-            WHERE o.period_date >= ?
-            AND o.period_date <  ?
+            WHERE o.period_date >= :period_from
+            AND o.period_date <  :period_to
     )
     SELECT *
     FROM scored s
     JOIN client c ON c.client_id = s.client_id
-    WHERE c.gender = ?
-    AND (s.last_score - s.first_score) >= ?;
-            """;
-    AtomicInteger paramIndex = new AtomicInteger(1);
+    %s
+    AND (s.last_score - s.first_score) >= :minProgress;
+            """,
+            whereClause);
+    Map<String, Object> params = new HashMap<>();
+    params.put("period_from", from);
+    params.put("period_to", to);
+    ClientRepositoryImpl.addFilters(params, filters);
+    params.put("minProgress", minProgress);
+    params.put("assessor", assessor.name());
     return jdbcClient
         .sql(sql)
-        .param(paramIndex.getAndIncrement(), from)
-        .param(paramIndex.getAndIncrement(), to)
-        .param(paramIndex.getAndIncrement(), Gender.MALE.name())
-        .param(paramIndex.getAndIncrement(), minProgress)
+        .params(params)
         .query(
             (rs, rowNum) ->
                 GoalProgress.builder()
@@ -106,6 +122,7 @@ public class GoalRepositoryImpl implements GoalRepository {
                             .goalId(rs.getObject("goal_id", UUID.class))
                             .description(rs.getString("goal_description"))
                             .build())
+                    .assessor(assessor)
                     .firstScore(rs.getInt("first_score"))
                     .lastScore(rs.getInt("last_score"))
                     .build())

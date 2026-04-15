@@ -46,8 +46,8 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
 
   public List<InterventionTypeEntity> getByFile(UUID clientId) throws SdqException {
     return jdbcClient
-        .sql("SELECT intervention_type FROM intervention_type WHERE client_id = ?")
-        .param(1, clientId)
+        .sql("SELECT intervention_type FROM intervention_type WHERE client_id = :clientId")
+        .param("clientId", clientId)
         .query(
             (rs, rowNum) -> {
               InterventionType interventionType =

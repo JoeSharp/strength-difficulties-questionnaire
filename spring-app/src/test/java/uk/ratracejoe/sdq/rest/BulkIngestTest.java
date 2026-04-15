@@ -3,7 +3,6 @@ package uk.ratracejoe.sdq.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +14,7 @@ import uk.ratracejoe.sdq.SdqDatabaseInitializer;
 import uk.ratracejoe.sdq.model.*;
 import uk.ratracejoe.sdq.model.demographics.Council;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
+import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.demographics.Gender;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
@@ -51,9 +51,10 @@ class BulkIngestTest {
 
     var fileResponse =
         sdqApi.searchClients(
-            Map.of(
-                DemographicField.Gender, Gender.MALE.name(),
-                DemographicField.Council, Council.CHELTENHAM.name()));
+            List.of(
+                new DemographicFilter(DemographicField.Gender, List.of(Gender.MALE.name())),
+                new DemographicFilter(
+                    DemographicField.Council, List.of(Council.CHELTENHAM.name()))));
     assertThat(fileResponse).hasSizeGreaterThanOrEqualTo(1);
     assertThat(fileResponse).extracting(SdqClient::codeName).contains("Test File 4.xlsx");
   }

@@ -17,6 +17,9 @@ databaseChangeLog:
                   name: assessor
                   type: TEXT
               - column:
+                  name: category
+                  type: TEXT
+              - column:
                   name: statement
                   type: TEXT
               - column:

@@ -1,6 +1,6 @@
 package uk.ratracejoe.sdq.repository;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
@@ -15,13 +15,24 @@ public class GboRepositoryImpl implements GboRepository {
   public static final String FIELD_SCORE = "score";
 
   public void save(GboSubmission domain) {
-    AtomicInteger paramIndex = new AtomicInteger(1);
     jdbcClient
-        .sql("INSERT INTO gbo_score (goal_id, period_date, assessor, score) VALUES (?, ?, ?, ?)")
-        .param(paramIndex.getAndIncrement(), domain.goalId())
-        .param(paramIndex.getAndIncrement(), domain.period())
-        .param(paramIndex.getAndIncrement(), domain.assessor().name())
-        .param(paramIndex.getAndIncrement(), domain.score())
+        .sql(
+            """
+          INSERT INTO gbo_score
+            (goal_id, period_date, assessor, score)
+          VALUES
+            (:goalId, :periodDate, :assessor, :score)
+          """)
+        .params(
+            Map.of(
+                "goalId",
+                domain.goalId(),
+                "periodDate",
+                domain.period(),
+                "assessor",
+                domain.assessor().name(),
+                "score",
+                domain.score()))
         .update();
   }
 

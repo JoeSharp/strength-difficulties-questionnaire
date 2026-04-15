@@ -50,7 +50,9 @@ public class WorkbookClientFileExtractor {
                         Goal.builder()
                             .goalId(UUID.randomUUID())
                             .clientId(sdqClient.clientId())
-                            .description(AUTO_GOAL_DESCRIPTION + sdqClient.codeName())
+                            .description(
+                                String.format(
+                                    "%s-%s-%d", AUTO_GOAL_DESCRIPTION, sdqClient.codeName(), i))
                             .build()));
 
     List<Goal> goals = goalIndices.stream().map(goalsByIndex::get).toList();

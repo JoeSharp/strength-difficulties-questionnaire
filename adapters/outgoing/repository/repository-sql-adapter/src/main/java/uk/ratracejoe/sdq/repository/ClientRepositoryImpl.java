@@ -5,8 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
@@ -19,53 +20,49 @@ public class ClientRepositoryImpl implements ClientRepository {
 
   public SdqClient createClient(SdqClient client) throws SdqException {
     UUID clientId = Optional.ofNullable(client.clientId()).orElseGet(UUID::randomUUID);
-    AtomicInteger paramIndex = new AtomicInteger(1);
-    jdbcClient
-        .sql(insertSQL())
-        .param(paramIndex.getAndIncrement(), clientId)
-        .param(paramIndex.getAndIncrement(), client.codeName())
-        .param(paramIndex.getAndIncrement(), Date.valueOf(client.dateOfBirth()))
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client).map(SdqClient::gender).map(Gender::name).orElse(null))
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client).map(SdqClient::council).map(Council::name).orElse(null))
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client).map(SdqClient::ethnicity).map(Ethnicity::name).orElse(null))
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client)
-                .map(SdqClient::englishAdditionalLanguage)
-                .map(EnglishAsAdditionalLanguage::name)
-                .orElse(null))
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client)
-                .map(SdqClient::disabilityStatus)
-                .map(DisabilityStatus::name)
-                .orElse(null))
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client)
-                .map(SdqClient::disabilityType)
-                .map(DisabilityType::name)
-                .orElse(null))
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client)
-                .map(SdqClient::careExperience)
-                .map(CareExperience::name)
-                .orElse(null))
-        .param(paramIndex.getAndIncrement(), client.aces())
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client)
-                .map(SdqClient::fundingSource)
-                .map(FundingSource::name)
-                .orElse(null))
-        .update();
+
+    List<String> fields = new ArrayList<>();
+    Map<String, Object> params = new HashMap<>();
+    Function<String, Consumer<Object>> addField =
+        (fieldName) ->
+            v -> {
+              params.put(fieldName, v);
+              fields.add(fieldName);
+            };
+    addField.apply("client_id").accept(clientId);
+    addField.apply("code_name").accept(client.codeName());
+    addField.apply("date_of_birth").accept(Date.valueOf(client.dateOfBirth()));
+
+    Optional.ofNullable(client.gender()).map(Gender::name).ifPresent(addField.apply("gender"));
+    Optional.ofNullable(client.council()).map(Council::name).ifPresent(addField.apply("council"));
+    Optional.ofNullable(client.ethnicity())
+        .map(Ethnicity::name)
+        .ifPresent(addField.apply("ethnicity"));
+    Optional.ofNullable(client.englishAdditionalLanguage())
+        .map(EnglishAsAdditionalLanguage::name)
+        .ifPresent(addField.apply("eal"));
+    Optional.ofNullable(client.disabilityType())
+        .map(DisabilityType::name)
+        .ifPresent(addField.apply("disability_type"));
+    Optional.ofNullable(client.disabilityStatus())
+        .map(DisabilityStatus::name)
+        .ifPresent(addField.apply("disability_status"));
+    Optional.ofNullable(client.careExperience())
+        .map(CareExperience::name)
+        .ifPresent(addField.apply("care_experience"));
+    Optional.ofNullable(client.fundingSource())
+        .map(FundingSource::name)
+        .ifPresent(addField.apply("funding_source"));
+
+    StringBuilder sql = new StringBuilder();
+    sql.append("INSERT INTO client (");
+    String fieldNames = String.join(",", fields);
+    sql.append(fieldNames);
+    sql.append(") VALUES (");
+    String placeholders = fields.stream().map(f -> ":" + f).collect(Collectors.joining(", "));
+    sql.append(placeholders);
+    sql.append(")");
+    jdbcClient.sql(sql.toString()).params(params).update();
     return get(clientId);
   }
 
@@ -100,29 +97,17 @@ public class ClientRepositoryImpl implements ClientRepository {
         .list();
   }
 
-  private record FilterAndValue(DemographicField field, String value) {}
-
   @Override
-  public List<SdqClient> getFiltered(Map<DemographicField, String> filterMap) {
-    // Build the list of filters
-    List<FilterAndValue> filters =
-        filterMap.entrySet().stream()
-            .map(e -> new FilterAndValue(e.getKey(), e.getValue()))
-            .toList();
-
+  public List<SdqClient> getFiltered(List<DemographicFilter> filters) {
     // Build SQL dynamically based on fields
-    String sql = selectFilteredSql(filters.stream().map(FilterAndValue::field).toList());
-
-    JdbcClient.StatementSpec stmt = jdbcClient.sql(sql);
+    String sql = selectFilteredSql(filters.stream().toList());
 
     // Bind positional parameters
-    int index = 1;
-    for (FilterAndValue fv : filters) {
-      stmt = stmt.param(index++, fv.value());
-    }
+    Map<String, Object> params = new HashMap<>();
+    addFilters(params, filters);
 
     // Execute + map
-    return stmt.query((rs, rowNum) -> getFromResultSet(rs)).list();
+    return jdbcClient.sql(sql).params(params).query((rs, rowNum) -> getFromResultSet(rs)).list();
   }
 
   private SdqClient getFromResultSet(ResultSet rs) throws SQLException {
@@ -244,9 +229,6 @@ public class ClientRepositoryImpl implements ClientRepository {
           "aces",
           "funding_source");
 
-  private static final List<String> QUERY_FIELDS =
-      Stream.concat(Stream.of("client_id"), UPDATE_FIELDS.stream()).toList();
-
   static String updateSQL() {
     StringBuilder sb = new StringBuilder();
     sb.append("UPDATE client SET ");
@@ -256,18 +238,6 @@ public class ClientRepositoryImpl implements ClientRepository {
     sb.append(" WHERE ");
     sb.append("client_id");
     sb.append("  = ?");
-    return sb.toString();
-  }
-
-  static String insertSQL() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("INSERT INTO client (");
-    String fieldNames = String.join(",", QUERY_FIELDS);
-    sb.append(fieldNames);
-    sb.append(") VALUES (");
-    String placeholders = QUERY_FIELDS.stream().map(f -> "?").collect(Collectors.joining(", "));
-    sb.append(placeholders);
-    sb.append(")");
     return sb.toString();
   }
 
@@ -293,18 +263,27 @@ public class ClientRepositoryImpl implements ClientRepository {
         columnName, columnName);
   }
 
-  static String selectFilteredSql(List<DemographicField> fields) {
+  static String selectFilteredSql(List<DemographicFilter> filters) {
     StringBuilder sql = new StringBuilder();
-    sql.append("SELECT * FROM client ");
-    if (!fields.isEmpty()) {
-      sql.append(
-          String.format(
-              " WHERE %s",
-              fields.stream()
-                  .map(ClientRepositoryImpl::demographicColumn)
-                  .map(column -> String.format("%s = ?", column))
-                  .collect(Collectors.joining(" AND "))));
+    sql.append("SELECT * FROM client");
+    if (!filters.isEmpty()) {
+      sql.append(" WHERE ");
+      sql.append(filterSelectWhere("client", filters));
     }
     return sql.toString();
+  }
+
+  public static void addFilters(Map<String, Object> params, List<DemographicFilter> filters) {
+    for (DemographicFilter fv : filters) {
+      params.put(demographicColumn(fv.field()), fv.values());
+    }
+  }
+
+  public static String filterSelectWhere(String tableAlias, List<DemographicFilter> fields) {
+    return fields.stream()
+        .map(DemographicFilter::field)
+        .map(ClientRepositoryImpl::demographicColumn)
+        .map(column -> String.format("%s.%s IN (:%s)", tableAlias, column, column))
+        .collect(Collectors.joining(" AND "));
   }
 }

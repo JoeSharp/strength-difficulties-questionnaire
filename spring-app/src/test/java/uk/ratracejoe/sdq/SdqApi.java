@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import uk.ratracejoe.sdq.model.*;
-import uk.ratracejoe.sdq.model.demographics.DemographicField;
+import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
@@ -100,7 +99,7 @@ public class SdqApi {
         .getBody();
   }
 
-  public List<SdqClient> searchClients(Map<DemographicField, String> filters) {
+  public List<SdqClient> searchClients(List<DemographicFilter> filters) {
     return restClient
         .post()
         .uri(REST_URL_CLIENT + "/search")
