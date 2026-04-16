@@ -1,5 +1,9 @@
 import React from "react";
-import type { GoalQueryDTO } from "../../api/GboApi/gboApi";
+import type { GoalQueryDTO } from "@/api/GboApi/gboApi";
+
+import type { Assessor, DemographicFilter } from "@/api/types";
+import AssessorPicker from "../AssessorPicker/AssessorPicker";
+import DemographicFilterForm from "../DemographicFilterForm";
 
 import "./GoalQueryForm.scss";
 
@@ -41,6 +45,26 @@ const GoalQueryForm: React.FC<Props> = ({ value, onChange }) => {
       [onChange],
     );
 
+  const onAssessorChange = React.useCallback(
+    (assessor: Assessor) => {
+      onChange((prev) => ({
+        ...prev,
+        assessor,
+      }));
+    },
+    [onChange],
+  );
+
+  const onFiltersChange = React.useCallback(
+    (filters: DemographicFilter[]) => {
+      onChange((prev) => ({
+        ...prev,
+        filters,
+      }));
+    },
+    [onChange],
+  );
+
   return (
     <form>
       <div className="goal-query-form-top">
@@ -71,7 +95,12 @@ const GoalQueryForm: React.FC<Props> = ({ value, onChange }) => {
             onChange={onDateToChange}
           />
         </div>
+        <div className="form-group">
+          <label htmlFor="assessor">Assessor</label>
+          <AssessorPicker value={value.assessor} onChange={onAssessorChange} />
+        </div>
       </div>
+      <DemographicFilterForm value={value.filters} onChange={onFiltersChange} />
     </form>
   );
 };

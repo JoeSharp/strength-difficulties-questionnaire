@@ -1,15 +1,17 @@
 import { EMPTY_CLIENT_FILE, type ClientFile } from "@/api/ClientApi/clientApi";
-import type { GboScore } from "@/api/GboApi/gboApi";
-import type { SdqScore } from "@/api//SdqApi/sdqApi";
+import type { GboSubmission, Goal } from "@/api/GboApi/gboApi";
+import type { SdqReportingPeriod } from "@/api//SdqApi/sdqApi";
 
 export interface ParsedFile {
-  clientFile: ClientFile;
-  sdq: SdqScore[];
-  gbo: GboScore[];
+  sdqClient: ClientFile;
+  goals: Goal[];
+  sdq: SdqReportingPeriod[];
+  gbo: GboSubmission[];
 }
 
 export const EMPTY_PARSED_FILE: ParsedFile = {
-  clientFile: EMPTY_CLIENT_FILE,
+  sdqClient: EMPTY_CLIENT_FILE,
+  goals: [],
   sdq: [],
   gbo: [],
 };

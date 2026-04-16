@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useNavigate } from "react-router-dom";
-import useClients from "../../api/ClientApi/useClients";
+import useClients from "@/api/ClientApi/useClients";
 
 function UploadFileTable() {
   const { clients } = useClients();

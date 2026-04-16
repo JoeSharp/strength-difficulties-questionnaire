@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import useClient from "../../api/ClientApi/useClient";
-import InProgressSpinner from "../../components/InProgressSpinner";
+import useClient from "@/api/ClientApi/useClient";
+import InProgressSpinner from "@/components/InProgressSpinner";
 
 function ClientFilePage() {
   const { id } = useParams();

@@ -1,6 +1,6 @@
 import React from "react";
 import type { DemographicField } from "@/api/ReferenceApi/referenceApi";
-import useReference from "../../api/ReferenceApi";
+import useReference from "@/api/ReferenceApi";
 
 interface Props {
   demographic: DemographicField;

@@ -3,7 +3,7 @@ import {
   DEMOGRAPHIC_FIELDS,
   type DemographicField,
 } from "@/api/ReferenceApi/referenceApi";
-import useDemographicReport from "../../api/ClientApi/useDemographicReport";
+import useDemographicReport from "@/api/ClientApi/useDemographicReport";
 
 const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
   value: field,
@@ -13,15 +13,12 @@ const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
 function DemographicReportPage() {
   const [demographicName, setDemographicName] =
     React.useState<DemographicField>("Gender");
-  const { demographicReport, refresh } = useDemographicReport(demographicName);
+  const { demographicReport } = useDemographicReport(demographicName);
 
   const onDemographicNameChange: React.ChangeEventHandler<HTMLSelectElement> =
     React.useCallback((e) => {
       setDemographicName(e.target.value as DemographicField);
     }, []);
-  const onClickFetch = React.useCallback(() => {
-    refresh();
-  }, [refresh]);
 
   return (
     <div>
@@ -40,10 +37,6 @@ function DemographicReportPage() {
           ))}
         </select>
       </div>
-
-      <button className="form-button" onClick={onClickFetch}>
-        Fetch
-      </button>
 
       <table className="table">
         <thead>

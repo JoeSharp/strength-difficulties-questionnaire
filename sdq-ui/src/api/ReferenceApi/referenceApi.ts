@@ -15,12 +15,6 @@ export type DemographicReference = {
   [key in DemographicField]?: string[];
 };
 
-export type DemographicFilter = {
-  [key in DemographicField]?: string;
-};
-
-export const EMPTY_DEMOGRAPHIC_FILTER: DemographicFilter = {};
-
 const EMPTY_DEMOGRAPHIC_REFERENCE: DemographicReference = {};
 
 export type RefInfoDescription = Record<string, Record<string, object>>;

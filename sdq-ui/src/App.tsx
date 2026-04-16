@@ -4,7 +4,6 @@ import InProgressSpinner from "./components/InProgressSpinner";
 import ClientFilePage from "./pages/ClientFilePage";
 import BulkUploadPage from "./pages/BulkUploadPage";
 import HomePage from "./pages/HomePage";
-import ExploreDataPage from "./pages/ExploreDataPage";
 import DemographicReportPage from "./pages/DemographicReportPage";
 import GoalBasedOutcomePage from "./pages/GoalBasedOutcomePage";
 
@@ -18,7 +17,6 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/demographic-report" element={<DemographicReportPage />} />
-        <Route path="/explore-data" element={<ExploreDataPage />} />
         <Route path="/gbo" element={<GoalBasedOutcomePage />} />
         <Route path="/client/:id" element={<ClientFilePage />} />
         <Route path="/bulk-upload" element={<BulkUploadPage />} />

@@ -60,7 +60,13 @@ export interface StatementResponse {
   score: number;
 }
 
-export interface SdqPeriod {
-  periodIndex: number;
-  responses: Record<Assessor, StatementResponse[]>;
+export interface ReportingPeriod {
+  clientId: string;
+  periodId: string;
+  period: string;
+}
+
+export interface SdqReportingPeriod {
+  period: ReportingPeriod;
+  responses: Record<Assessor, SdqSubmission[]>;
 }

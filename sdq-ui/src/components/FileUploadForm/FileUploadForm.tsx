@@ -1,5 +1,5 @@
 import React from "react";
-import useUploadApi from "../../api/UploadApi/useUploadApi";
+import useUploadApi from "@/api/UploadApi/useUploadApi";
 
 function FileUploadForm() {
   const { onSubmitFile } = useUploadApi();

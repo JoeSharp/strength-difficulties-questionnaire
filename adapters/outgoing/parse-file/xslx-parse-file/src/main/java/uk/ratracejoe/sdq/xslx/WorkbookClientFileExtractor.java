@@ -16,7 +16,6 @@ import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 
 public class WorkbookClientFileExtractor {
-  private static final String AUTO_GOAL_DESCRIPTION = "Generate from spreadsheet";
   private final WorkbookSdqExtractor xslSdqExtractor;
   private final WorkbookGboExtractor workbookGboExtractor;
   private final WorkbookDemographicExtractor xslDemographicExtractor;
@@ -52,7 +51,7 @@ public class WorkbookClientFileExtractor {
                             .clientId(sdqClient.clientId())
                             .description(
                                 String.format(
-                                    "%s-%s-%d", AUTO_GOAL_DESCRIPTION, sdqClient.codeName(), i))
+                                    "Goal %d for %s", i, sdqClient.codeName()))
                             .build()));
 
     List<Goal> goals = goalIndices.stream().map(goalsByIndex::get).toList();
