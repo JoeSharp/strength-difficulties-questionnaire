@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import useAppNotificationContext from "../../context/AppNotificationContext";
-import useInProgressContext from "../../context/InProgressContext";
-import { BASE_CLIENT_URL, parseFile } from "./clientApi";
+import useAppNotificationContext from "@/context/AppNotificationContext";
+import useInProgressContext from "@/context/InProgressContext";
+import { BASE_CLIENT_URL, type ClientFile, parseFile } from "./clientApi";
 
 function useClient(clientId?: string) {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
 
-  return useQuery({
+  return useQuery<ClientFile>({
     queryKey: ["clientFile", clientId],
     queryFn: async () => {
       const jobId = beginJob("Fetching file");

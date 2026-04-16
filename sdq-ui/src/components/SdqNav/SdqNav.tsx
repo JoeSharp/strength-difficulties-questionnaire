@@ -19,6 +19,9 @@ const SdqNav: React.FC = () => {
           <Link to="/">Home</Link>
         </li>
         <li>
+          <Link to="/gbo">GBO</Link>
+        </li>
+        <li>
           <Link to="/explore-data">Explore Data</Link>
         </li>
         <li>

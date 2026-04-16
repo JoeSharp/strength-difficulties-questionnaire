@@ -16,7 +16,7 @@ function useClients(): IUseClients {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
 
-  const query = useQuery({
+  const query = useQuery<ClientFile[]>({
     queryKey: ["clientFiles"],
     queryFn: async () => {
       const jobId = beginJob("Fetching files");
@@ -34,7 +34,7 @@ function useClients(): IUseClients {
         }
 
         const json = await response.json();
-        return json.map(parseFile) as ClientFile[];
+        return json.map(parseFile);
       } finally {
         endJob(jobId);
       }

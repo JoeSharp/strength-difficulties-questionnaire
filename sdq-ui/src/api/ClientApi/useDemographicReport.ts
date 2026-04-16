@@ -15,7 +15,7 @@ interface IUseDemographicReport {
 function useDemographicReport(tableName: string): IUseDemographicReport {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
-  const query = useQuery({
+  const query = useQuery<DemographicReport, Error, void>({
     queryKey: ["demographicReport", tableName],
     queryFn: async () => {
       const jobId = beginJob("Fetching demographic report");

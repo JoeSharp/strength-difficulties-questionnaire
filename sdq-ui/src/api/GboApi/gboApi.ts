@@ -1,13 +1,31 @@
-import type { Assessor } from "../types";
+import type { Assessor, DemographicFilter } from "../types";
 
-export interface GboScore {
-  scoreIndex: number;
-  score: number;
+export const BASE_GOAL_URL = "/api/goal";
+
+export interface Goal {
+  clientId: string;
+  goalId: string;
+  description: string;
+}
+
+export interface GoalProgress {
+  goal: Goal;
+  assessor: Assessor;
+  firstScore: number;
+  lastScore: number;
 }
 
 export interface GboSubmission {
-  clientId: string;
+  goalId: string;
+  period: Date;
   assessor: Assessor;
-  periodDate: Date;
-  scores: GboScore[];
+  score: number;
+}
+
+export interface GoalQueryDTO {
+  assessor: Assessor;
+  filters: DemographicFilter[];
+  minProgress: number;
+  from: string;
+  to: string;
 }
