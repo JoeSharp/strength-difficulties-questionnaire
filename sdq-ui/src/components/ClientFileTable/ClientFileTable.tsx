@@ -31,7 +31,7 @@ function UploadFileTable() {
           />
         </div>
       </form>
-      <table className="table">
+      <table>
         <thead>
           <tr>
             <th>Name</th>

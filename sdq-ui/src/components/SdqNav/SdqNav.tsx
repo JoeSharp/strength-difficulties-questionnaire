@@ -30,9 +30,7 @@ const SdqNav: React.FC = () => {
       </ul>
       <div className="nav-right">
         <AppNotifications />
-        <button className="form-button" onClick={onClickLogout}>
-          Logout
-        </button>
+        <button onClick={onClickLogout}>Logout</button>
       </div>
     </nav>
   );

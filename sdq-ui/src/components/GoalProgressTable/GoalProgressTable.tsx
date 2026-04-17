@@ -7,7 +7,7 @@ interface Props {
 
 const GoalProgressTable: React.FC<Props> = ({ goals }) => {
   return (
-    <table className="table">
+    <table>
       <thead>
         <tr>
           <th>Client ID</th>

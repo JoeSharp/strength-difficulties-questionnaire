@@ -37,7 +37,7 @@ $error: #d9534f;
   }
 }
 
-.form-button {
+button {
   padding: 0.6rem 1.2rem;
   background: $primary;
   color: white;
@@ -50,4 +50,13 @@ $error: #d9534f;
   &:hover {
     background: color.scale($primary, $lightness: -10%);
   }
+}
+
+.form-horizontal {
+    display: flex;
+    flex-direction: row;
+    
+    div {
+        padding-right: 1rem;
+    }
 }

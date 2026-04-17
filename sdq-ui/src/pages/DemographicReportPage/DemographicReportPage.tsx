@@ -38,7 +38,7 @@ function DemographicReportPage() {
         </select>
       </div>
 
-      <table className="table">
+      <table>
         <thead>
           <tr>
             <th>Option</th>

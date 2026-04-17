@@ -26,7 +26,7 @@ function FileUploadForm() {
           <label htmlFor="sdqFiles">File</label>
           <input type="file" multiple name="sdqFiles" />
         </div>
-        <input className="form-button" type="submit" value="Upload File(s)" />
+        <input type="submit" value="Upload File(s)" />
       </form>
     </>
   );

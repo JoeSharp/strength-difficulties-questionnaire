@@ -24,9 +24,7 @@ function GoalBasedOutcomePage() {
     <div>
       <h2>Goal Based Outcomes</h2>
       <GoalQueryForm value={goalQuery} onChange={setGoalQuery} />
-      <button className="form-button" onClick={onClickQuery}>
-        Search
-      </button>
+      <button onClick={onClickQuery}>Search</button>
 
       {queryGoalProgress.data && (
         <>

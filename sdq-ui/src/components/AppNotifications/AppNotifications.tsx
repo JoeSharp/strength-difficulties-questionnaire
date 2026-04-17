@@ -24,11 +24,7 @@ function AppNotifications() {
 
   return (
     <div className="notification-bell">
-      <button
-        id="bellBtn"
-        className="form-button"
-        onClick={() => setShow((p) => !p)}
-      >
+      <button id="bellBtn" onClick={() => setShow((p) => !p)}>
         🔔
         {messages.length > 0 && (
           <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">

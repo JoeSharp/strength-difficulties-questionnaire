@@ -5,8 +5,6 @@ import type { Assessor, DemographicFilter } from "@/api/types";
 import AssessorPicker from "../AssessorPicker/AssessorPicker";
 import DemographicFilterForm from "../DemographicFilterForm";
 
-import "./GoalQueryForm.scss";
-
 interface Props {
   value: GoalQueryDTO;
   onChange: React.Dispatch<React.SetStateAction<GoalQueryDTO>>;
@@ -56,18 +54,25 @@ const GoalQueryForm: React.FC<Props> = ({ value, onChange }) => {
   );
 
   const onFiltersChange = React.useCallback(
-    (filters: DemographicFilter[]) => {
-      onChange((prev) => ({
-        ...prev,
-        filters,
-      }));
+    (filtersChange: React.SetStateAction<DemographicFilter[]>) => {
+      onChange((prev) => {
+        const filters =
+          typeof filtersChange === "function"
+            ? filtersChange(prev.filters)
+            : filtersChange;
+
+        return {
+          ...prev,
+          filters,
+        };
+      });
     },
     [onChange],
   );
 
   return (
     <form>
-      <div className="goal-query-form-top">
+      <div className="form-horizontal">
         <div className="form-group">
           <label htmlFor="minProgress">Minimum Progress</label>
           <input
