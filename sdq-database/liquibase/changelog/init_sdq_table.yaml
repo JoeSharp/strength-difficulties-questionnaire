@@ -17,9 +17,6 @@ databaseChangeLog:
                   name: assessor
                   type: TEXT
               - column:
-                  name: category
-                  type: TEXT
-              - column:
                   name: statement
                   type: TEXT
               - column:
@@ -31,6 +28,13 @@ databaseChangeLog:
             tableName: sdq
             columnNames: period_id, assessor, statement
             constraintName: pk_sdq
+
+        - addForeignKeyConstraint:
+            baseTableName: sdq
+            baseColumnNames: statement
+            referencedTableName: sdq_statement
+            referencedColumnNames: statement_key
+            constraintName: fk_sdq_statement
 
         # Foreign key to reporting_period(period_id)
         - addForeignKeyConstraint:

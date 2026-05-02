@@ -43,8 +43,8 @@ public class ServiceConfig {
   }
 
   @Bean
-  public RefDataService refDataService() {
-    return new RefDataServiceImpl();
+  public RefDataService refDataService(StatementRepository statementRepository) {
+    return new RefDataServiceImpl(statementRepository);
   }
 
   @Bean

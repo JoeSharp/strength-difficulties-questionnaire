@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -90,6 +91,16 @@ public class SdqApiClient {
         .uri(REST_URL_SDQ + "/{periodId}/{assessor}/summary", periodId, assessor)
         .retrieve()
         .toEntity(SdqSubmissionSummary.class);
+  }
+
+  public HttpEntity<List<SdqSubmissionSummary>> getSdqWithProgress(GoalQueryDTO query) {
+    return restClient
+        .post()
+        .uri(REST_URL_SDQ + "/query")
+        .body(query)
+        .contentType(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<>() {});
   }
 
   public SdqClient createClient(SdqClient newClient) {

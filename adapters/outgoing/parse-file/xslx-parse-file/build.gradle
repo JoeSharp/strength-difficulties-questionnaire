@@ -5,6 +5,7 @@ version = '0.0.1-SNAPSHOT'
 
 dependencies {
     implementation project(":domain:ports:outgoing:parse-file")
+    implementation project(":domain:ports:incoming:service")
     implementation project(":domain:model")
     implementation("org.slf4j:slf4j-api:2.0.16") // Service
     compileOnly 'org.projectlombok:lombok:1.18.36'

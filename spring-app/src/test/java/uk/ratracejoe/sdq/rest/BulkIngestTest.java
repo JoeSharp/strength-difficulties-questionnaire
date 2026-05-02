@@ -52,7 +52,7 @@ class BulkIngestTest {
   @Test
   void bulkImportLifecycle() {
     var ingestResponse = client.ingestFile("Test File 1.xlsx");
-    assertThat(ingestResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(ingestResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(ingestResponse.getBody()).hasSize(1);
     SdqClient sdqClient = ingestResponse.getBody().getFirst().sdqClient();
 

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -13,10 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApiClient;
 import uk.ratracejoe.sdq.SdqFixtures;
+import uk.ratracejoe.sdq.dto.GoalQueryDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
-import uk.ratracejoe.sdq.model.sdq.Category;
+import uk.ratracejoe.sdq.model.demographics.DemographicField;
+import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
+import uk.ratracejoe.sdq.model.demographics.Gender;
 import uk.ratracejoe.sdq.model.sdq.Posture;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
@@ -32,6 +36,30 @@ class SdqSummaryTests {
   void beforeEach() {
     fixtures = new SdqFixtures(port);
     client = fixtures.getSdqClient();
+  }
+
+  /** Still a WIP */
+  @Disabled
+  @Test
+  void getSdqWithProgress() {
+    fixtures.givenAllTestFilesIngested();
+
+    List<SdqSubmissionSummary> summaries =
+        client
+            .getSdqWithProgress(
+                GoalQueryDTO.builder()
+                    .assessor(Assessor.School)
+                    .filters(
+                        List.of(
+                            new DemographicFilter(
+                                DemographicField.Gender, List.of(Gender.MALE.name()))))
+                    .minProgress(3)
+                    .from(LocalDate.of(2024, 5, 1))
+                    .to(LocalDate.of(2025, 11, 1))
+                    .build())
+            .getBody();
+
+    assertThat(summaries).isNotEmpty();
   }
 
   @Test
@@ -63,11 +91,11 @@ class SdqSummaryTests {
         .satisfies(
             s -> {
               assertThat(s.categorySubTotals())
-                  .containsEntry(Category.Emotional, 7)
-                  .containsEntry(Category.Peer, 3)
-                  .containsEntry(Category.Conduct, 6)
-                  .containsEntry(Category.HyperActivity, 8)
-                  .containsEntry(Category.ProSocial, 6);
+                  .containsEntry("Emotional", 7)
+                  .containsEntry("Peer", 3)
+                  .containsEntry("Conduct", 6)
+                  .containsEntry("HyperActivity", 8)
+                  .containsEntry("ProSocial", 6);
               assertThat(s.postureSubTotals())
                   .containsEntry(Posture.Internalising, 10)
                   .containsEntry(Posture.Externalising, 14);

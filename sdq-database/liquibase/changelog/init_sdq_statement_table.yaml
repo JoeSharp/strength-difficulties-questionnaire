@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-sdq-statement-table
+      author: Joe Sharp
+      labels: init
+      changes:
+        - createTable:
+            tableName: sdq_statement
+            columns:
+              - column:
+                  name: order
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: statement_key
+                  type: varchar(100)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: category
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_statement_category
+                    references: sdq_category(category)
+
+              - column:
+                  name: description
+                  type: varchar(255)
+
+              - column:
+                  name: is_true_positive
+                  type: boolean
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: load-sdq-statement-data
+      author: Joe Sharp
+      changes:
+        - loadData:
+            tableName: sdq_statement
+            file: changelog/data/sdq_statement.csv
+            separator: ","
+            encoding: UTF-8

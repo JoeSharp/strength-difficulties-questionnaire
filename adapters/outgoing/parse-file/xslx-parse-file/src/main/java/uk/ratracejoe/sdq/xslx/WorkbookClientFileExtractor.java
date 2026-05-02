@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.GboParsedPeriod;
@@ -15,16 +16,11 @@ import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 
+@RequiredArgsConstructor
 public class WorkbookClientFileExtractor {
   private final WorkbookSdqExtractor xslSdqExtractor;
   private final WorkbookGboExtractor workbookGboExtractor;
   private final WorkbookDemographicExtractor xslDemographicExtractor;
-
-  public WorkbookClientFileExtractor() {
-    xslSdqExtractor = new WorkbookSdqExtractor();
-    workbookGboExtractor = new WorkbookGboExtractor();
-    xslDemographicExtractor = new WorkbookDemographicExtractor();
-  }
 
   public ParsedFile extract(String name, Workbook workbook) throws SdqException {
     SdqClient sdqClient = xslDemographicExtractor.parse(workbook, name);

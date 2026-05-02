@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-sdq-category-table
+      author: Joe Sharp
+      labels: init
+      changes:
+        - createTable:
+            tableName: sdq_category
+            columns:
+              - column:
+                  name: category
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: posture
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: load-sdq-category-data
+      author: Joe Sharp
+      changes:
+        - loadData:
+            tableName: sdq_category
+            file: changelog/data/sdq_category.csv
+            separator: ","
+            encoding: UTF-8

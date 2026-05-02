@@ -5,6 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record SdqSubmissionSummary(
-    Map<Category, Integer> categorySubTotals,
+    Map<String, Integer> categorySubTotals,
     Map<Posture, Integer> postureSubTotals,
     int totalDifficulties) {}

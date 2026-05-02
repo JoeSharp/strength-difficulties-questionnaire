@@ -14,6 +14,11 @@ public class RepositoryConfig {
   }
 
   @Bean
+  public StatementRepository statementRepository(JdbcClient jdbcClient) {
+    return new StatementRepositoryImpl(jdbcClient);
+  }
+
+  @Bean
   public GboRepository gboRepository(JdbcClient jdbcClient) {
     return new GboRepositoryImpl(jdbcClient);
   }
@@ -29,8 +34,9 @@ public class RepositoryConfig {
   }
 
   @Bean
-  public SdqRepository sdqRepository(JdbcClient jdbcClient) {
-    return new SdqRepositoryImpl(jdbcClient);
+  public SdqRepository sdqRepository(
+      JdbcClient jdbcClient, StatementRepository statementRepository) {
+    return new SdqRepositoryImpl(jdbcClient, statementRepository);
   }
 
   @Bean

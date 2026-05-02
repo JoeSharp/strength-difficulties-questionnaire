@@ -7,12 +7,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
 import uk.ratracejoe.sdq.model.sdq.*;
+import uk.ratracejoe.sdq.service.RefDataService;
 
+@RequiredArgsConstructor
 public class WorkbookSdqExtractor {
   private static final Logger LOGGER = getLogger(WorkbookSdqExtractor.class);
 
@@ -26,6 +29,8 @@ public class WorkbookSdqExtractor {
           new AssessorRow(Assessor.Parent2, 44),
           new AssessorRow(Assessor.School, 75),
           new AssessorRow(Assessor.Child, 105));
+
+  private final RefDataService refDataService;
 
   public List<SdqReportingPeriod> parse(UUID clientId, Workbook workbook) {
     return StreamSupport.stream(workbook.spliterator(), false)
@@ -74,8 +79,9 @@ public class WorkbookSdqExtractor {
   }
 
   private List<StatementResponse> getStatementResponses(Sheet sheet, int startRow) {
-    return IntStream.range(0, Statement.values().length)
-        .mapToObj(i -> getStatementResponse(sheet, Statement.values()[i], i + startRow))
+    List<Statement> statements = refDataService.getStatements();
+    return IntStream.range(0, statements.size())
+        .mapToObj(i -> getStatementResponse(sheet, statements.get(i), i + startRow))
         .toList();
   }
 
