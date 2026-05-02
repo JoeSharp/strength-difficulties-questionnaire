@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import uk.ratracejoe.sdq.SdqApi;
+import uk.ratracejoe.sdq.SdqApiClient;
+import uk.ratracejoe.sdq.SdqFixtures;
 import uk.ratracejoe.sdq.dto.GoalQueryDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
@@ -22,32 +22,23 @@ import uk.ratracejoe.sdq.model.gbo.GoalProgress;
 @ActiveProfiles("test")
 class GoalAnalyticTests {
 
-  private SdqApi sdqApi;
+  private SdqFixtures fixtures;
+  private SdqApiClient client;
 
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeEach() {
-    sdqApi = new SdqApi(port);
-    sdqApi.clearDatabase();
+    fixtures = new SdqFixtures(port);
+    client = fixtures.getSdqClient();
   }
 
   @Test
   void getGoalsWithProgress() {
-    var response =
-        sdqApi.ingestFile(
-            "Test File 1.xlsx",
-            "Test File 4.xlsx",
-            "Test File 5.xlsx",
-            "Test File 6.xlsx",
-            "Test File 7.xlsx",
-            "Test File 8.xlsx",
-            "Test File 9.xlsx",
-            "Test File 10.xlsx");
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    fixtures.givenAllTestFilesIngested();
 
     List<GoalProgress> result =
-        sdqApi
+        client
             .getGoalsWithProgress(
                 GoalQueryDTO.builder()
                     .assessor(Assessor.School)

@@ -10,20 +10,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
-import uk.ratracejoe.sdq.SdqApi;
+import uk.ratracejoe.sdq.SdqApiClient;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ManageClientTest {
-  private SdqApi sdqApi;
+  private SdqApiClient client;
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeAll() {
-    sdqApi = new SdqApi(port);
-    sdqApi.clearDatabase();
+    client = new SdqApiClient(port);
+    client.clearDatabase();
   }
 
   @Test
@@ -41,21 +41,21 @@ class ManageClientTest {
             .interventionTypes(List.of(InterventionType.IA, InterventionType.CCPT))
             .aces(2)
             .build();
-    SdqClient client = sdqApi.createClient(toCreate);
-    assertThat(client)
+    SdqClient sdqClient = this.client.createClient(toCreate);
+    assertThat(sdqClient)
         .extracting(SdqClient::interventionTypes, list(InterventionType.class))
         .containsExactlyInAnyOrder(InterventionType.IA, InterventionType.CCPT);
 
     SdqClient toUpdate =
         SdqClient.builder()
-            .clientId(client.clientId())
+            .clientId(sdqClient.clientId())
             .codeName("Arnold Rimmer")
             .careExperience(CareExperience.KINSHIP)
             .disabilityType(DisabilityType.COGNITIVE_OR_MEMORY)
             .interventionTypes(List.of(InterventionType.IA, InterventionType.PTP))
             .build();
-    SdqClient updated = sdqApi.updateClient(toUpdate);
-    SdqClient afterUpdate = sdqApi.getClient(client.clientId());
+    SdqClient updated = this.client.updateClient(toUpdate);
+    SdqClient afterUpdate = this.client.getClient(sdqClient.clientId());
 
     assertThat(updated).isEqualTo(afterUpdate);
     assertThat(updated).extracting(SdqClient::fundingSource).isEqualTo(FundingSource.EHCP);

@@ -3,13 +3,17 @@ package uk.ratracejoe.sdq.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import uk.ratracejoe.sdq.SdqApi;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.SdqApiClient;
+import uk.ratracejoe.sdq.SdqFixtures;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.ReportingPeriod;
+import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.Council;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
@@ -20,33 +24,23 @@ import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class BulkIngestTest {
-  private SdqApi sdqApi;
+  private SdqFixtures fixtures;
+  private SdqApiClient client;
 
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeAll() {
-    sdqApi = new SdqApi(port);
-    sdqApi.clearDatabase();
+    fixtures = new SdqFixtures(port);
+    client = fixtures.getSdqClient();
   }
 
   @Test
   void getFilteredFiles() {
-    ResponseEntity<List<ParsedFile>> created =
-        sdqApi.ingestFile(
-            "Test File 1.xlsx",
-            "Test File 4.xlsx",
-            "Test File 5.xlsx",
-            "Test File 6.xlsx",
-            "Test File 7.xlsx",
-            "Test File 8.xlsx",
-            "Test File 9.xlsx",
-            "Test File 10.xlsx");
-    assertThat(created.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(created.getBody()).hasSize(8);
+    fixtures.givenAllTestFilesIngested();
 
     var fileResponse =
-        sdqApi.searchClients(
+        client.searchClients(
             List.of(
                 new DemographicFilter(DemographicField.Gender, List.of(Gender.MALE.name())),
                 new DemographicFilter(
@@ -57,21 +51,22 @@ class BulkIngestTest {
 
   @Test
   void bulkImportLifecycle() {
-    var ingestResponse = sdqApi.ingestFile("Test File 1.xlsx");
+    var ingestResponse = client.ingestFile("Test File 1.xlsx");
     assertThat(ingestResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(ingestResponse.getBody()).hasSize(1);
-    SdqClient client = ingestResponse.getBody().getFirst().sdqClient();
+    SdqClient sdqClient = ingestResponse.getBody().getFirst().sdqClient();
 
-    List<ReportingPeriod> periods = sdqApi.getSdqReportingPeriods(client.clientId()).getBody();
+    List<ReportingPeriod> periods =
+        this.client.getSdqReportingPeriods(sdqClient.clientId()).getBody();
     assertThat(periods).hasSizeGreaterThan(1);
     ReportingPeriod period = periods.getFirst();
 
     SdqSubmission sdqSubmission =
-        sdqApi.getSdqSubmission(period.periodId(), Assessor.Parent1).getBody();
+        this.client.getSdqSubmission(period.periodId(), Assessor.Parent1).getBody();
     assertThat(sdqSubmission).isNotNull();
 
     SdqSubmissionSummary sdqSubmissionSummary =
-        sdqApi.getSdqSubmissionSummary(period.periodId(), Assessor.Parent1).getBody();
+        this.client.getSdqSubmissionSummary(period.periodId(), Assessor.Parent1).getBody();
     assertThat(sdqSubmissionSummary).isNotNull();
   }
 }

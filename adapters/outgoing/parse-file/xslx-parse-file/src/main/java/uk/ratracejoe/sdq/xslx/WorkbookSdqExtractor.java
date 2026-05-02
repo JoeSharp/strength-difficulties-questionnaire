@@ -3,21 +3,21 @@ package uk.ratracejoe.sdq.xslx;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.ReportingPeriod;
 import uk.ratracejoe.sdq.model.sdq.*;
 
 public class WorkbookSdqExtractor {
   private static final Logger LOGGER = getLogger(WorkbookSdqExtractor.class);
 
   private static final String SHEET_NAME_PREFIX = "SDQ Period";
+  private static final Integer INVALID_SCORE = -1;
   private static final int[] COL_SCORES = {4, 5, 6};
 
   private static final List<AssessorRow> FIRST_ROWS =
@@ -31,7 +31,16 @@ public class WorkbookSdqExtractor {
     return StreamSupport.stream(workbook.spliterator(), false)
         .filter(this::isSDQ)
         .map(sheet -> this.parseSdqPeriod(clientId, sheet))
+        .filter(this::isPopulated)
         .toList();
+  }
+
+  private boolean isPopulated(SdqReportingPeriod period) {
+    return !period.sdq().values().stream()
+        .map(SdqSubmission::scores)
+        .flatMap(List::stream)
+        .map(SdqScore::score)
+        .allMatch(INVALID_SCORE::equals);
   }
 
   private boolean isSDQ(Sheet sheet) {
@@ -42,7 +51,15 @@ public class WorkbookSdqExtractor {
     Row row = sheet.getRow(rowIndex);
     if (Objects.isNull(row)) {
       LOGGER.warn("Could not get row {}", rowIndex);
-      return 0;
+      return INVALID_SCORE;
+    }
+
+    boolean allBlank =
+        Arrays.stream(COL_SCORES)
+            .mapToObj(row::getCell)
+            .allMatch(c -> CellType.BLANK.equals(c.getCellType()));
+    if (allBlank) {
+      return INVALID_SCORE;
     }
 
     return Arrays.stream(COL_SCORES)
@@ -57,7 +74,7 @@ public class WorkbookSdqExtractor {
   }
 
   private List<StatementResponse> getStatementResponses(Sheet sheet, int startRow) {
-    return IntStream.range(0, Statement.values().length - 1)
+    return IntStream.range(0, Statement.values().length)
         .mapToObj(i -> getStatementResponse(sheet, Statement.values()[i], i + startRow))
         .toList();
   }
@@ -83,10 +100,18 @@ public class WorkbookSdqExtractor {
         .period(
             ReportingPeriod.builder()
                 .periodId(periodId)
-                .period(LocalDate.now()) // Figure out the right value later!
+                .period(findPeriodDate(sheet))
                 .clientId(clientId)
                 .build())
         .sdq(sdq)
         .build();
+  }
+
+  private LocalDate findPeriodDate(Sheet sheet) {
+    return Optional.ofNullable(sheet.getRow(5))
+        .map(row -> row.getCell(3))
+        .map(Cell::getLocalDateTimeCellValue)
+        .map(LocalDateTime::toLocalDate)
+        .orElseGet(LocalDate::now);
   }
 }

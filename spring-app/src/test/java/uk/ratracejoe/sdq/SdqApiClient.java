@@ -11,12 +11,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import uk.ratracejoe.sdq.dto.GoalQueryDTO;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.ParsedFile;
+import uk.ratracejoe.sdq.model.ReportingPeriod;
+import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
@@ -25,7 +30,7 @@ import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
 @RequiredArgsConstructor
-public class SdqApi {
+public class SdqApiClient {
   private static final String REST_URL_ADMIN = "/api/admin";
   private static final String REST_URL_UPLOAD = "/api/upload";
   private static final String REST_URL_CLIENT = "/api/client";
@@ -33,7 +38,7 @@ public class SdqApi {
   private static final String REST_URL_GOAL = "/api/goal";
   private final RestClient restClient;
 
-  public SdqApi(int port) {
+  public SdqApiClient(int port) {
     this.restClient = RestClient.builder().baseUrl("http://localhost:" + port).build();
   }
 

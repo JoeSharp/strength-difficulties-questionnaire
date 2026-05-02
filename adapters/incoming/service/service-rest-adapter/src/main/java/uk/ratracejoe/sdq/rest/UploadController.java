@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.ParsedFile;
@@ -20,6 +18,7 @@ public class UploadController {
   private final UploadService uploadService;
 
   @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
   public List<ParsedFile> uploadFiles(@RequestParam List<MultipartFile> sdqFiles)
       throws SdqException {
     List<ParsedFile> results = new ArrayList<>();

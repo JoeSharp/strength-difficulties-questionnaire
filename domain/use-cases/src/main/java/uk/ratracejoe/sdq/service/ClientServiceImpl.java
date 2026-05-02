@@ -10,7 +10,8 @@ import uk.ratracejoe.sdq.model.demographics.DemographicField;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.demographics.DemographicReport;
 import uk.ratracejoe.sdq.model.demographics.InterventionType;
-import uk.ratracejoe.sdq.repository.*;
+import uk.ratracejoe.sdq.repository.ClientRepository;
+import uk.ratracejoe.sdq.repository.InterventionTypeRepository;
 
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
