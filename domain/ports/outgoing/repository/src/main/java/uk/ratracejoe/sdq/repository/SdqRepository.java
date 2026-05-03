@@ -8,6 +8,7 @@ import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.sdq.SdqProgress;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
+import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
 public interface SdqRepository {
 
@@ -19,10 +20,12 @@ public interface SdqRepository {
 
   List<SdqProgress> getSdqProgress(Assessor assessor, LocalDate from, LocalDate to);
 
-  List<SdqSubmission> getFilteredSdqs(
+  List<SdqSubmissionSummary> getFilteredSdqs(
       Assessor assessor,
       String category,
       List<DemographicFilter> filters,
       LocalDate from,
       LocalDate to);
+
+  SdqSubmissionSummary getSummary(UUID periodId, Assessor assessor);
 }

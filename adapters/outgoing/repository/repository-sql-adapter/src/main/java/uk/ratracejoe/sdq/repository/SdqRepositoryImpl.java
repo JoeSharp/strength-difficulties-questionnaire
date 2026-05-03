@@ -1,17 +1,15 @@
 package uk.ratracejoe.sdq.repository;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
-import uk.ratracejoe.sdq.model.sdq.SdqProgress;
-import uk.ratracejoe.sdq.model.sdq.SdqScore;
-import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
+import uk.ratracejoe.sdq.model.sdq.*;
 
 @RequiredArgsConstructor
 public class SdqRepositoryImpl implements SdqRepository {
@@ -57,13 +55,93 @@ public class SdqRepositoryImpl implements SdqRepository {
   }
 
   @Override
-  public List<SdqSubmission> getFilteredSdqs(
+  public List<SdqSubmissionSummary> getFilteredSdqs(
       Assessor assessor,
       String category,
       List<DemographicFilter> filters,
       LocalDate from,
       LocalDate to) {
-    return null;
+    return Collections.emptyList();
+  }
+
+  private static final String GET_SUMMARY_SQL =
+      """
+          WITH base AS (
+            SELECT
+              s.statement AS statement_key,
+              st.category AS category,
+              s.score AS score,
+              c.posture AS posture
+            FROM
+              sdq s
+              INNER JOIN sdq_statement st ON st.statement_key = s.statement
+              INNER JOIN sdq_category c ON c.category = st.category
+              WHERE period_id = :periodId AND assessor = :assessor
+          ),
+
+          category_totals AS (
+            SELECT category, SUM(score) AS total
+            FROM base
+            GROUP BY category
+          ),
+
+          posture_totals AS (
+            SELECT posture, SUM(score) AS total
+            FROM base
+            GROUP BY posture
+          ),
+
+          total_difficulties AS (
+            SELECT SUM(score) AS total
+            FROM base
+            WHERE posture <> 'ProSocial'
+          )
+
+          SELECT
+            (SELECT JSONB_OBJECT_AGG(category, total) FROM category_totals) AS category_subtotals,
+            (SELECT JSONB_OBJECT_AGG(posture, total) FROM posture_totals) AS posture_subtotals,
+            (SELECT total FROM total_difficulties) AS total_difficulties;
+              """;
+
+  @Override
+  public SdqSubmissionSummary getSummary(UUID periodId, Assessor assessor) {
+    return jdbcClient
+        .sql(GET_SUMMARY_SQL)
+        .param("periodId", periodId)
+        .param("assessor", assessor.name())
+        .query(
+            (rs, rowNum) -> {
+              String categoryJson = rs.getString("category_subtotals");
+              String postureJson = rs.getString("posture_subtotals");
+              Map<String, Integer> byCategory = parseMap(categoryJson);
+              Map<Posture, Integer> byPosture = convertPosture(parseMap(postureJson));
+
+              int totalDifficulties = rs.getInt("total_difficulties");
+
+              return SdqSubmissionSummary.builder()
+                  .categorySubTotals(byCategory)
+                  .postureSubTotals(byPosture)
+                  .totalDifficulties(totalDifficulties)
+                  .build();
+            })
+        .single();
+  }
+
+  private static Map<Posture, Integer> convertPosture(Map<String, Integer> raw) {
+    Map<Posture, Integer> result = new EnumMap<>(Posture.class);
+    raw.forEach((k, v) -> result.put(Posture.valueOf(k), v));
+    return result;
+  }
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+
+  private static Map<String, Integer> parseMap(String json) {
+    if (json == null) return Map.of();
+    try {
+      return MAPPER.readValue(json, new TypeReference<>() {});
+    } catch (Exception e) {
+      throw new SdqException("Failed to parse JSON: " + json, e);
+    }
   }
 
   private List<SdqScore> getScores(UUID periodId, Assessor assessor) {
@@ -77,10 +155,10 @@ public class SdqRepositoryImpl implements SdqRepository {
             sdq s
           INNER JOIN sdq_statement st
           ON s.statement = st.statement_key
-          WHERE period_id = ? AND assessor = ?
+          WHERE period_id = :periodId AND assessor = :assessor
         """)
-        .param(1, periodId)
-        .param(2, assessor.name())
+        .param("periodId", periodId)
+        .param("assessor", assessor.name())
         .query(
             (rs, rowNum) ->
                 SdqScore.builder()
