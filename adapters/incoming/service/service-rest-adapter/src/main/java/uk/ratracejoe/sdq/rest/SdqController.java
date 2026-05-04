@@ -41,7 +41,7 @@ public class SdqController {
   }
 
   @PostMapping("/query")
-  public List<SdqSubmissionSummary> getGoalsWithProgress(@RequestBody SdqQueryDTO query) {
+  public List<SdqSubmissionSummary> getFiltered(@RequestBody SdqQueryDTO query) {
     return sdqService.getSdqSummariesWithProgress(
         query.assessor(),
         query.category(),

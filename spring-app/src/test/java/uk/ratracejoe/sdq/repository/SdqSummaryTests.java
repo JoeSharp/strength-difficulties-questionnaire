@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -38,8 +37,6 @@ class SdqSummaryTests {
     client = fixtures.getSdqClient();
   }
 
-  /** Still a WIP */
-  @Disabled
   @Test
   void getSdqWithProgress() {
     fixtures.givenAllTestFilesIngested();
