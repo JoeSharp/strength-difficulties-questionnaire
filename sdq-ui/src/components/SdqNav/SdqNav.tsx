@@ -22,6 +22,9 @@ const SdqNav: React.FC = () => {
           <Link to="/gbo">GBO</Link>
         </li>
         <li>
+          <Link to="/sdq">SDQ</Link>
+        </li>
+        <li>
           <Link to="/demographic-report">Demographic Report</Link>
         </li>
         <li>

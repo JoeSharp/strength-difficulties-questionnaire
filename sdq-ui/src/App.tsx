@@ -6,6 +6,7 @@ import BulkUploadPage from "./pages/BulkUploadPage";
 import HomePage from "./pages/HomePage";
 import DemographicReportPage from "./pages/DemographicReportPage";
 import GoalBasedOutcomePage from "./pages/GoalBasedOutcomePage";
+import SdqResponsePage from "./pages/SdqResponsePage";
 
 import SdqNav from "./components/SdqNav";
 
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/demographic-report" element={<DemographicReportPage />} />
         <Route path="/gbo" element={<GoalBasedOutcomePage />} />
+        <Route path="/sdq" element={<SdqResponsePage />} />
         <Route path="/client/:id" element={<ClientFilePage />} />
         <Route path="/bulk-upload" element={<BulkUploadPage />} />
       </Routes>

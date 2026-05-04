@@ -1,4 +1,6 @@
-import type { Assessor } from "../types";
+import type { Assessor, DemographicFilter } from "../types";
+
+export const BASE_SDQ_URL = "/api/sdq";
 
 export interface SdqScore {
   statement: string;
@@ -69,4 +71,17 @@ export interface ReportingPeriod {
 export interface SdqReportingPeriod {
   period: ReportingPeriod;
   responses: Record<Assessor, SdqSubmission[]>;
+}
+
+export interface SdqSubmissionSummary {
+  categorySubTotals: Record<string, number>;
+  postureSubTotals: Record<string, number>;
+  totalDifficulties: number;
+}
+
+export interface SdqFilterDTO {
+  assessor: Assessor;
+  filters: DemographicFilter[];
+  from: string;
+  to: string;
 }
