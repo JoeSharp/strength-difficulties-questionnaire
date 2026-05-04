@@ -39,13 +39,8 @@ public class SdqServiceImpl implements SdqService {
   }
 
   @Override
-  public List<SdqSubmissionSummary> getSdqSummariesWithProgress(
-      Assessor assessor,
-      String category,
-      List<DemographicFilter> filters,
-      int minProgress,
-      LocalDate from,
-      LocalDate to) {
-    return sdqRepository.getFilteredSdqs(assessor, category, filters, from, to);
+  public List<SdqSubmissionSummary> querySdqSummaries(
+      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
+    return sdqRepository.getFiltered(assessor, filters, from, to);
   }
 }

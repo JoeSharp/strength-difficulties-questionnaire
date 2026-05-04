@@ -20,11 +20,6 @@ public interface SdqService {
 
   List<ReportingPeriod> getReportingPeriods(UUID clientId);
 
-  List<SdqSubmissionSummary> getSdqSummariesWithProgress(
-      Assessor assessor,
-      String category,
-      List<DemographicFilter> filters,
-      int minProgress,
-      LocalDate from,
-      LocalDate to);
+  List<SdqSubmissionSummary> querySdqSummaries(
+      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 }

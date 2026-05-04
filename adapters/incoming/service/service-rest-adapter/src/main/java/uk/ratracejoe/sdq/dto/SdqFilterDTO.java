@@ -7,10 +7,5 @@ import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 
 @Builder
-public record SdqQueryDTO(
-    Assessor assessor,
-    String category,
-    List<DemographicFilter> filters,
-    int minProgress,
-    LocalDate from,
-    LocalDate to) {}
+public record SdqFilterDTO(
+    Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {}

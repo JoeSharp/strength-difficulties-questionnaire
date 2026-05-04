@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApiClient;
 import uk.ratracejoe.sdq.SdqFixtures;
-import uk.ratracejoe.sdq.dto.GoalQueryDTO;
+import uk.ratracejoe.sdq.dto.SdqFilterDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
@@ -38,19 +38,18 @@ class SdqSummaryTests {
   }
 
   @Test
-  void getSdqWithProgress() {
+  void getFilteredSdqs() {
     fixtures.givenAllTestFilesIngested();
 
     List<SdqSubmissionSummary> summaries =
         client
-            .getSdqWithProgress(
-                GoalQueryDTO.builder()
+            .getFilteredSdqs(
+                SdqFilterDTO.builder()
                     .assessor(Assessor.School)
                     .filters(
                         List.of(
                             new DemographicFilter(
                                 DemographicField.Gender, List.of(Gender.MALE.name()))))
-                    .minProgress(3)
                     .from(LocalDate.of(2024, 5, 1))
                     .to(LocalDate.of(2025, 11, 1))
                     .build())

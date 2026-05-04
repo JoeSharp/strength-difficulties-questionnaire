@@ -19,6 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import uk.ratracejoe.sdq.dto.GoalQueryDTO;
+import uk.ratracejoe.sdq.dto.SdqFilterDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
@@ -93,7 +94,7 @@ public class SdqApiClient {
         .toEntity(SdqSubmissionSummary.class);
   }
 
-  public HttpEntity<List<SdqSubmissionSummary>> getSdqWithProgress(GoalQueryDTO query) {
+  public HttpEntity<List<SdqSubmissionSummary>> getFilteredSdqs(SdqFilterDTO query) {
     return restClient
         .post()
         .uri(REST_URL_SDQ + "/query")

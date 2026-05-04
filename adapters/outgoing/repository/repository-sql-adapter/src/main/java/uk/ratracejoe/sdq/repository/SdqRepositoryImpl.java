@@ -103,12 +103,8 @@ public class SdqRepositoryImpl implements SdqRepository {
                   """;
 
   @Override
-  public List<SdqSubmissionSummary> getFilteredSdqs(
-      Assessor assessor,
-      String category,
-      List<DemographicFilter> filters,
-      LocalDate from,
-      LocalDate to) {
+  public List<SdqSubmissionSummary> getFiltered(
+      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
     StringBuilder whereClause = new StringBuilder();
     if (!filters.isEmpty()) {
       whereClause.append(" AND ");

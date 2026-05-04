@@ -19,12 +19,8 @@ public interface SdqRepository {
 
   List<SdqSubmissionSummary> getSdqProgress(Assessor assessor, LocalDate from, LocalDate to);
 
-  List<SdqSubmissionSummary> getFilteredSdqs(
-      Assessor assessor,
-      String category,
-      List<DemographicFilter> filters,
-      LocalDate from,
-      LocalDate to);
+  List<SdqSubmissionSummary> getFiltered(
+      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
   SdqSubmissionSummary getSummary(UUID periodId, Assessor assessor);
 }
