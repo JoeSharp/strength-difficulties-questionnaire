@@ -9,11 +9,6 @@ import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 public class GboRepositoryImpl implements GboRepository {
   private final JdbcClient jdbcClient;
 
-  public static final String FIELD_GOAL_ID = "goal_id";
-  public static final String FIELD_ASSESSOR = "assessor";
-  public static final String FIELD_PERIOD_DATE = "period_date";
-  public static final String FIELD_SCORE = "score";
-
   public void save(GboSubmission domain) {
     jdbcClient
         .sql(
