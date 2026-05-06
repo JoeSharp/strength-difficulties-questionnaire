@@ -32,8 +32,10 @@ function SdqResponsePage() {
     <div>
       <h2>Strength Difficulties Responses</h2>
       <SdqQueryForm value={sdqFilter} onChange={setSdqFilter} />
-      <button onClick={onClickQuery}>Search</button>
-      <button onClick={onClickQueryProgress}>Search Progress</button>
+      <div className="button-group">
+        <button onClick={onClickQuery}>Search</button>
+        <button onClick={onClickQueryProgress}>Search Progress</button>
+      </div>
 
       {sdqSummaries.data && (
         <>

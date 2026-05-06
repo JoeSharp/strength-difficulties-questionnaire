@@ -52,6 +52,12 @@ button {
   }
 }
 
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 .form-horizontal {
     display: flex;
     flex-direction: row;
