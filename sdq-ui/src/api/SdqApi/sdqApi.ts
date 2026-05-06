@@ -74,9 +74,25 @@ export interface SdqReportingPeriod {
 }
 
 export interface SdqSubmissionSummary {
+  clientId: string;
+  period: string;
   categorySubTotals: Record<string, number>;
   postureSubTotals: Record<string, number>;
   totalDifficulties: number;
+}
+
+export type Progress = {
+  last: number;
+  first: number;
+  delta: number;
+};
+
+export interface SdqProgressSummary {
+  clientId: string;
+  assessor: Assessor;
+  categoryProgress: Record<string, Progress>;
+  postureProgress: Record<string, Progress>;
+  totalDifficulties: Progress;
 }
 
 export interface SdqFilterDTO {

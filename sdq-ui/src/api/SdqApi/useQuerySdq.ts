@@ -7,7 +7,7 @@ import {
   type SdqSubmissionSummary,
 } from "./sdqApi";
 
-function useQuerySdqSummaries() {
+function useQuerySdq() {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
   return useMutation<SdqSubmissionSummary[], Error, SdqFilterDTO>({
@@ -38,4 +38,4 @@ function useQuerySdqSummaries() {
   });
 }
 
-export default useQuerySdqSummaries;
+export default useQuerySdq;

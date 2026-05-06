@@ -1,8 +1,10 @@
 import React from "react";
 import type { SdqFilterDTO } from "@/api/SdqApi/sdqApi";
-import useFilterSdqSummaries from "@/api/SdqApi/useFilterSdqSummaries";
+import useQuerySdq from "@/api/SdqApi/useQuerySdq";
+import useQuerySdqProgress from "@/api/SdqApi/useQuerySdqProgress";
 import SdqQueryForm from "@/components/SdqQueryForm";
 import SdqSummaryTable from "@/components/SdqSummaryTable";
+import SdqProgressTable from "../../components/SdqProgressTable";
 
 const DEFAULT_GOAL_QUERY: SdqFilterDTO = {
   assessor: "School",
@@ -11,24 +13,40 @@ const DEFAULT_GOAL_QUERY: SdqFilterDTO = {
   to: "2026-01-01",
 };
 function SdqResponsePage() {
-  const querySdqSummaries = useFilterSdqSummaries();
+  const sdqSummaries = useQuerySdq();
+  const sdqProgress = useQuerySdqProgress();
   const [sdqFilter, setSdqFilter] =
     React.useState<SdqFilterDTO>(DEFAULT_GOAL_QUERY);
 
   const onClickQuery = React.useCallback(() => {
-    querySdqSummaries.mutate(sdqFilter);
-  }, [sdqFilter, querySdqSummaries]);
+    sdqSummaries.mutate(sdqFilter);
+    sdqProgress.reset();
+  }, [sdqFilter, sdqSummaries]);
+
+  const onClickQueryProgress = React.useCallback(() => {
+    sdqProgress.mutate(sdqFilter);
+    sdqSummaries.reset();
+  }, [sdqFilter, sdqProgress]);
 
   return (
     <div>
       <h2>Strength Difficulties Responses</h2>
       <SdqQueryForm value={sdqFilter} onChange={setSdqFilter} />
       <button onClick={onClickQuery}>Search</button>
+      <button onClick={onClickQueryProgress}>Search Progress</button>
 
-      {querySdqSummaries.data && (
+      {sdqSummaries.data && (
         <>
-          <h3>{querySdqSummaries.data.length} matching SDQ responses found</h3>
-          <SdqSummaryTable submissions={querySdqSummaries.data} />
+          <h3>{sdqSummaries.data.length} matching SDQ responses found</h3>
+          <SdqSummaryTable submissions={sdqSummaries.data} />
+        </>
+      )}
+      {sdqProgress.data && (
+        <>
+          <h3>
+            {sdqProgress.data.length} matching SDQ progress summaries found
+          </h3>
+          <SdqProgressTable summaries={sdqProgress.data} />
         </>
       )}
     </div>
