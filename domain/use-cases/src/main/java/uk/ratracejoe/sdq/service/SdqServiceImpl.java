@@ -8,6 +8,7 @@ import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
+import uk.ratracejoe.sdq.model.sdq.SdqProgressSummary;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 import uk.ratracejoe.sdq.repository.ReportingPeriodRepository;
@@ -30,12 +31,17 @@ public class SdqServiceImpl implements SdqService {
   @Override
   public SdqSubmissionSummary getSubmissionSummary(UUID periodId, Assessor assessor) {
     return sdqRepository.getSummary(periodId, assessor);
-    // return forSubmission(getSubmission(periodId, assessor));
   }
 
   @Override
   public List<ReportingPeriod> getReportingPeriods(UUID clientId) {
     return reportingPeriodRepository.getForClient(clientId);
+  }
+
+  @Override
+  public List<SdqProgressSummary> querySdqProgress(
+      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
+    return sdqRepository.getSdqProgress(assessor, filters, from, to);
   }
 
   @Override

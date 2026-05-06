@@ -7,6 +7,7 @@ import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
+import uk.ratracejoe.sdq.model.sdq.SdqProgressSummary;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
@@ -19,6 +20,9 @@ public interface SdqService {
   SdqSubmissionSummary getSubmissionSummary(UUID periodId, Assessor assessor);
 
   List<ReportingPeriod> getReportingPeriods(UUID clientId);
+
+  List<SdqProgressSummary> querySdqProgress(
+      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
   List<SdqSubmissionSummary> querySdqSummaries(
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);

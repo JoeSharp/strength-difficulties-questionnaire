@@ -21,6 +21,7 @@ import uk.ratracejoe.sdq.model.demographics.DemographicField;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.demographics.Gender;
 import uk.ratracejoe.sdq.model.sdq.Posture;
+import uk.ratracejoe.sdq.model.sdq.SdqProgressSummary;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,12 +39,12 @@ class SdqSummaryTests {
   }
 
   @Test
-  void getFilteredSdqs() {
+  void querySdq() {
     fixtures.givenAllTestFilesIngested();
 
     List<SdqSubmissionSummary> summaries =
         client
-            .getFilteredSdqs(
+            .querySdq(
                 SdqFilterDTO.builder()
                     .assessor(Assessor.School)
                     .filters(
@@ -55,7 +56,28 @@ class SdqSummaryTests {
                     .build())
             .getBody();
 
-    assertThat(summaries).isNotEmpty();
+    assertThat(summaries).hasSize(6);
+  }
+
+  @Test
+  void querySdqProgress() {
+    fixtures.givenAllTestFilesIngested();
+
+    List<SdqProgressSummary> progress =
+        client
+            .querySdqProgress(
+                SdqFilterDTO.builder()
+                    .assessor(Assessor.School)
+                    .filters(
+                        List.of(
+                            new DemographicFilter(
+                                DemographicField.Gender, List.of(Gender.MALE.name()))))
+                    .from(LocalDate.of(2024, 5, 1))
+                    .to(LocalDate.of(2025, 11, 1))
+                    .build())
+            .getBody();
+
+    assertThat(progress).hasSize(2);
   }
 
   @Test

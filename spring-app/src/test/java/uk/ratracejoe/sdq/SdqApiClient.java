@@ -28,6 +28,7 @@ import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.gbo.GoalProgress;
+import uk.ratracejoe.sdq.model.sdq.SdqProgressSummary;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
@@ -94,7 +95,17 @@ public class SdqApiClient {
         .toEntity(SdqSubmissionSummary.class);
   }
 
-  public HttpEntity<List<SdqSubmissionSummary>> getFilteredSdqs(SdqFilterDTO query) {
+  public HttpEntity<List<SdqProgressSummary>> querySdqProgress(SdqFilterDTO query) {
+    return restClient
+        .post()
+        .uri(REST_URL_SDQ + "/query/progress")
+        .body(query)
+        .contentType(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<>() {});
+  }
+
+  public HttpEntity<List<SdqSubmissionSummary>> querySdq(SdqFilterDTO query) {
     return restClient
         .post()
         .uri(REST_URL_SDQ + "/query")

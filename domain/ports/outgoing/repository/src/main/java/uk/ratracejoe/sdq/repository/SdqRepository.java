@@ -6,6 +6,7 @@ import java.util.UUID;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
+import uk.ratracejoe.sdq.model.sdq.SdqProgressSummary;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmission;
 import uk.ratracejoe.sdq.model.sdq.SdqSubmissionSummary;
 
@@ -17,7 +18,8 @@ public interface SdqRepository {
 
   int deleteAll();
 
-  List<SdqSubmissionSummary> getSdqProgress(Assessor assessor, LocalDate from, LocalDate to);
+  List<SdqProgressSummary> getSdqProgress(
+      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
   List<SdqSubmissionSummary> getFiltered(
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
