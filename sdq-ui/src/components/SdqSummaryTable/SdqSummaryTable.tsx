@@ -3,10 +3,10 @@ import type { SdqSubmissionSummary } from "@/api/SdqApi/sdqApi";
 import KeyedCountCell from "./KeyedCountCell";
 
 interface Props {
-  submissions: SdqSubmissionSummary[];
+  summaries: SdqSubmissionSummary[];
 }
 
-const SdqSummaryTable: React.FC<Props> = ({ submissions }) => {
+const SdqSummaryTable: React.FC<Props> = ({ summaries }) => {
   return (
     <table>
       <thead>
@@ -19,17 +19,17 @@ const SdqSummaryTable: React.FC<Props> = ({ submissions }) => {
         </tr>
       </thead>
       <tbody>
-        {submissions.map((submission, i) => (
+        {summaries.map((summary, i) => (
           <tr key={i}>
-            <td>{submission.clientId}</td>
-            <td>{submission.period}</td>
+            <td>{summary.clientId}</td>
+            <td>{summary.period}</td>
             <td>
-              <KeyedCountCell data={submission.categorySubTotals} />
+              <KeyedCountCell data={summary.categorySubTotals} />
             </td>
             <td>
-              <KeyedCountCell data={submission.postureSubTotals} />
+              <KeyedCountCell data={summary.postureSubTotals} />
             </td>
-            <td>{submission.totalDifficulties}</td>
+            <td>{summary.totalDifficulties}</td>
           </tr>
         ))}
       </tbody>

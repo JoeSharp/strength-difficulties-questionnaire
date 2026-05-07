@@ -60,4 +60,9 @@ public class GoalServiceImpl implements GoalService {
   public Goal getGoal(UUID goalId) {
     return goalRepository.get(goalId);
   }
+
+  @Override
+  public GoalProgress getGoalProgress(UUID goalId, Assessor assessor) {
+    return goalRepository.getGoalProgress(goalId, assessor);
+  }
 }

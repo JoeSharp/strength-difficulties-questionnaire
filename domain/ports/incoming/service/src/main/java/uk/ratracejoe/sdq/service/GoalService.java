@@ -27,4 +27,6 @@ public interface GoalService {
   Goal updateGoal(Goal goal);
 
   Goal getGoal(UUID goalId);
+
+  GoalProgress getGoalProgress(UUID goalId, Assessor assessor);
 }

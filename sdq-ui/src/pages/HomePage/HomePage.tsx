@@ -1,12 +1,12 @@
 import type React from "react";
 
-import ClientFileTable from "@/components/ClientFileTable";
+import ClientListView from "@/pages/ClientFilePage/ClientListView";
 
 const HomePage: React.FC = () => {
   {
     return (
       <>
-        <ClientFileTable />
+        <ClientListView />
       </>
     );
   }

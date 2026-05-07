@@ -41,6 +41,12 @@ public class SdqController {
     return sdqService.getSubmissionSummary(periodId, assessor);
   }
 
+  @GetMapping("/{clientId}/{assessor}/progress")
+  public SdqProgressSummary getSdqProgress(
+      @PathVariable UUID clientId, @PathVariable Assessor assessor) {
+    return sdqService.getSdqProgressForClient(clientId, assessor);
+  }
+
   @PostMapping("/query")
   public List<SdqSubmissionSummary> query(@RequestBody SdqFilterDTO query) {
     return sdqService.querySdqSummaries(

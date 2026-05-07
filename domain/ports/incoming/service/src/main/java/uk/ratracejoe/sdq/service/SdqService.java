@@ -26,4 +26,6 @@ public interface SdqService {
 
   List<SdqSubmissionSummary> querySdqSummaries(
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
+
+  SdqProgressSummary getSdqProgressForClient(UUID clientId, Assessor assessor);
 }

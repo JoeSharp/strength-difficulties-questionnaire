@@ -1,36 +1,39 @@
 import { useQuery } from "@tanstack/react-query";
 import useInProgressContext from "@/context/InProgressContext";
 import useAppNotificationContext from "@/context/AppNotificationContext";
-import { BASE_GOAL_URL, type Goal } from "./gboApi";
+import { BASE_GOAL_URL, type GoalProgress } from "./gboApi";
+import type { Assessor } from "@/api/types";
 
-function useGoalsForClient(clientId: string) {
+function useGoalProgress(goalId: string, assessor: Assessor) {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
 
-  return useQuery<Goal[], void>({
-    queryKey: ["goalsForClient", clientId],
+  return useQuery<GoalProgress>({
+    queryKey: ["goalProgress", goalId, assessor],
+    enabled: !!goalId,
     queryFn: async () => {
-      const jobId = beginJob("Fetching goals");
+      const jobId = beginJob("Fetching goal");
 
       try {
-        const response = await fetch(`${BASE_GOAL_URL}/forClient/${clientId}`);
+        const response = await fetch(
+          `${BASE_GOAL_URL}/${goalId}/progress/${assessor}`,
+        );
 
         if (!response.ok) {
           addMessage(
             "danger",
             response.status,
-            "Failed to fetch goals: " + response.statusText,
+            "Failed to fetch goal: " + response.statusText,
           );
           throw new Error("Network response was not ok");
         }
 
-        return await response.json(); // List<Goal>
+        return await response.json();
       } finally {
         endJob(jobId);
       }
     },
-    enabled: !!clientId, // don’t run until clientId is available
   });
 }
 
-export default useGoalsForClient;
+export default useGoalProgress;

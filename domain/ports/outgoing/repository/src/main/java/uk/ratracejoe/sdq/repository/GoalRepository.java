@@ -27,4 +27,6 @@ public interface GoalRepository {
   int update(Goal goal);
 
   Goal get(UUID goalId);
+
+  GoalProgress getGoalProgress(UUID goalId, Assessor assessor);
 }

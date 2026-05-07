@@ -49,4 +49,9 @@ public class SdqServiceImpl implements SdqService {
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
     return sdqRepository.getFiltered(assessor, filters, from, to);
   }
+
+  @Override
+  public SdqProgressSummary getSdqProgressForClient(UUID clientId, Assessor assessor) {
+    return sdqRepository.getProgressForClient(clientId, assessor);
+  }
 }

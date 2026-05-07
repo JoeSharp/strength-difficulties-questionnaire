@@ -1,12 +1,11 @@
 import React from "react";
 
-import { useNavigate } from "react-router-dom";
 import useClients from "@/api/ClientApi/useClients";
+import ClientCard from "./ClientCard";
 
-function UploadFileTable() {
+function ClientListView() {
   const { clients } = useClients();
 
-  const navigate = useNavigate();
   const [nameToSearch, setNameToSearch] = React.useState<string>("");
   const onChangeNameToSearch: React.ChangeEventHandler<HTMLInputElement> =
     React.useCallback(({ target: { value } }) => {
@@ -20,7 +19,7 @@ function UploadFileTable() {
 
   return (
     <div>
-      <h4>Uploaded Files</h4>
+      <h2>Client List</h2>
       <form>
         <div className="form-group">
           <label htmlFor="name-to-search">Name</label>
@@ -31,28 +30,11 @@ function UploadFileTable() {
           />
         </div>
       </form>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>DOB</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredClients.map((client) => (
-            <tr
-              key={client.clientId}
-              className="clickable"
-              onClick={() => navigate(`/client/${client.clientId}`)}
-            >
-              <td>{client.codeName}</td>
-              <td>{client.dateOfBirth.toISOString().slice(0, 7)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {filteredClients.map((client) => (
+        <ClientCard client={client} />
+      ))}
     </div>
   );
 }
 
-export default UploadFileTable;
+export default ClientListView;

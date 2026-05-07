@@ -43,6 +43,47 @@ public class GoalRepositoryImpl implements GoalRepository {
   }
 
   @Override
+  public GoalProgress getGoalProgress(UUID goalId, Assessor assessor) {
+    return jdbcClient
+        .sql(
+            """
+                    SELECT DISTINCT
+                      g.client_id as client_id,
+                      o.goal_id as goal_id,
+                      g.description as goal_description,
+                    FIRST_VALUE(o.score) OVER (
+                            PARTITION BY g.client_id, o.goal_id
+                            ORDER BY o.period_date
+                    ) AS first_score,
+                    LAST_VALUE(o.score) OVER (
+                            PARTITION BY g.client_id, o.goal_id
+                            ORDER BY o.period_date
+                            RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+                    ) AS last_score
+                    FROM gbo_score o
+                    JOIN goal g ON g.goal_id = o.goal_id
+                    WHERE g.goal_id = :goal_id
+                    AND o.assessor = :assessor
+                    """)
+        .param("goal_id", goalId)
+        .param("assessor", assessor.name())
+        .query(
+            (rs, rowNum) ->
+                GoalProgress.builder()
+                    .assessor(assessor)
+                    .goal(
+                        Goal.builder()
+                            .clientId(rs.getObject("client_id", UUID.class))
+                            .goalId(rs.getObject("goal_id", UUID.class))
+                            .description(rs.getString("goal_description"))
+                            .build())
+                    .firstScore(rs.getInt("first_score"))
+                    .lastScore(rs.getInt("last_score"))
+                    .build())
+        .single();
+  }
+
+  @Override
   public List<Goal> getForClient(UUID clientId) {
     return jdbcClient
         .sql("SELECT goal_id, description FROM goal WHERE client_id = ?")

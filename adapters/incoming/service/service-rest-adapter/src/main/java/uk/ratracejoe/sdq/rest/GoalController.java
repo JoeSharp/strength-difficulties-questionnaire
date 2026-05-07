@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import uk.ratracejoe.sdq.dto.GoalQueryDTO;
+import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.gbo.GoalProgress;
@@ -37,6 +38,11 @@ public class GoalController {
   @GetMapping("/{goalId}")
   public Goal getGoal(@PathVariable UUID goalId) {
     return goalService.getGoal(goalId);
+  }
+
+  @GetMapping("/{goalId}/progress/{assessor}")
+  public GoalProgress getGoalProgress(@PathVariable UUID goalId, @PathVariable Assessor assessor) {
+    return goalService.getGoalProgress(goalId, assessor);
   }
 
   @PutMapping

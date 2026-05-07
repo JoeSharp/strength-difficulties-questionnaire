@@ -3,15 +3,14 @@ package uk.ratracejoe.sdq.repository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.sdq.*;
-
-import java.time.LocalDate;
-import java.util.*;
 
 @RequiredArgsConstructor
 public class SdqRepositoryImpl implements SdqRepository {
@@ -51,7 +50,37 @@ public class SdqRepositoryImpl implements SdqRepository {
     return jdbcClient.sql("DELETE FROM sdq").update();
   }
 
-  private static final String GET_FILTERED_PROGRESS_SUMMARY_SQL =
+  @Override
+  public SdqProgressSummary getProgressForClient(UUID clientId, Assessor assessor) {
+    String whereClause = "AND cl.client_id = :client_id";
+    Map<String, Object> params = new HashMap<>();
+    params.put("assessor", assessor.name());
+    params.put("client_id", clientId);
+    return jdbcClient
+        .sql(String.format(GET_PROGRESS_SUMMARY_SQL, whereClause))
+        .params(params)
+        .query(
+            (rs, rowNum) -> {
+              String categoryJson = rs.getString("category_progress");
+              String postureJson = rs.getString("posture_progress");
+              Map<String, Progress> byCategory = parseMap(categoryJson, new TypeReference<>() {});
+              Map<Posture, Progress> byPosture =
+                  convertPosture(parseMap(postureJson, new TypeReference<>() {}));
+
+              Progress totalDifficulties = parseProgress(rs.getString("total_progress"));
+
+              return SdqProgressSummary.builder()
+                  .clientId(clientId)
+                  .assessor(assessor)
+                  .categoryProgress(byCategory)
+                  .postureProgress(byPosture)
+                  .totalDifficulties(totalDifficulties)
+                  .build();
+            })
+        .single();
+  }
+
+  private static final String GET_PROGRESS_SUMMARY_SQL =
       """
               WITH base AS (
               SELECT
@@ -73,11 +102,9 @@ public class SdqRepositoryImpl implements SdqRepository {
                 c.category = st.category
               WHERE
                 assessor = :assessor
-                and p.period_date >= :period_from
-                and p.period_date < :period_to
                 %s
-                    ),
-                    posture_totals AS (
+              ),
+              posture_totals AS (
               SELECT
                 client_id,
                 period_date,
@@ -268,6 +295,8 @@ public class SdqRepositoryImpl implements SdqRepository {
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
     StringBuilder whereClause = new StringBuilder();
     if (!filters.isEmpty()) {
+      whereClause.append(" AND p.period_date >= :period_from ");
+      whereClause.append(" AND p.period_date < :period_to ");
       whereClause.append(" AND ");
       whereClause.append(ClientRepositoryImpl.filterSelectWhere("cl", filters));
     }
@@ -277,7 +306,7 @@ public class SdqRepositoryImpl implements SdqRepository {
     params.put("assessor", assessor.name());
     ClientRepositoryImpl.addFilters(params, filters);
     return jdbcClient
-        .sql(String.format(GET_FILTERED_PROGRESS_SUMMARY_SQL, whereClause))
+        .sql(String.format(GET_PROGRESS_SUMMARY_SQL, whereClause))
         .params(params)
         .query(
             (rs, rowNum) -> {

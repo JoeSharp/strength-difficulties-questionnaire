@@ -18,6 +18,8 @@ public interface SdqRepository {
 
   int deleteAll();
 
+  SdqProgressSummary getProgressForClient(UUID clientId, Assessor assessor);
+
   List<SdqProgressSummary> getSdqProgress(
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 

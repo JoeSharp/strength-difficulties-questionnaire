@@ -40,7 +40,7 @@ function SdqResponsePage() {
       {sdqSummaries.data && (
         <>
           <h3>{sdqSummaries.data.length} matching SDQ responses found</h3>
-          <SdqSummaryTable submissions={sdqSummaries.data} />
+          <SdqSummaryTable summaries={sdqSummaries.data} />
         </>
       )}
       {sdqProgress.data && (

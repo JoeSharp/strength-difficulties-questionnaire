@@ -7,7 +7,7 @@ function useGoal(goalId: string) {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
 
-  return useQuery<void, Goal>({
+  return useQuery<Goal>({
     queryKey: ["goal", goalId],
     enabled: !!goalId,
     queryFn: async () => {
