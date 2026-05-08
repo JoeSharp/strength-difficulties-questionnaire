@@ -4,16 +4,12 @@ import useUploadApi from "@/api/UploadApi/useUploadApi";
 function FileUploadForm() {
   const { onSubmitFile } = useUploadApi();
 
-  const onClickSubmit: React.FormEventHandler<HTMLFormElement> =
-    React.useCallback(
-      (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
+  const onClickSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
 
-        onSubmitFile(formData);
-      },
-      [onSubmitFile],
-    );
+    onSubmitFile(formData);
+  };
 
   return (
     <>

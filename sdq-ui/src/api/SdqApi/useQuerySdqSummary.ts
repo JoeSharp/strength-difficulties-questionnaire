@@ -8,7 +8,7 @@ function useQuerySdqSummary(periodId: string, assessor: Assessor) {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
   return useQuery<SdqSubmissionSummary>({
-    queryKey: ["sdqForPeriod", periodId, assessor],
+    queryKey: ["sdqSummary", periodId, assessor],
     queryFn: async () => {
       const jobId = beginJob("Querying SDQ summaries");
 

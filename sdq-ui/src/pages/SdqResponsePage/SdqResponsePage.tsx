@@ -18,15 +18,15 @@ function SdqResponsePage() {
   const [sdqFilter, setSdqFilter] =
     React.useState<SdqFilterDTO>(DEFAULT_GOAL_QUERY);
 
-  const onClickQuery = React.useCallback(() => {
+  const onClickQuery = () => {
     sdqSummaries.mutate(sdqFilter);
     sdqProgress.reset();
-  }, [sdqFilter, sdqSummaries]);
+  };
 
-  const onClickQueryProgress = React.useCallback(() => {
+  const onClickQueryProgress = () => {
     sdqProgress.mutate(sdqFilter);
     sdqSummaries.reset();
-  }, [sdqFilter, sdqProgress]);
+  };
 
   return (
     <div>

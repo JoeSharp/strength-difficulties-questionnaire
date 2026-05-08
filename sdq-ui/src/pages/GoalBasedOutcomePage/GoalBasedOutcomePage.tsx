@@ -16,9 +16,9 @@ function GoalBasedOutcomePage() {
   const [goalQuery, setGoalQuery] =
     React.useState<GoalQueryDTO>(DEFAULT_GOAL_QUERY);
 
-  const onClickQuery = React.useCallback(() => {
+  const onClickQuery = () => {
     queryGoalProgress.mutate(goalQuery);
-  }, [goalQuery, queryGoalProgress]);
+  };
 
   return (
     <div>

@@ -57,6 +57,16 @@ public class ClientServiceImpl implements ClientService {
     return withInterventionTypes(clientRepository.get(client.clientId()));
   }
 
+  @Override
+  public int deleteAllClients() {
+    return clientRepository.deleteAll();
+  }
+
+  @Override
+  public int deleteByClientId(UUID clientId) {
+    return clientRepository.deleteByClientId(clientId);
+  }
+
   private SdqClient withInterventionTypes(SdqClient client) {
     List<InterventionType> interventionTypes =
         interventionTypeRepository.getForClient(client.clientId());

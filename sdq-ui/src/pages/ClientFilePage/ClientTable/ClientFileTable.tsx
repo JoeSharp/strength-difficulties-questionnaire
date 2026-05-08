@@ -8,14 +8,14 @@ function ClientTable() {
 
   const navigate = useNavigate();
   const [nameToSearch, setNameToSearch] = React.useState<string>("");
-  const onChangeNameToSearch: React.ChangeEventHandler<HTMLInputElement> =
-    React.useCallback(({ target: { value } }) => {
-      setNameToSearch(value);
-    }, []);
+  const onChangeNameToSearch: React.ChangeEventHandler<HTMLInputElement> = ({
+    target: { value },
+  }) => {
+    setNameToSearch(value);
+  };
 
-  const filteredClients = React.useMemo(
-    () => clients.filter((f) => f.codeName.includes(nameToSearch)),
-    [nameToSearch, clients],
+  const filteredClients = clients.filter((f) =>
+    f.codeName.includes(nameToSearch),
   );
 
   return (

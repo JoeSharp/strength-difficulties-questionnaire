@@ -11,53 +11,45 @@ interface Props {
 }
 
 const SdqQueryForm: React.FC<Props> = ({ value, onChange }) => {
-  const onDateFromChange: React.ChangeEventHandler<HTMLInputElement> =
-    React.useCallback(
-      ({ target: { value } }) => {
-        onChange((prev) => ({
-          ...prev,
-          from: value,
-        }));
-      },
-      [onChange],
-    );
-  const onDateToChange: React.ChangeEventHandler<HTMLInputElement> =
-    React.useCallback(
-      ({ target: { value } }) => {
-        onChange((prev) => ({
-          ...prev,
-          to: value,
-        }));
-      },
-      [onChange],
-    );
+  const onDateFromChange: React.ChangeEventHandler<HTMLInputElement> = ({
+    target: { value },
+  }) => {
+    onChange((prev) => ({
+      ...prev,
+      from: value,
+    }));
+  };
+  const onDateToChange: React.ChangeEventHandler<HTMLInputElement> = ({
+    target: { value },
+  }) => {
+    onChange((prev) => ({
+      ...prev,
+      to: value,
+    }));
+  };
 
-  const onAssessorChange = React.useCallback(
-    (assessor: Assessor) => {
-      onChange((prev) => ({
+  const onAssessorChange = (assessor: Assessor) => {
+    onChange((prev) => ({
+      ...prev,
+      assessor,
+    }));
+  };
+
+  const onFiltersChange = (
+    filtersChange: React.SetStateAction<DemographicFilter[]>,
+  ) => {
+    onChange((prev) => {
+      const filters =
+        typeof filtersChange === "function"
+          ? filtersChange(prev.filters)
+          : filtersChange;
+
+      return {
         ...prev,
-        assessor,
-      }));
-    },
-    [onChange],
-  );
-
-  const onFiltersChange = React.useCallback(
-    (filtersChange: React.SetStateAction<DemographicFilter[]>) => {
-      onChange((prev) => {
-        const filters =
-          typeof filtersChange === "function"
-            ? filtersChange(prev.filters)
-            : filtersChange;
-
-        return {
-          ...prev,
-          filters,
-        };
-      });
-    },
-    [onChange],
-  );
+        filters,
+      };
+    });
+  };
 
   return (
     <form>

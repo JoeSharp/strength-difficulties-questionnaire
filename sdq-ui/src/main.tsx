@@ -1,26 +1,32 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
 import "./styles/index.scss";
 
-import App from "./App";
 import InProgressContextProvider from "./context/InProgressContext/InProgressContextProvider";
 import ApplicationErrorContextProvider from "./context/AppNotificationContext/AppNotificationContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AppRoutes from "./pages/AppRoutes/AppRoutes";
 
-const queryClient = new QueryClient();
+// You want these flags or React Query will refetch EVERYTHING if you BREATHE near it.
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: false,
+    },
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <ApplicationErrorContextProvider>
-          <InProgressContextProvider>
-            <App />
-          </InProgressContextProvider>
-        </ApplicationErrorContextProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
-  </StrictMode>,
+  <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <ApplicationErrorContextProvider>
+        <InProgressContextProvider>
+          <AppRoutes />
+        </InProgressContextProvider>
+      </ApplicationErrorContextProvider>
+    </QueryClientProvider>
+  </BrowserRouter>,
 );

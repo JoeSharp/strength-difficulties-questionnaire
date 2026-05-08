@@ -1,5 +1,5 @@
 import React from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useInProgressContext from "@/context/InProgressContext";
 import useAppNotificationContext from "@/context/AppNotificationContext";
 import { EMPTY_PARSED_FILE, type ParsedFile } from "./uploadApi";
@@ -10,6 +10,7 @@ interface IUseUploadApi {
 }
 
 function useUploadApi(): IUseUploadApi {
+  const queryClient = useQueryClient();
   const [lastFile, setLastFile] = React.useState<ParsedFile>(EMPTY_PARSED_FILE);
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
@@ -41,6 +42,9 @@ function useUploadApi(): IUseUploadApi {
     },
     onSuccess: (parsed: ParsedFile) => {
       setLastFile(parsed);
+
+      // Invalidate any queries that depend on clients
+      queryClient.invalidateQueries({ queryKey: ["clientFiles"] });
     },
   });
 

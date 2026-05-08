@@ -1,5 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import type { ClientFile } from "@/api/ClientApi/clientApi";
+import ClientViewDetailsButton from "../ClientViewDetailsButton";
+import ClientDeleteButton from "../ClientDeleteButton";
 
 import "./ClientCard.scss";
 
@@ -8,8 +9,6 @@ type Props = {
   client: ClientFile;
 };
 const ClientCard: React.FC<Props> = ({ includeHeader = true, client }) => {
-  const navigate = useNavigate();
-
   return (
     <div className="client-card">
       {includeHeader && (
@@ -18,13 +17,10 @@ const ClientCard: React.FC<Props> = ({ includeHeader = true, client }) => {
             <h3>{client.codeName}</h3>
             <p className="client-card__meta">ID: {client.clientId}</p>
           </div>
-          <button
-            type="button"
-            className="client-card__button"
-            onClick={() => navigate(`/client/${client.clientId}`)}
-          >
-            View details
-          </button>
+          <div>
+            <ClientViewDetailsButton clientId={client.clientId} />
+            <ClientDeleteButton clientId={client.clientId} />
+          </div>
         </div>
       )}
 

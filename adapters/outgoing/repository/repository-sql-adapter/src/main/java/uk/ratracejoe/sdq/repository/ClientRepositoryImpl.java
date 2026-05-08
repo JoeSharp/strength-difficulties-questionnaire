@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.*;
 
 @RequiredArgsConstructor
@@ -212,6 +212,14 @@ public class ClientRepositoryImpl implements ClientRepository {
             paramIndex.getAndIncrement(),
             Optional.ofNullable(client.fundingSource()).orElseGet(existing::fundingSource).name())
         .param(paramIndex.getAndIncrement(), client.clientId())
+        .update();
+  }
+
+  @Override
+  public int deleteByClientId(UUID clientId) {
+    return jdbcClient
+        .sql("DELETE FROM client c WHERE c.client_id = :client_id")
+        .param("client_id", clientId)
         .update();
   }
 

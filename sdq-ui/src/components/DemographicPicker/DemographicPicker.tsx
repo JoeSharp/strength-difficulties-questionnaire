@@ -11,22 +11,17 @@ interface Props {
 function DemographicPicker({ demographic, value, onChange }: Props) {
   const { demographicFields } = useReference();
 
-  const options = React.useMemo(() => {
-    return (
-      demographicFields[demographic]?.map((option) => ({
-        value: option,
-        label: option,
-      })) || []
-    );
-  }, [demographicFields, demographic]);
+  const options =
+    demographicFields[demographic]?.map((option) => ({
+      value: option,
+      label: option,
+    })) || [];
 
-  const onSelectChange: React.ChangeEventHandler<HTMLSelectElement> =
-    React.useCallback(
-      ({ target: { value } }) => {
-        onChange(value);
-      },
-      [onChange],
-    );
+  const onSelectChange: React.ChangeEventHandler<HTMLSelectElement> = ({
+    target: { value },
+  }) => {
+    onChange(value);
+  };
 
   return (
     <div className="form-group">

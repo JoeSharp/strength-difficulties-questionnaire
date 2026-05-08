@@ -2,8 +2,10 @@ package uk.ratracejoe.sdq;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import uk.ratracejoe.sdq.model.ParsedFile;
 
 @Getter
 public class SdqFixtures {
@@ -14,7 +16,7 @@ public class SdqFixtures {
     sdqClient.clearDatabase();
   }
 
-  public void givenAllTestFilesIngested() {
+  public List<ParsedFile> givenAllTestFilesIngested() {
     var response =
         sdqClient.ingestFile(
             "Test File 1.xlsx",
@@ -27,5 +29,6 @@ public class SdqFixtures {
             "Test File 10.xlsx");
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(response.getBody()).hasSize(8);
+    return response.getBody();
   }
 }

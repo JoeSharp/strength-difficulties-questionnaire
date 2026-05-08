@@ -20,13 +20,11 @@ const OPTIONS: DemographicField[] = [
 ];
 
 const DemographicFieldPicker: React.FC<Props> = ({ value, onChange }) => {
-  const onInternalChange: React.ChangeEventHandler<HTMLSelectElement> =
-    React.useCallback(
-      ({ target: { value } }) => {
-        onChange(value as DemographicField);
-      },
-      [onChange],
-    );
+  const onInternalChange: React.ChangeEventHandler<HTMLSelectElement> = ({
+    target: { value },
+  }) => {
+    onChange(value as DemographicField);
+  };
 
   return (
     <select value={value} onChange={onInternalChange}>

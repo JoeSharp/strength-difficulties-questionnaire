@@ -24,17 +24,20 @@ function useAppNotifications(): IAppNotifications {
       const newMessage = { id: nextId++, type, status, message };
       setMessages((p) => [...p, newMessage]);
     },
-    []
+    [],
   );
   const dismissMessage = React.useCallback((id: number) => {
     setMessages((p) => p.filter((e) => e.id !== id));
   }, []);
 
-  return {
-    messages,
-    addMessage,
-    dismissMessage,
-  };
+  return React.useMemo(
+    () => ({
+      messages,
+      addMessage,
+      dismissMessage,
+    }),
+    [messages, addMessage, dismissMessage],
+  );
 }
 
 export default useAppNotifications;

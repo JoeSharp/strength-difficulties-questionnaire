@@ -22,4 +22,6 @@ public interface ClientRepository {
   int deleteAll();
 
   int update(SdqClient client);
+
+  int deleteByClientId(UUID clientId);
 }

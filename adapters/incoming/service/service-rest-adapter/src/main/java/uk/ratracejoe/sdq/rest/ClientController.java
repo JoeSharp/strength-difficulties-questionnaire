@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.demographics.DemographicReport;
@@ -40,6 +40,16 @@ public class ClientController {
   @GetMapping("/{clientId}")
   public SdqClient getByUUID(@PathVariable UUID clientId) throws SdqException {
     return clientService.getByUUID(clientId);
+  }
+
+  @DeleteMapping
+  public void deleteAllClients() {
+    clientService.deleteAllClients();
+  }
+
+  @DeleteMapping("/{clientId}")
+  public void deleteByClientId(@PathVariable UUID clientId) throws SdqException {
+    clientService.deleteByClientId(clientId);
   }
 
   @GetMapping("/demographic_report/{demographic}")

@@ -8,13 +8,13 @@ function AppNotifications() {
   const { messages, dismissMessage } = useAppNotificationContext();
   const [show, setShow] = React.useState<boolean>(false);
 
-  const boxStyle = React.useMemo(() => {
+  const boxStyle = (() => {
     let style = "notification-list p-3";
     if (show) {
       style += " show";
     }
     return style;
-  }, [show]);
+  })();
 
   React.useEffect(() => {
     if (messages.length === 0) {

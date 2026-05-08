@@ -5,12 +5,15 @@ import static org.assertj.core.api.InstanceOfAssertFactories.list;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApiClient;
+import uk.ratracejoe.sdq.SdqFixtures;
+import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.*;
 
@@ -18,12 +21,29 @@ import uk.ratracejoe.sdq.model.demographics.*;
 @ActiveProfiles("test")
 class ManageClientTest {
   private SdqApiClient client;
+  private SdqFixtures fixtures;
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeAll() {
-    client = new SdqApiClient(port);
-    client.clearDatabase();
+    fixtures = new SdqFixtures(port);
+    client = fixtures.getSdqClient();
+  }
+
+  @Test
+  void deleteClient() {
+    // Given
+    List<ParsedFile> files = fixtures.givenAllTestFilesIngested();
+    UUID clientIdToDelete = files.getFirst().sdqClient().clientId();
+
+    // When
+    List<SdqClient> clientsBeforeDelete = client.getAllClients();
+    client.deleteClient(clientIdToDelete);
+    List<SdqClient> clientsAfterDelete = client.getAllClients();
+
+    // Then
+    assertThat(clientsBeforeDelete).extracting(SdqClient::clientId).contains(clientIdToDelete);
+    assertThat(clientsAfterDelete).extracting(SdqClient::clientId).doesNotContain(clientIdToDelete);
   }
 
   @Test

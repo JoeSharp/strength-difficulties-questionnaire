@@ -2,11 +2,9 @@ import React from "react";
 import AppNotificationContext from "./AppNotificationContext";
 import useAppNotifications from "./useAppNotifications";
 
-type WithChildren = { children: React.ReactElement };
-
 export default function AppNotificationContextProvider({
   children,
-}: WithChildren) {
+}: React.PropsWithChildren) {
   const value = useAppNotifications();
 
   return (

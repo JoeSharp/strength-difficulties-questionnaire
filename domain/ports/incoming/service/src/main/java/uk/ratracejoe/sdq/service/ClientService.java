@@ -20,4 +20,8 @@ public interface ClientService {
   SdqClient getByUUID(UUID uuid) throws SdqException;
 
   SdqClient update(SdqClient client);
+
+  int deleteAllClients();
+
+  int deleteByClientId(UUID clientId);
 }

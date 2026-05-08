@@ -21,63 +21,47 @@ const DemographicFilterForm: React.FC<Props> = ({ value, onChange }) => {
   const [current, setCurrent] =
     React.useState<DemographicFilter>(DEFAUL_FILTER);
 
-  const onAddFilter: React.MouseEventHandler<HTMLButtonElement> =
-    React.useCallback(
-      (e) => {
-        e.preventDefault();
-        onChange((prev) => {
-          const newFilters = [
-            ...prev.filter((p) => p.field !== current.field),
-            current,
-          ];
-          return newFilters;
-        });
-      },
-      [current, onChange],
-    );
+  const onAddFilter: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    onChange((prev) => {
+      const newFilters = [
+        ...prev.filter((p) => p.field !== current.field),
+        current,
+      ];
+      return newFilters;
+    });
+  };
 
-  const onDemographicFieldChange = React.useCallback(
-    (field: DemographicField) => {
-      const currentSpec = value.find((f) => f.field === field);
-      const values: string[] = currentSpec ? currentSpec.values : [];
-      setCurrent({
-        field,
-        values,
-      });
-    },
-    [value],
-  );
+  const onDemographicFieldChange = (field: DemographicField) => {
+    const currentSpec = value.find((f) => f.field === field);
+    const values: string[] = currentSpec ? currentSpec.values : [];
+    setCurrent({
+      field,
+      values,
+    });
+  };
 
-  const selectedOptions: SelectOption[] = React.useMemo(
-    () => current.values.map((f) => ({ value: f, label: f })),
-    [current.values],
-  );
-  const options: SelectOption[] = React.useMemo(() => {
-    return (
-      demographicFields[current.field]?.map((option) => ({
-        value: option,
-        label: option,
-      })) || []
-    );
-  }, [demographicFields, current.field]);
+  const selectedOptions: SelectOption[] = current.values.map((f) => ({
+    value: f,
+    label: f,
+  }));
+  const options: SelectOption[] =
+    demographicFields[current.field]?.map((option) => ({
+      value: option,
+      label: option,
+    })) || [];
 
-  const onValuesChange = React.useCallback(
-    (selected: MultiValue<SelectOption>) => {
-      const selectedValues = selected.map(({ value }) => value);
-      setCurrent((prev) => ({
-        ...prev,
-        values: selectedValues,
-      }));
-    },
-    [],
-  );
+  const onValuesChange = (selected: MultiValue<SelectOption>) => {
+    const selectedValues = selected.map(({ value }) => value);
+    setCurrent((prev) => ({
+      ...prev,
+      values: selectedValues,
+    }));
+  };
 
-  const onClickRemoveField = React.useCallback(
-    (toDelete: DemographicField) => {
-      onChange((prev) => [...prev.filter((p) => p.field !== toDelete)]);
-    },
-    [onChange],
-  );
+  const onClickRemoveField = (toDelete: DemographicField) => {
+    onChange((prev) => [...prev.filter((p) => p.field !== toDelete)]);
+  };
 
   return (
     <div>

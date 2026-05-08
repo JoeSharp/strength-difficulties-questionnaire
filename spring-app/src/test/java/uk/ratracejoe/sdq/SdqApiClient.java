@@ -134,6 +134,23 @@ public class SdqApiClient {
         .getBody();
   }
 
+  public List<SdqClient> getAllClients() {
+    return restClient
+        .get()
+        .uri(REST_URL_CLIENT)
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<List<SdqClient>>() {})
+        .getBody();
+  }
+
+  public ResponseEntity<Void> deleteClient(UUID clientId) {
+    return restClient
+        .delete()
+        .uri(String.format("%s/%s", REST_URL_CLIENT, clientId))
+        .retrieve()
+        .toBodilessEntity();
+  }
+
   public SdqClient updateClient(SdqClient client) {
     return restClient
         .put()

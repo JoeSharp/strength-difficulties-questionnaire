@@ -80,7 +80,15 @@ public class GoalRepositoryImpl implements GoalRepository {
                     .firstScore(rs.getInt("first_score"))
                     .lastScore(rs.getInt("last_score"))
                     .build())
-        .single();
+        .optional()
+        .orElseGet(
+            () ->
+                GoalProgress.builder()
+                    .goal(get(goalId))
+                    .lastScore(0)
+                    .firstScore(0)
+                    .assessor(assessor)
+                    .build());
   }
 
   @Override

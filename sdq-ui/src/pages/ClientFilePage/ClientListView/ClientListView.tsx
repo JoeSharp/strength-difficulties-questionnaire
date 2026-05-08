@@ -2,19 +2,20 @@ import React from "react";
 
 import useClients from "@/api/ClientApi/useClients";
 import ClientCard from "./ClientCard";
+import ClientDeleteAllButton from "../ClientDeleteAllButton";
 
 function ClientListView() {
   const { clients } = useClients();
 
   const [nameToSearch, setNameToSearch] = React.useState<string>("");
-  const onChangeNameToSearch: React.ChangeEventHandler<HTMLInputElement> =
-    React.useCallback(({ target: { value } }) => {
-      setNameToSearch(value);
-    }, []);
+  const onChangeNameToSearch: React.ChangeEventHandler<HTMLInputElement> = ({
+    target: { value },
+  }) => {
+    setNameToSearch(value);
+  };
 
-  const filteredClients = React.useMemo(
-    () => clients.filter((f) => f.codeName.includes(nameToSearch)),
-    [nameToSearch, clients],
+  const filteredClients = clients.filter((f) =>
+    f.codeName.includes(nameToSearch),
   );
 
   return (
@@ -29,9 +30,10 @@ function ClientListView() {
             onChange={onChangeNameToSearch}
           />
         </div>
+        <ClientDeleteAllButton />
       </form>
       {filteredClients.map((client) => (
-        <ClientCard client={client} />
+        <ClientCard key={client.clientId} client={client} />
       ))}
     </div>
   );

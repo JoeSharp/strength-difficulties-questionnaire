@@ -15,10 +15,11 @@ function DemographicReportPage() {
     React.useState<DemographicField>("Gender");
   const { demographicReport } = useDemographicReport(demographicName);
 
-  const onDemographicNameChange: React.ChangeEventHandler<HTMLSelectElement> =
-    React.useCallback((e) => {
-      setDemographicName(e.target.value as DemographicField);
-    }, []);
+  const onDemographicNameChange: React.ChangeEventHandler<HTMLSelectElement> = (
+    e,
+  ) => {
+    setDemographicName(e.target.value as DemographicField);
+  };
 
   return (
     <div>

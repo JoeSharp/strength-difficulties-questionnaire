@@ -5,9 +5,9 @@ import AppNotifications from "@/components/AppNotifications";
 import "./SdqNav.css";
 
 const SdqNav: React.FC = () => {
-  const onClickLogout = React.useCallback(() => {
+  const onClickLogout = () => {
     window.location.href = "/logout";
-  }, []);
+  };
 
   return (
     <nav className="nav">
