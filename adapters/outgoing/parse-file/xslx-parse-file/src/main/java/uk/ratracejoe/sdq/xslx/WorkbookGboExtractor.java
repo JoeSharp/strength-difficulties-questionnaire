@@ -2,7 +2,10 @@ package uk.ratracejoe.sdq.xslx;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -11,6 +14,7 @@ import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.GboParsedPeriod;
 import uk.ratracejoe.sdq.model.GboParsedScore;
+import uk.ratracejoe.sdq.model.gbo.GoalType;
 
 public class WorkbookGboExtractor {
 
@@ -44,15 +48,16 @@ public class WorkbookGboExtractor {
   }
 
   private Stream<GboParsedPeriod> getGboPeriods(Assessor assessor, Sheet sheet, int startRow) {
+    Row typeRow = sheet.getRow(startRow - 2);
     return IntStream.range(1, NUMBER_PERIODS_EXPECTED + 1)
-        .mapToObj(i -> extractPeriod(assessor, sheet.getRow(startRow + i - 1)))
+        .mapToObj(i -> extractPeriod(assessor, typeRow, sheet.getRow(startRow + i - 1)))
         .filter(Objects::nonNull);
   }
 
-  private GboParsedPeriod extractPeriod(Assessor assessor, Row row) {
+  private GboParsedPeriod extractPeriod(Assessor assessor, Row typeRow, Row row) {
     LocalDate periodDate = extractDate(row);
     if (Objects.isNull(periodDate)) return null;
-    List<GboParsedScore> scores = extractScores(row);
+    List<GboParsedScore> scores = extractScores(typeRow, row);
 
     return GboParsedPeriod.builder().period(periodDate).assessor(assessor).scores(scores).build();
   }
@@ -65,15 +70,34 @@ public class WorkbookGboExtractor {
         .orElse(null);
   }
 
-  private List<GboParsedScore> extractScores(Row row) {
+  private List<GboParsedScore> extractScores(Row typeRow, Row row) {
     List<GboParsedScore> scores = new ArrayList<>();
     for (int i = 0; i < NUMBER_SCORES_EXPECTED; i++) {
       int index = i + 1;
+      GoalType goalType = getGoalType(typeRow, i);
       Optional.ofNullable(getScore(row, i))
           .ifPresent(
-              score -> scores.add(GboParsedScore.builder().index(index).score(score).build()));
+              score ->
+                  scores.add(
+                      GboParsedScore.builder()
+                          .goalType(goalType)
+                          .index(index)
+                          .score(score)
+                          .build()));
     }
     return scores;
+  }
+
+  private GoalType getGoalType(Row row, int scoreIndex) {
+    Cell cell = row.getCell(FIRST_SCORE_COLUMN + scoreIndex);
+    if (Objects.isNull(cell) || cell.getCellType() == CellType.BLANK) {
+      return null;
+    }
+    try {
+      return GoalType.fromDisplay(cell.getStringCellValue());
+    } catch (IllegalArgumentException e) {
+      return GoalType.defaultValue();
+    }
   }
 
   private Integer getScore(Row row, int scoreIndex) {

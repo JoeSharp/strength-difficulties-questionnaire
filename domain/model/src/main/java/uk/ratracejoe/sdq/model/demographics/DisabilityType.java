@@ -2,6 +2,7 @@ package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import uk.ratracejoe.sdq.model.EnumValue;
 
 @RequiredArgsConstructor
 public enum DisabilityType {
@@ -17,6 +18,10 @@ public enum DisabilityType {
   NOT_APPLICABLE("N/A");
 
   final String display;
+
+  public EnumValue enumValue() {
+    return new EnumValue(name(), display);
+  }
 
   public static DisabilityType defaultValue() {
     return NOT_APPLICABLE;

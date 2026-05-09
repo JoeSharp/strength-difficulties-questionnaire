@@ -1,16 +1,14 @@
 package uk.ratracejoe.sdq.repository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.gbo.GoalProgress;
+import uk.ratracejoe.sdq.model.gbo.GoalType;
 
 @RequiredArgsConstructor
 public class GoalRepositoryImpl implements GoalRepository {
@@ -20,23 +18,35 @@ public class GoalRepositoryImpl implements GoalRepository {
   @Override
   public void save(Goal goal) {
     jdbcClient
-        .sql("INSERT INTO goal (client_id, goal_id, description) VALUES (?, ?, ?)")
-        .param(1, goal.clientId())
-        .param(2, goal.goalId())
-        .param(3, goal.description())
+        .sql(
+            """
+        INSERT INTO goal
+          (client_id, goal_id, type, description)
+        VALUES
+          (:client_id, :goal_id, :goal_type, :description)
+        """)
+        .param("client_id", goal.clientId())
+        .param("goal_id", goal.goalId())
+        .param(
+            "goal_type",
+            Optional.ofNullable(goal.type())
+                .map(GoalType::name)
+                .orElse(GoalType.defaultValue().name()))
+        .param("description", goal.description())
         .update();
   }
 
   @Override
   public Goal get(UUID goalId) {
     return jdbcClient
-        .sql("SELECT client_id, description FROM goal WHERE goal_id = ?")
+        .sql("SELECT client_id, type, description FROM goal WHERE goal_id = ?")
         .param(1, goalId)
         .query(
             (rs, rowNum) ->
                 Goal.builder()
                     .goalId(goalId)
                     .clientId(rs.getObject("client_id", UUID.class))
+                    .type(GoalType.valueOf(rs.getString("type")))
                     .description(rs.getString("description"))
                     .build())
         .single();
@@ -50,6 +60,7 @@ public class GoalRepositoryImpl implements GoalRepository {
                     SELECT DISTINCT
                       g.client_id as client_id,
                       o.goal_id as goal_id,
+                      g.type as goal_type,
                       g.description as goal_description,
                     FIRST_VALUE(o.score) OVER (
                             PARTITION BY g.client_id, o.goal_id
@@ -75,6 +86,10 @@ public class GoalRepositoryImpl implements GoalRepository {
                         Goal.builder()
                             .clientId(rs.getObject("client_id", UUID.class))
                             .goalId(rs.getObject("goal_id", UUID.class))
+                            .type(
+                                Optional.ofNullable(rs.getString("goal_type"))
+                                    .map(GoalType::valueOf)
+                                    .orElseGet(GoalType::defaultValue))
                             .description(rs.getString("goal_description"))
                             .build())
                     .firstScore(rs.getInt("first_score"))
@@ -94,13 +109,17 @@ public class GoalRepositoryImpl implements GoalRepository {
   @Override
   public List<Goal> getForClient(UUID clientId) {
     return jdbcClient
-        .sql("SELECT goal_id, description FROM goal WHERE client_id = ?")
+        .sql("SELECT goal_id, type, description FROM goal WHERE client_id = ?")
         .param(1, clientId)
         .query(
             (rs, rowNum) ->
                 Goal.builder()
                     .clientId(clientId)
                     .goalId(rs.getObject("goal_id", UUID.class))
+                    .type(
+                        Optional.ofNullable(rs.getString("type"))
+                            .map(GoalType::valueOf)
+                            .orElseGet(GoalType::defaultValue))
                     .description(rs.getString("description"))
                     .build())
         .list();
@@ -119,6 +138,7 @@ public class GoalRepositoryImpl implements GoalRepository {
             SELECT DISTINCT
               g.client_id as client_id,
               o.goal_id as goal_id,
+              g.type as goal_type,
               g.description as goal_description,
             FIRST_VALUE(o.score) OVER (
                     PARTITION BY g.client_id, o.goal_id
@@ -146,6 +166,10 @@ public class GoalRepositoryImpl implements GoalRepository {
                         Goal.builder()
                             .clientId(rs.getObject("client_id", UUID.class))
                             .goalId(rs.getObject("goal_id", UUID.class))
+                            .type(
+                                Optional.ofNullable(rs.getString("goal_type"))
+                                    .map(GoalType::valueOf)
+                                    .orElseGet(GoalType::defaultValue))
                             .description(rs.getString("goal_description"))
                             .build())
                     .firstScore(rs.getInt("first_score"))
@@ -159,12 +183,21 @@ public class GoalRepositoryImpl implements GoalRepository {
       Assessor assessor,
       List<DemographicFilter> filters,
       int minProgress,
+      List<GoalType> goalTypes,
       LocalDate from,
       LocalDate to) {
     StringBuilder whereClause = new StringBuilder();
-    if (!filters.isEmpty()) {
+    if (!filters.isEmpty() || !goalTypes.isEmpty()) {
       whereClause.append(" WHERE ");
-      whereClause.append(ClientRepositoryImpl.filterSelectWhere("c", filters));
+      if (!filters.isEmpty()) {
+        whereClause.append(ClientRepositoryImpl.filterSelectWhere("c", filters));
+      }
+      if (!goalTypes.isEmpty()) {
+        if (!filters.isEmpty()) {
+          whereClause.append(" AND ");
+        }
+        whereClause.append(" s.goal_type IN (:goal_types)");
+      }
     }
     String sql =
         String.format(
@@ -172,6 +205,7 @@ public class GoalRepositoryImpl implements GoalRepository {
     WITH scored AS (
             SELECT DISTINCT
             g.client_id as client_id,
+            g.type as goal_type,
             o.goal_id as goal_id,
             g.description as goal_description,
             FIRST_VALUE(o.score) OVER (
@@ -201,6 +235,7 @@ public class GoalRepositoryImpl implements GoalRepository {
     ClientRepositoryImpl.addFilters(params, filters);
     params.put("minProgress", minProgress);
     params.put("assessor", assessor.name());
+    params.put("goal_types", goalTypes.stream().map(GoalType::name).toList());
     return jdbcClient
         .sql(sql)
         .params(params)
@@ -211,6 +246,10 @@ public class GoalRepositoryImpl implements GoalRepository {
                         Goal.builder()
                             .clientId(rs.getObject("client_id", UUID.class))
                             .goalId(rs.getObject("goal_id", UUID.class))
+                            .type(
+                                Optional.ofNullable(rs.getString("goal_type"))
+                                    .map(GoalType::valueOf)
+                                    .orElseGet(GoalType::defaultValue))
                             .description(rs.getString("goal_description"))
                             .build())
                     .assessor(assessor)
@@ -223,9 +262,15 @@ public class GoalRepositoryImpl implements GoalRepository {
   @Override
   public int update(Goal goal) {
     return jdbcClient
-        .sql("UPDATE goal SET description = ? WHERE goal_id = ?")
-        .param(1, goal.description())
-        .param(2, goal.goalId())
+        .sql(
+            "UPDATE goal SET type = :goal_type description = :description WHERE goal_id = :goal_id")
+        .param("description", goal.description())
+        .param(
+            "goal_type",
+            Optional.ofNullable(goal.type())
+                .map(GoalType::name)
+                .orElse(GoalType.defaultValue().name()))
+        .param("goal_id", goal.goalId())
         .update();
   }
 }

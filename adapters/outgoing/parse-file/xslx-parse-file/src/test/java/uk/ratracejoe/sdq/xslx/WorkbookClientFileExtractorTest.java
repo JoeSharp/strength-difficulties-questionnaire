@@ -16,7 +16,7 @@ class WorkbookClientFileExtractorTest {
   @Test
   void goalsExtracted() throws IOException {
     // Given
-    WorkbookClientFileExtractor fileParser = new WorkbookClientFileExtractor();
+    WorkbookClientFileExtractor fileParser = Utils.fileParser();
     Workbook workbook = workbookLoaded();
 
     // When

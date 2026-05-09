@@ -4,6 +4,7 @@ export const BASE_GOAL_URL = "/api/goal";
 
 export interface Goal {
   clientId: string;
+  type: string;
   goalId: string;
   description: string;
 }
@@ -23,6 +24,7 @@ export interface GboSubmission {
 }
 
 export interface GoalQueryDTO {
+  goalTypes: string[];
   assessor: Assessor;
   filters: DemographicFilter[];
   minProgress: number;

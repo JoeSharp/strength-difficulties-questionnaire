@@ -1,6 +1,7 @@
 import React from "react";
 import type { SdqSubmissionSummary } from "@/api/SdqApi/sdqApi";
 import KeyedCountCell from "./KeyedCountCell";
+import ClientLink from "../ClientLink";
 
 interface Props {
   summaries: SdqSubmissionSummary[];
@@ -21,7 +22,9 @@ const SdqSummaryTable: React.FC<Props> = ({ summaries }) => {
       <tbody>
         {summaries.map((summary, i) => (
           <tr key={i}>
-            <td>{summary.clientId}</td>
+            <td>
+              <ClientLink clientId={summary.clientId} />
+            </td>
             <td>{summary.period}</td>
             <td>
               <KeyedCountCell data={summary.categorySubTotals} />

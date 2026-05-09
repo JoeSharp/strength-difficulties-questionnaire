@@ -11,25 +11,40 @@ export const DEMOGRAPHIC_FIELDS = [
   "FundingSource",
 ] as const;
 export type DemographicField = (typeof DEMOGRAPHIC_FIELDS)[number];
-export type DemographicReference = {
-  [key in DemographicField]?: string[];
+export type Option = {
+  value: string;
+  label: string;
 };
 
-const EMPTY_DEMOGRAPHIC_REFERENCE: DemographicReference = {};
+export type DemographicReference = {
+  [key in DemographicField]?: Option[];
+};
 
-export type RefInfoDescription = Record<string, Record<string, object>>;
-const EMPTY_REF_INFO_DESCRIPTION: RefInfoDescription = {};
+export type Category = {
+  category: string;
+  posture: string;
+};
+
+export type Statement = {
+  order: number;
+  key: string;
+  category: Category;
+  isTruePositive: boolean;
+  description: string;
+};
 
 export interface ReferenceInfo {
-  categories: RefInfoDescription;
-  statements: RefInfoDescription;
-  postures: RefInfoDescription;
+  goalTypes: Option[];
+  categories: Category[];
+  statements: Statement[];
+  postures: string[];
   demographicFields: DemographicReference;
 }
 
 export const EMPTY_REFERENCE_INFO: ReferenceInfo = {
-  categories: EMPTY_REF_INFO_DESCRIPTION,
-  statements: EMPTY_REF_INFO_DESCRIPTION,
-  postures: EMPTY_REF_INFO_DESCRIPTION,
-  demographicFields: EMPTY_DEMOGRAPHIC_REFERENCE,
+  goalTypes: [],
+  categories: [],
+  statements: [],
+  postures: [],
+  demographicFields: {},
 };

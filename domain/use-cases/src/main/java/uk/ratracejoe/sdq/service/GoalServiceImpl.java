@@ -10,6 +10,7 @@ import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.gbo.GoalProgress;
+import uk.ratracejoe.sdq.model.gbo.GoalType;
 import uk.ratracejoe.sdq.repository.GboRepository;
 import uk.ratracejoe.sdq.repository.GoalRepository;
 
@@ -45,9 +46,10 @@ public class GoalServiceImpl implements GoalService {
       Assessor assessor,
       List<DemographicFilter> filters,
       int minProgress,
+      List<GoalType> goalTypes,
       LocalDate from,
       LocalDate to) {
-    return goalRepository.getGoalsWithProgress(assessor, filters, minProgress, from, to);
+    return goalRepository.getGoalsWithProgress(assessor, filters, minProgress, goalTypes, from, to);
   }
 
   @Override

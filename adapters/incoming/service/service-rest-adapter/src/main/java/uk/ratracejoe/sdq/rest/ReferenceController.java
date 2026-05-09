@@ -19,6 +19,7 @@ public class ReferenceController {
   @GetMapping
   public ReferenceInfoDTO refInfo() throws SdqException {
     return ReferenceInfoDTO.builder()
+        .goalTypes(refDataService.getGoalTypes())
         .categories(refDataService.getCategories())
         .statements(refDataService.getStatements())
         .postures(Arrays.stream(Posture.values()).toList())

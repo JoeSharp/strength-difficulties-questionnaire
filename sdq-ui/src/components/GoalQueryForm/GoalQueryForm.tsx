@@ -2,8 +2,9 @@ import React from "react";
 import type { GoalQueryDTO } from "@/api/GboApi/gboApi";
 
 import type { Assessor, DemographicFilter } from "@/api/types";
-import AssessorPicker from "../AssessorPicker/AssessorPicker";
+import AssessorPicker from "../AssessorPicker";
 import DemographicFilterForm from "../DemographicFilterForm";
+import GoalTypePicker from "./GoalTypePicker";
 
 interface Props {
   value: GoalQueryDTO;
@@ -11,6 +12,13 @@ interface Props {
 }
 
 const GoalQueryForm: React.FC<Props> = ({ value, onChange }) => {
+  const onGoalTypesChange = (goalTypes: string[]) => {
+    onChange((prev) => ({
+      ...prev,
+      goalTypes,
+    }));
+  };
+
   const onMinProgressChange: React.ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
   }) => {
@@ -93,6 +101,13 @@ const GoalQueryForm: React.FC<Props> = ({ value, onChange }) => {
         <div className="form-group">
           <label htmlFor="assessor">Assessor</label>
           <AssessorPicker value={value.assessor} onChange={onAssessorChange} />
+        </div>
+        <div className="form-group">
+          <label htmlFor="goalTypes">Goal Types</label>
+          <GoalTypePicker
+            value={value.goalTypes}
+            onChange={onGoalTypesChange}
+          />
         </div>
       </div>
       <DemographicFilterForm value={value.filters} onChange={onFiltersChange} />

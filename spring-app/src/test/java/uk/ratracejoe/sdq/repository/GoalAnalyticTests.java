@@ -13,10 +13,13 @@ import uk.ratracejoe.sdq.SdqApiClient;
 import uk.ratracejoe.sdq.SdqFixtures;
 import uk.ratracejoe.sdq.dto.GoalQueryDTO;
 import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.demographics.Gender;
+import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.gbo.GoalProgress;
+import uk.ratracejoe.sdq.model.gbo.GoalType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -31,6 +34,24 @@ class GoalAnalyticTests {
   void beforeEach() {
     fixtures = new SdqFixtures(port);
     client = fixtures.getSdqClient();
+  }
+
+  @Test
+  void getGoalWithType() {
+    // Given
+    SdqClient sdqClient = client.ingestFile("Test File 4.xlsx").getBody().getFirst().sdqClient();
+
+    // When
+    List<Goal> goals = client.getGoalsForClient(sdqClient.clientId());
+
+    // Then
+    assertThat(goals)
+        .extracting(Goal::type)
+        .containsExactly(
+            GoalType.EMOTIONAL,
+            GoalType.BEHAVIOURAL,
+            GoalType.TRAUMA_RECOVERY,
+            GoalType.SELF_ESTEEM_CONFIDENCE);
   }
 
   @Test
@@ -52,5 +73,26 @@ class GoalAnalyticTests {
                     .build())
             .getBody();
     assertThat(result).hasSize(1);
+  }
+
+  @Test
+  void getGoalsOfType() {
+    fixtures.givenAllTestFilesIngested();
+
+    List<GoalProgress> result =
+        client
+            .getGoalsWithProgress(
+                GoalQueryDTO.builder()
+                    .assessor(Assessor.School)
+                    .minProgress(1)
+                    .goalTypes(List.of(GoalType.BEHAVIOURAL, GoalType.EMOTIONAL))
+                    .from(LocalDate.of(2024, 5, 1))
+                    .to(LocalDate.of(2025, 11, 1))
+                    .build())
+            .getBody();
+    assertThat(result)
+        .extracting(GoalProgress::goal)
+        .extracting(Goal::type)
+        .containsOnly(GoalType.BEHAVIOURAL, GoalType.EMOTIONAL);
   }
 }

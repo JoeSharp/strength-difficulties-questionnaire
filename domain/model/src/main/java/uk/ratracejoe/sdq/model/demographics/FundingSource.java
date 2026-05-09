@@ -2,6 +2,7 @@ package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import uk.ratracejoe.sdq.model.EnumValue;
 
 @RequiredArgsConstructor
 public enum FundingSource {
@@ -16,6 +17,10 @@ public enum FundingSource {
   UNKNOWN("Unknown");
 
   final String display;
+
+  public EnumValue enumValue() {
+    return new EnumValue(name(), display);
+  }
 
   public static FundingSource defaultValue() {
     return UNKNOWN;

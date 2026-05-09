@@ -8,7 +8,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.EnumValue;
 import uk.ratracejoe.sdq.model.demographics.*;
+import uk.ratracejoe.sdq.model.gbo.GoalType;
 import uk.ratracejoe.sdq.model.sdq.Category;
 import uk.ratracejoe.sdq.model.sdq.Statement;
 import uk.ratracejoe.sdq.repository.StatementRepository;
@@ -22,28 +24,28 @@ public class RefDataServiceImpl implements RefDataService {
   private final StatementRepository repository;
 
   @Override
-  public Map<DemographicField, List<String>> getDemographicOptions() throws SdqException {
+  public Map<DemographicField, List<EnumValue>> getDemographicOptions() throws SdqException {
     return Map.of(
         DemographicField.Gender,
-        Arrays.stream(Gender.values()).map(Gender::name).toList(),
+        Arrays.stream(Gender.values()).map(Gender::enumValue).toList(),
         DemographicField.Council,
-        Arrays.stream(Council.values()).map(Council::name).toList(),
+        Arrays.stream(Council.values()).map(Council::enumValue).toList(),
         DemographicField.Ethnicity,
-        Arrays.stream(Ethnicity.values()).map(Ethnicity::name).toList(),
+        Arrays.stream(Ethnicity.values()).map(Ethnicity::enumValue).toList(),
         DemographicField.EAL,
         Arrays.stream(EnglishAsAdditionalLanguage.values())
-            .map(EnglishAsAdditionalLanguage::name)
+            .map(EnglishAsAdditionalLanguage::enumValue)
             .toList(),
         DemographicField.DisabilityStatus,
-        Arrays.stream(DisabilityStatus.values()).map(DisabilityStatus::name).toList(),
+        Arrays.stream(DisabilityStatus.values()).map(DisabilityStatus::enumValue).toList(),
         DemographicField.DisabilityType,
-        Arrays.stream(DisabilityType.values()).map(DisabilityType::name).toList(),
+        Arrays.stream(DisabilityType.values()).map(DisabilityType::enumValue).toList(),
         DemographicField.CareExperience,
-        Arrays.stream(CareExperience.values()).map(CareExperience::name).toList(),
+        Arrays.stream(CareExperience.values()).map(CareExperience::enumValue).toList(),
         DemographicField.InterventionType,
-        Arrays.stream(InterventionType.values()).map(InterventionType::name).toList(),
+        Arrays.stream(InterventionType.values()).map(InterventionType::enumValue).toList(),
         DemographicField.FundingSource,
-        Arrays.stream(FundingSource.values()).map(FundingSource::name).toList());
+        Arrays.stream(FundingSource.values()).map(FundingSource::enumValue).toList());
   }
 
   @Override
@@ -62,6 +64,11 @@ public class RefDataServiceImpl implements RefDataService {
   public Statement getStatement(String key) {
     ensure();
     return byKey.get(key);
+  }
+
+  @Override
+  public List<EnumValue> getGoalTypes() {
+    return Arrays.stream(GoalType.values()).map(GoalType::enumValue).toList();
   }
 
   private void ensure() {

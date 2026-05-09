@@ -2,6 +2,7 @@ package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import uk.ratracejoe.sdq.model.EnumValue;
 
 @RequiredArgsConstructor
 public enum Council {
@@ -15,6 +16,10 @@ public enum Council {
   UNKNOWN("Unknown");
 
   final String display;
+
+  public EnumValue enumValue() {
+    return new EnumValue(name(), display);
+  }
 
   public static Council defaultValue() {
 

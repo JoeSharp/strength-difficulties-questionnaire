@@ -15,6 +15,9 @@ databaseChangeLog:
                     nullable: false
                     primaryKey: true
               - column:
+                  name: type
+                  type: TEXT
+              - column:
                   name: client_id
                   type: UUID
                   constraints:

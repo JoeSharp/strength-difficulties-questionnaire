@@ -2,6 +2,7 @@ package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import uk.ratracejoe.sdq.model.EnumValue;
 
 @RequiredArgsConstructor
 public enum CareExperience {
@@ -12,6 +13,10 @@ public enum CareExperience {
   KINSHIP("Kinship"),
   UNKNOWN("Unknown");
   final String display;
+
+  public EnumValue enumValue() {
+    return new EnumValue(name(), display);
+  }
 
   public static CareExperience defaultValue() {
     return UNKNOWN;

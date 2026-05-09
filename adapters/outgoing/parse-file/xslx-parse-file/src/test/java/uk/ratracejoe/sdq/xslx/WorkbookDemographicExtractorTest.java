@@ -1,5 +1,6 @@
 package uk.ratracejoe.sdq.xslx;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.ratracejoe.sdq.xslx.Utils.workbookLoaded;
 
 import java.io.IOException;

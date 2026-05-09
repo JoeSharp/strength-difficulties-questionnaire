@@ -16,6 +16,7 @@ const ClientGoals: React.FC<Props> = ({ clientId, assessor }) => {
       <table>
         <thead>
           <tr>
+            <th>Type</th>
             <th>Description</th>
             <th>First Score</th>
             <th>Last Score</th>
@@ -32,7 +33,7 @@ const ClientGoals: React.FC<Props> = ({ clientId, assessor }) => {
             ))
           ) : (
             <tr>
-              <td colSpan={3}>No goals found.</td>
+              <td colSpan={4}>No goals found.</td>
             </tr>
           )}
         </tbody>

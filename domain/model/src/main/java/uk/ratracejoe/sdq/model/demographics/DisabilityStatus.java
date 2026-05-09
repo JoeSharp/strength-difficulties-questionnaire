@@ -2,6 +2,7 @@ package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import uk.ratracejoe.sdq.model.EnumValue;
 
 @RequiredArgsConstructor
 public enum DisabilityStatus {
@@ -10,6 +11,10 @@ public enum DisabilityStatus {
   PREFER_NOT_TO_SAY("Prefer Not To Say");
 
   final String display;
+
+  public EnumValue enumValue() {
+    return new EnumValue(name(), display);
+  }
 
   public static DisabilityStatus defaultValue() {
     return PREFER_NOT_TO_SAY;

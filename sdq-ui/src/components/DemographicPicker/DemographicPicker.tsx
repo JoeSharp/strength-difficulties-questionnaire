@@ -9,13 +9,11 @@ interface Props {
 }
 
 function DemographicPicker({ demographic, value, onChange }: Props) {
-  const { demographicFields } = useReference();
+  const {
+    data: { demographicFields },
+  } = useReference();
 
-  const options =
-    demographicFields[demographic]?.map((option) => ({
-      value: option,
-      label: option,
-    })) || [];
+  const options = demographicFields[demographic] || [];
 
   const onSelectChange: React.ChangeEventHandler<HTMLSelectElement> = ({
     target: { value },

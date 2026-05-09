@@ -4,4 +4,4 @@ import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record Goal(UUID clientId, UUID goalId, String description) {}
+public record Goal(UUID clientId, UUID goalId, GoalType type, String description) {}

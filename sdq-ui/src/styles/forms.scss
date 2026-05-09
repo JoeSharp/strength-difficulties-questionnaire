@@ -37,7 +37,7 @@ $error: #d9534f;
   }
 }
 
-button {
+button, input[type="submit"] {
   padding: 0.6rem 1.2rem;
   background: $primary;
   color: white;

@@ -7,6 +7,7 @@ import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.gbo.GoalProgress;
+import uk.ratracejoe.sdq.model.gbo.GoalType;
 
 public interface GoalRepository {
   void save(Goal goal);
@@ -21,6 +22,7 @@ public interface GoalRepository {
       Assessor assessor,
       List<DemographicFilter> filters,
       int minProgress,
+      List<GoalType> goalTypes,
       LocalDate from,
       LocalDate to);
 

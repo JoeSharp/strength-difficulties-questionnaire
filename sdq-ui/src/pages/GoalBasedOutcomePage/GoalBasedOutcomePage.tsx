@@ -5,6 +5,7 @@ import GoalQueryForm from "@/components/GoalQueryForm";
 import type { GoalQueryDTO } from "@/api/GboApi/gboApi";
 
 const DEFAULT_GOAL_QUERY: GoalQueryDTO = {
+  goalTypes: [],
   assessor: "School",
   filters: [],
   minProgress: 1,

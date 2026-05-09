@@ -2,24 +2,23 @@ import React from "react";
 import Select, { type MultiValue } from "react-select";
 import type { DemographicField, DemographicFilter } from "@/api/types";
 import useReference from "@/api/ReferenceApi";
+import type { Option } from "@/api/ReferenceApi/referenceApi";
 import DemographicFieldPicker from "../DemographicFieldPicker/DemographicFieldPicker";
-
-interface SelectOption {
-  label: string;
-  value: string;
-}
 
 interface Props {
   value: DemographicFilter[];
   onChange: React.Dispatch<React.SetStateAction<DemographicFilter[]>>;
 }
-const DEFAUL_FILTER: DemographicFilter = { field: "Gender", values: [] };
+const DEFAULT_FILTER: DemographicFilter = { field: "Gender", values: [] };
 
 const DemographicFilterForm: React.FC<Props> = ({ value, onChange }) => {
-  const { demographicFields } = useReference();
+  const {
+    data: { demographicFields },
+    getLabelForDemographicValue,
+  } = useReference();
 
   const [current, setCurrent] =
-    React.useState<DemographicFilter>(DEFAUL_FILTER);
+    React.useState<DemographicFilter>(DEFAULT_FILTER);
 
   const onAddFilter: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
@@ -41,17 +40,11 @@ const DemographicFilterForm: React.FC<Props> = ({ value, onChange }) => {
     });
   };
 
-  const selectedOptions: SelectOption[] = current.values.map((f) => ({
-    value: f,
-    label: f,
-  }));
-  const options: SelectOption[] =
-    demographicFields[current.field]?.map((option) => ({
-      value: option,
-      label: option,
-    })) || [];
-
-  const onValuesChange = (selected: MultiValue<SelectOption>) => {
+  const options: Option[] = demographicFields[current.field] || [];
+  const selectedOptions: Option[] = options.filter((option) =>
+    current.values.includes(option.value),
+  );
+  const onValuesChange = (selected: MultiValue<Option>) => {
     const selectedValues = selected.map(({ value }) => value);
     setCurrent((prev) => ({
       ...prev,
@@ -101,7 +94,11 @@ const DemographicFilterForm: React.FC<Props> = ({ value, onChange }) => {
               {value.map((filter) => (
                 <tr key={filter.field}>
                   <td>{filter.field}</td>
-                  <td>{filter.values.join(" or ")}</td>
+                  <td>
+                    {filter.values
+                      .map((v) => getLabelForDemographicValue(filter.field, v))
+                      .join(" or ")}
+                  </td>
                   <td>
                     <button onClick={() => onClickRemoveField(filter.field)}>
                       Remove

@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
+import uk.ratracejoe.sdq.model.EnumValue;
 
 public enum InterventionType {
   CCPT,
@@ -8,6 +9,10 @@ public enum InterventionType {
   PTP,
   IA,
   UKKNOWN;
+
+  public EnumValue enumValue() {
+    return new EnumValue(name(), name());
+  }
 
   public static InterventionType defaultValue() {
     return UKKNOWN;

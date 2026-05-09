@@ -15,7 +15,7 @@ class WorkbookSdqExtractorTest {
   void sdqExtracted() throws IOException {
     // Given
     UUID clientId = UUID.randomUUID();
-    WorkbookSdqExtractor extractor = new WorkbookSdqExtractor();
+    WorkbookSdqExtractor extractor = Utils.sdqExtractor();
     Workbook workbook = workbookLoaded();
 
     // When

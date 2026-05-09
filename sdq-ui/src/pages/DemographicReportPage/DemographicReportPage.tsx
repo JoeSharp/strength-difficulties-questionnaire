@@ -1,9 +1,10 @@
-import React from "react";
+import React, { use } from "react";
 import {
   DEMOGRAPHIC_FIELDS,
   type DemographicField,
 } from "@/api/ReferenceApi/referenceApi";
 import useDemographicReport from "@/api/ClientApi/useDemographicReport";
+import useReference from "@/api/ReferenceApi";
 
 const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
   value: field,
@@ -11,6 +12,7 @@ const OPTIONS = DEMOGRAPHIC_FIELDS.map((field) => ({
 }));
 
 function DemographicReportPage() {
+  const { getLabelForDemographicValue } = useReference();
   const [demographicName, setDemographicName] =
     React.useState<DemographicField>("Gender");
   const { demographicReport } = useDemographicReport(demographicName);
@@ -50,7 +52,7 @@ function DemographicReportPage() {
         <tbody>
           {demographicReport.counts.map(({ option, count, percentage }) => (
             <tr key={option}>
-              <td>{option}</td>
+              <td>{getLabelForDemographicValue(demographicName, option)}</td>
               <td>{count}</td>
               <td>{percentage} %</td>
             </tr>

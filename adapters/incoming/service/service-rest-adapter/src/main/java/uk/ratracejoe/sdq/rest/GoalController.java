@@ -1,6 +1,8 @@
 package uk.ratracejoe.sdq.rest;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +29,12 @@ public class GoalController {
   @PostMapping("/query")
   public List<GoalProgress> getGoalsWithProgress(@RequestBody GoalQueryDTO query) {
     return goalService.getGoalsWithProgress(
-        query.assessor(), query.filters(), query.minProgress(), query.from(), query.to());
+        query.assessor(),
+        Optional.ofNullable(query.filters()).orElseGet(Collections::emptyList),
+        query.minProgress(),
+        Optional.ofNullable(query.goalTypes()).orElseGet(Collections::emptyList),
+        query.from(),
+        query.to());
   }
 
   @GetMapping("/forClient/{clientId}")

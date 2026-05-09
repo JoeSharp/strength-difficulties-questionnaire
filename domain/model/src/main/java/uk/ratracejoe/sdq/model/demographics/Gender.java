@@ -2,6 +2,7 @@ package uk.ratracejoe.sdq.model.demographics;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import uk.ratracejoe.sdq.model.EnumValue;
 
 @RequiredArgsConstructor
 public enum Gender {
@@ -15,6 +16,10 @@ public enum Gender {
 
   public static Gender defaultValue() {
     return PREFER_NOT_TO_SAY;
+  }
+
+  public EnumValue enumValue() {
+    return new EnumValue(name(), display);
   }
 
   public static Gender fromDisplay(String value) {

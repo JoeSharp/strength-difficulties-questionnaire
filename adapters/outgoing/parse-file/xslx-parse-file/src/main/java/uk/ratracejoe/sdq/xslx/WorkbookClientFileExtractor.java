@@ -14,6 +14,7 @@ import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
+import uk.ratracejoe.sdq.model.gbo.GoalType;
 import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 
 @RequiredArgsConstructor
@@ -35,6 +36,12 @@ public class WorkbookClientFileExtractor {
             .distinct()
             .sorted()
             .toList();
+    Map<Integer, GoalType> goalTypes =
+        parsedGbo.stream()
+            .flatMap(p -> p.scores().stream())
+            .filter(p -> Objects.nonNull(p.goalType()))
+            .collect(
+                Collectors.toMap(GboParsedScore::index, GboParsedScore::goalType, (a, b) -> a));
 
     Map<Integer, Goal> goalsByIndex =
         goalIndices.stream()
@@ -44,6 +51,7 @@ public class WorkbookClientFileExtractor {
                     i ->
                         Goal.builder()
                             .goalId(UUID.randomUUID())
+                            .type(goalTypes.get(i))
                             .clientId(sdqClient.clientId())
                             .description(String.format("Goal %d for %s", i, sdqClient.codeName()))
                             .build()));
