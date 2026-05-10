@@ -98,13 +98,16 @@ public class ClientRepositoryImpl implements ClientRepository {
   }
 
   @Override
-  public List<SdqClient> getFiltered(List<DemographicFilter> filters) {
+  public List<SdqClient> getFiltered(String partialName, List<DemographicFilter> filters) {
     // Build SQL dynamically based on fields
-    String sql = selectFilteredSql(filters.stream().toList());
+    String sql = selectFilteredSql(partialName, filters.stream().toList());
 
     // Bind positional parameters
     Map<String, Object> params = new HashMap<>();
     addFilters(params, filters);
+    if (partialName != null) {
+      params.put("partial_name", partialName);
+    }
 
     // Execute + map
     return jdbcClient.sql(sql).params(params).query((rs, rowNum) -> getFromResultSet(rs)).list();
@@ -271,12 +274,22 @@ public class ClientRepositoryImpl implements ClientRepository {
         columnName, columnName);
   }
 
-  static String selectFilteredSql(List<DemographicFilter> filters) {
+  static String selectFilteredSql(String partialName, List<DemographicFilter> filters) {
+    boolean filterOnName = partialName != null && !partialName.isEmpty();
     StringBuilder sql = new StringBuilder();
     sql.append("SELECT * FROM client");
-    if (!filters.isEmpty()) {
+    if (!filters.isEmpty() || filterOnName) {
       sql.append(" WHERE ");
-      sql.append(filterSelectWhere("client", filters));
+      if (!filters.isEmpty()) {
+        sql.append(filterSelectWhere("client", filters));
+      }
+      if (filterOnName) {
+        if (!filters.isEmpty()) {
+          sql.append(" AND ");
+        }
+
+        sql.append("code_name LIKE CONCAT('%', :partial_name, '%')");
+      }
     }
     return sql.toString();
   }

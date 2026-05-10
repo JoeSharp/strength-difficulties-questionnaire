@@ -2,20 +2,23 @@ import { useMutation } from "@tanstack/react-query";
 import useInProgressContext from "@/context/InProgressContext";
 import useAppNotificationContext from "@/context/AppNotificationContext";
 import {
-  BASE_SDQ_URL,
-  type SdqQueryDTO,
-  type SdqProgressSummary,
-} from "./sdqApi";
+  BASE_CLIENT_URL,
+  parseFile,
+  type ClientFile,
+  type ClientQueryDTO,
+} from "@/api/ClientApi/clientApi";
 
-function useQuerySdqProgress() {
+function useSearchClients() {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
-  return useMutation<SdqProgressSummary[], Error, SdqQueryDTO>({
+
+  return useMutation<ClientFile[], Error, ClientQueryDTO>({
+    mutationKey: ["clientFilteredFiles"],
     mutationFn: async (query) => {
-      const jobId = beginJob("Querying SDQ summaries");
+      const jobId = beginJob("Fetching files");
 
       try {
-        const response = await fetch(`${BASE_SDQ_URL}/query/progress`, {
+        const response = await fetch(`${BASE_CLIENT_URL}/search`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(query),
@@ -25,12 +28,13 @@ function useQuerySdqProgress() {
           addMessage(
             "danger",
             response.status,
-            "Failed to query SDQ summaries: " + response.statusText,
+            "Failed to fetch file: " + response.statusText,
           );
           throw new Error("Network response was not ok");
         }
 
-        return await response.json();
+        const json = await response.json();
+        return json.map(parseFile);
       } finally {
         endJob(jobId);
       }
@@ -38,4 +42,4 @@ function useQuerySdqProgress() {
   });
 }
 
-export default useQuerySdqProgress;
+export default useSearchClients;

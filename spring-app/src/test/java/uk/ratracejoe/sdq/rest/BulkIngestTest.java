@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApiClient;
 import uk.ratracejoe.sdq.SdqFixtures;
+import uk.ratracejoe.sdq.dto.ClientQueryDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
 import uk.ratracejoe.sdq.model.SdqClient;
@@ -41,10 +42,14 @@ class BulkIngestTest {
 
     var fileResponse =
         client.searchClients(
-            List.of(
-                new DemographicFilter(DemographicField.Gender, List.of(Gender.MALE.name())),
-                new DemographicFilter(
-                    DemographicField.Council, List.of(Council.CHELTENHAM.name()))));
+            ClientQueryDTO.builder()
+                .partialName("4")
+                .filters(
+                    List.of(
+                        new DemographicFilter(DemographicField.Gender, List.of(Gender.MALE.name())),
+                        new DemographicFilter(
+                            DemographicField.Council, List.of(Council.CHELTENHAM.name()))))
+                .build());
     assertThat(fileResponse).hasSizeGreaterThanOrEqualTo(1);
     assertThat(fileResponse).extracting(SdqClient::codeName).contains("Test File 4.xlsx");
   }

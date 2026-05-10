@@ -15,7 +15,8 @@ public interface ClientService {
 
   List<SdqClient> getAll() throws SdqException;
 
-  List<SdqClient> getFiltered(List<DemographicFilter> filters) throws SdqException;
+  List<SdqClient> getFiltered(String partialName, List<DemographicFilter> filters)
+      throws SdqException;
 
   SdqClient getByUUID(UUID uuid) throws SdqException;
 

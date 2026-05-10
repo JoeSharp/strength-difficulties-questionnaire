@@ -95,7 +95,7 @@ export interface SdqProgressSummary {
   totalDifficulties: Progress;
 }
 
-export interface SdqFilterDTO {
+export interface SdqQueryDTO {
   assessor: Assessor;
   filters: DemographicFilter[];
   from: string;

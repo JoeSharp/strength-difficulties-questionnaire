@@ -18,13 +18,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import uk.ratracejoe.sdq.dto.ClientQueryDTO;
 import uk.ratracejoe.sdq.dto.GoalQueryDTO;
-import uk.ratracejoe.sdq.dto.SdqFilterDTO;
+import uk.ratracejoe.sdq.dto.SdqQueryDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
 import uk.ratracejoe.sdq.model.SdqClient;
-import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
 import uk.ratracejoe.sdq.model.gbo.GoalProgress;
@@ -95,7 +95,7 @@ public class SdqApiClient {
         .toEntity(SdqSubmissionSummary.class);
   }
 
-  public HttpEntity<List<SdqProgressSummary>> querySdqProgress(SdqFilterDTO query) {
+  public HttpEntity<List<SdqProgressSummary>> querySdqProgress(SdqQueryDTO query) {
     return restClient
         .post()
         .uri(REST_URL_SDQ + "/query/progress")
@@ -105,7 +105,7 @@ public class SdqApiClient {
         .toEntity(new ParameterizedTypeReference<>() {});
   }
 
-  public HttpEntity<List<SdqSubmissionSummary>> querySdq(SdqFilterDTO query) {
+  public HttpEntity<List<SdqSubmissionSummary>> querySdq(SdqQueryDTO query) {
     return restClient
         .post()
         .uri(REST_URL_SDQ + "/query")
@@ -161,11 +161,11 @@ public class SdqApiClient {
         .getBody();
   }
 
-  public List<SdqClient> searchClients(List<DemographicFilter> filters) {
+  public List<SdqClient> searchClients(ClientQueryDTO query) {
     return restClient
         .post()
         .uri(REST_URL_CLIENT + "/search")
-        .body(filters)
+        .body(query)
         .retrieve()
         .toEntity(new ParameterizedTypeReference<List<SdqClient>>() {})
         .getBody();

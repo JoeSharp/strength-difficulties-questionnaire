@@ -1,13 +1,13 @@
 import React from "react";
-import type { SdqFilterDTO } from "@/api/SdqApi/sdqApi";
+import type { SdqQueryDTO } from "@/api/SdqApi/sdqApi";
 
 import type { Assessor, DemographicFilter } from "@/api/types";
 import AssessorPicker from "../AssessorPicker/AssessorPicker";
 import DemographicFilterForm from "../DemographicFilterForm";
 
 interface Props {
-  value: SdqFilterDTO;
-  onChange: React.Dispatch<React.SetStateAction<SdqFilterDTO>>;
+  value: SdqQueryDTO;
+  onChange: React.Dispatch<React.SetStateAction<SdqQueryDTO>>;
 }
 
 const SdqQueryForm: React.FC<Props> = ({ value, onChange }) => {

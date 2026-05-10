@@ -38,8 +38,11 @@ public class ClientServiceImpl implements ClientService {
   }
 
   @Override
-  public List<SdqClient> getFiltered(List<DemographicFilter> filters) throws SdqException {
-    return clientRepository.getFiltered(filters).stream().map(this::withInterventionTypes).toList();
+  public List<SdqClient> getFiltered(String partialName, List<DemographicFilter> filters)
+      throws SdqException {
+    return clientRepository.getFiltered(partialName, filters).stream()
+        .map(this::withInterventionTypes)
+        .toList();
   }
 
   @Override

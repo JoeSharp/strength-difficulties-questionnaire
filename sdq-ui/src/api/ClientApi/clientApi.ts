@@ -1,3 +1,5 @@
+import type { DemographicFilter } from "../types";
+
 export const BASE_CLIENT_URL = "/api/client";
 
 export interface ClientFile {
@@ -51,4 +53,13 @@ export interface DemographicReport {
 
 export const EMPTY_DEMOGRAPHIC_REPORT: DemographicReport = {
   counts: [],
+};
+
+export interface ClientQueryDTO {
+  partialName: string;
+  filters: DemographicFilter[];
+}
+export const DEFAULT_CLIENT_QUERY: ClientQueryDTO = {
+  partialName: "",
+  filters: [],
 };

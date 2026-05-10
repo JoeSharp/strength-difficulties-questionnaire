@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import uk.ratracejoe.sdq.dto.ClientQueryDTO;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
-import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.demographics.DemographicReport;
 import uk.ratracejoe.sdq.service.ClientService;
 
@@ -33,8 +33,8 @@ public class ClientController {
   }
 
   @PostMapping("/search")
-  public List<SdqClient> getFiltered(@RequestBody List<DemographicFilter> filters) {
-    return clientService.getFiltered(filters);
+  public List<SdqClient> searchClients(@RequestBody ClientQueryDTO query) {
+    return clientService.getFiltered(query.partialName(), query.filters());
   }
 
   @GetMapping("/{clientId}")

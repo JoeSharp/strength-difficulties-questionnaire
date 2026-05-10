@@ -1,40 +1,38 @@
 import React from "react";
 
-import useClients from "@/api/ClientApi/useClients";
 import ClientCard from "./ClientCard";
 import ClientDeleteAllButton from "../ClientDeleteAllButton";
+import ClientQueryForm from "@/components/ClientQueryForm";
+import useSearchClients from "@/api/ClientApi/useSearchClients";
+import {
+  DEFAULT_CLIENT_QUERY,
+  type ClientQueryDTO,
+} from "@/api/ClientApi/clientApi";
 
 function ClientListView() {
-  const { clients } = useClients();
+  const { data: clients, mutate: searchClients } = useSearchClients();
 
-  const [nameToSearch, setNameToSearch] = React.useState<string>("");
-  const onChangeNameToSearch: React.ChangeEventHandler<HTMLInputElement> = ({
-    target: { value },
-  }) => {
-    setNameToSearch(value);
+  const [clientQuery, setClientQuery] =
+    React.useState<ClientQueryDTO>(DEFAULT_CLIENT_QUERY);
+
+  const onClickQuery = () => {
+    searchClients(clientQuery);
   };
-
-  const filteredClients = clients.filter((f) =>
-    f.codeName.includes(nameToSearch),
-  );
 
   return (
     <div>
-      <h2>Client List</h2>
-      <form>
-        <div className="form-group">
-          <label htmlFor="name-to-search">Name</label>
-          <input
-            name="name-to-search"
-            value={nameToSearch}
-            onChange={onChangeNameToSearch}
-          />
-        </div>
+      <h2>
+        Client List
+        <span style={{ fontSize: "0.8em", marginLeft: "1em" }} />
         <ClientDeleteAllButton />
-      </form>
-      {filteredClients.map((client) => (
-        <ClientCard key={client.clientId} client={client} />
-      ))}
+      </h2>
+      <ClientQueryForm value={clientQuery} onChange={setClientQuery} />
+      <button onClick={onClickQuery}>Search</button>
+
+      {clients &&
+        clients.map((client) => (
+          <ClientCard key={client.clientId} client={client} />
+        ))}
     </div>
   );
 }

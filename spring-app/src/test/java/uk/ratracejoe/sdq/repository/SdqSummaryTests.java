@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApiClient;
 import uk.ratracejoe.sdq.SdqFixtures;
-import uk.ratracejoe.sdq.dto.SdqFilterDTO;
+import uk.ratracejoe.sdq.dto.SdqQueryDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
@@ -45,7 +45,7 @@ class SdqSummaryTests {
     List<SdqSubmissionSummary> summaries =
         client
             .querySdq(
-                SdqFilterDTO.builder()
+                SdqQueryDTO.builder()
                     .assessor(Assessor.School)
                     .filters(
                         List.of(
@@ -66,7 +66,7 @@ class SdqSummaryTests {
     List<SdqProgressSummary> progress =
         client
             .querySdqProgress(
-                SdqFilterDTO.builder()
+                SdqQueryDTO.builder()
                     .assessor(Assessor.School)
                     .filters(
                         List.of(

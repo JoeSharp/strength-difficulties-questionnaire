@@ -1,12 +1,12 @@
 import React from "react";
-import type { SdqFilterDTO } from "@/api/SdqApi/sdqApi";
+import type { SdqQueryDTO } from "@/api/SdqApi/sdqApi";
 import useQuerySdq from "@/api/SdqApi/useQuerySdq";
 import useQuerySdqProgress from "@/api/SdqApi/useQuerySdqProgress";
 import SdqQueryForm from "@/components/SdqQueryForm";
 import SdqSummaryTable from "@/components/SdqSummaryTable";
 import SdqProgressTable from "../../components/SdqProgressTable";
 
-const DEFAULT_GOAL_QUERY: SdqFilterDTO = {
+const DEFAULT_GOAL_QUERY: SdqQueryDTO = {
   assessor: "School",
   filters: [],
   from: "2024-01-01",
@@ -16,7 +16,7 @@ function SdqResponsePage() {
   const sdqSummaries = useQuerySdq();
   const sdqProgress = useQuerySdqProgress();
   const [sdqFilter, setSdqFilter] =
-    React.useState<SdqFilterDTO>(DEFAULT_GOAL_QUERY);
+    React.useState<SdqQueryDTO>(DEFAULT_GOAL_QUERY);
 
   const onClickQuery = () => {
     sdqSummaries.mutate(sdqFilter);

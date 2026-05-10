@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import uk.ratracejoe.sdq.dto.SdqFilterDTO;
+import uk.ratracejoe.sdq.dto.SdqQueryDTO;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.ReportingPeriod;
 import uk.ratracejoe.sdq.model.sdq.SdqProgressSummary;
@@ -48,13 +48,13 @@ public class SdqController {
   }
 
   @PostMapping("/query")
-  public List<SdqSubmissionSummary> query(@RequestBody SdqFilterDTO query) {
+  public List<SdqSubmissionSummary> query(@RequestBody SdqQueryDTO query) {
     return sdqService.querySdqSummaries(
         query.assessor(), query.filters(), query.from(), query.to());
   }
 
   @PostMapping("/query/progress")
-  public List<SdqProgressSummary> queryProgress(@RequestBody SdqFilterDTO query) {
+  public List<SdqProgressSummary> queryProgress(@RequestBody SdqQueryDTO query) {
     return sdqService.querySdqProgress(query.assessor(), query.filters(), query.from(), query.to());
   }
 }

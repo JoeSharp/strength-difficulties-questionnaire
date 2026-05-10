@@ -17,7 +17,7 @@ const ClientCard: React.FC<Props> = ({ includeHeader = true, client }) => {
       {includeHeader && (
         <div className="client-card__header">
           <div>
-            <h3>{client.codeName}</h3>
+            <h3>Code name: {client.codeName}</h3>
             <p className="client-card__meta">ID: {client.clientId}</p>
           </div>
           <div>

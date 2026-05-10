@@ -11,7 +11,8 @@ import uk.ratracejoe.sdq.model.demographics.DemographicReport;
 public interface ClientRepository {
   List<SdqClient> getAll() throws SdqException;
 
-  List<SdqClient> getFiltered(List<DemographicFilter> filters) throws SdqException;
+  List<SdqClient> getFiltered(String partialName, List<DemographicFilter> filters)
+      throws SdqException;
 
   SdqClient get(UUID fileId) throws SdqException;
 
