@@ -5,6 +5,14 @@ plugins {
     id 'io.spring.dependency-management' version "${springDependencyVersion}"
 }
 
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
 group = 'uk.ratracejoe.sdq.rest'
 version = '0.0.1-SNAPSHOT'
 
