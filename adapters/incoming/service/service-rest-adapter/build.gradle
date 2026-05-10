@@ -1,4 +1,9 @@
-apply plugin: 'java-library'
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyVersion}"
+}
 
 group = 'uk.ratracejoe.sdq.rest'
 version = '0.0.1-SNAPSHOT'
@@ -7,10 +12,10 @@ dependencies {
     implementation project(":domain:model")
     implementation project(":domain:ports:incoming:service")
 
-    implementation("org.springframework:spring-web:6.2.8")
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
     implementation("org.slf4j:slf4j-api:2.0.16") // Service
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
 
     compileOnly 'org.projectlombok:lombok:1.18.36'
