@@ -1,4 +1,6 @@
-apply plugin: 'java-library'
+plugins {
+    id 'java-library'
+}
 
 group = 'uk.ratracejoe.sdq.xslx'
 version = '0.0.1-SNAPSHOT'
@@ -17,6 +19,11 @@ dependencies {
     implementation 'org.dhatim:fastexcel-reader:0.18.1'
     implementation 'org.dhatim:fastexcel:0.18.1'
 
+    testImplementation project(":adapters:outgoing:repository:repository-sql-adapter")
+    testImplementation project(":domain:ports:outgoing:repository")
+    testImplementation("org.springframework.boot:spring-boot-starter-jdbc:3.5.14")
+    testImplementation 'org.postgresql:postgresql:42.7.3'
+    testImplementation project(":domain:use-cases")
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.assertj:assertj-core:3.27.7'

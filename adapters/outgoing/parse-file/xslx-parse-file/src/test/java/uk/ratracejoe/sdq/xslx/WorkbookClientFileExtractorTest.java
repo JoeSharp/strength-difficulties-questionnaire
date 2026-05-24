@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.xslx;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.ratracejoe.sdq.xslx.Utils.XLSX_TEST_FILE_1;
 import static uk.ratracejoe.sdq.xslx.Utils.workbookLoaded;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ class WorkbookClientFileExtractorTest {
   void goalsExtracted() throws IOException {
     // Given
     WorkbookClientFileExtractor fileParser = Utils.fileParser();
-    Workbook workbook = workbookLoaded();
+    Workbook workbook = workbookLoaded(XLSX_TEST_FILE_1);
 
     // When
     ParsedFile result = fileParser.extract("My Name", workbook);

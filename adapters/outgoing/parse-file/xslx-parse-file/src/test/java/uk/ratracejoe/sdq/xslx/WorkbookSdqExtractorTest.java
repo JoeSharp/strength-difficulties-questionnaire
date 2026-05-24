@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.xslx;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.ratracejoe.sdq.xslx.Utils.XLSX_TEST_FILE_1;
 import static uk.ratracejoe.sdq.xslx.Utils.workbookLoaded;
 
 import java.io.IOException;
@@ -16,12 +17,12 @@ class WorkbookSdqExtractorTest {
     // Given
     UUID clientId = UUID.randomUUID();
     WorkbookSdqExtractor extractor = Utils.sdqExtractor();
-    Workbook workbook = workbookLoaded();
+    Workbook workbook = workbookLoaded(XLSX_TEST_FILE_1);
 
     // When
     List<SdqReportingPeriod> result = extractor.parse(clientId, workbook);
 
     // Then
-    assertThat(result).hasSize(9);
+    assertThat(result).hasSize(2);
   }
 }
