@@ -1,9 +1,5 @@
 package uk.ratracejoe.sdq.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
@@ -12,6 +8,11 @@ import uk.ratracejoe.sdq.repository.AcesRepository;
 import uk.ratracejoe.sdq.repository.ClientRepository;
 import uk.ratracejoe.sdq.repository.DisabilityTypeRepository;
 import uk.ratracejoe.sdq.repository.InterventionRepository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
@@ -41,18 +42,21 @@ public class ClientServiceImpl implements ClientService {
 
   @Override
   public List<SdqClient> getAll() throws SdqException {
-    return clientRepository.getAll().stream().map(this::enriched).toList();
+    List<SdqClient> clients = clientRepository.getAll();
+    return clients.stream().map(this::enriched).toList();
   }
 
   @Override
   public List<SdqClient> getFiltered(String partialName, List<DemographicFilter> filters)
       throws SdqException {
-    return clientRepository.getFiltered(partialName, filters).stream().map(this::enriched).toList();
+    List<SdqClient> clients = clientRepository.getFiltered(partialName, filters);
+    return clients.stream().map(this::enriched).toList();
   }
 
   @Override
   public SdqClient getByUUID(UUID clientId) throws SdqException {
-    return enriched(clientRepository.get(clientId));
+    SdqClient client = clientRepository.get(clientId);
+    return enriched(client);
   }
 
   @Override
