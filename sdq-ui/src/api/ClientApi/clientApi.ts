@@ -2,7 +2,12 @@ import type { DemographicFilter } from "../types";
 
 export const BASE_CLIENT_URL = "/api/client";
 
-export interface ClientFile {
+export type Intervention = {
+  type: string;
+  sessions: number;
+};
+
+export type ClientFile = {
   clientId: string;
   codeName: string;
   dateOfBirth: Date;
@@ -11,12 +16,12 @@ export interface ClientFile {
   ethnicity: string;
   englishAdditionalLanguage: string;
   disabilityStatus: string;
-  disabilityType: string;
+  disabilityTypes: string[];
   careExperience: string;
-  interventionTypes: string[];
+  interventions: Intervention[];
   aces: number;
   fundingSource: string;
-}
+};
 
 export const EMPTY_CLIENT_FILE: ClientFile = {
   clientId: "",
@@ -27,9 +32,9 @@ export const EMPTY_CLIENT_FILE: ClientFile = {
   ethnicity: "",
   englishAdditionalLanguage: "",
   disabilityStatus: "",
-  disabilityType: "",
+  disabilityTypes: [],
   careExperience: "",
-  interventionTypes: [],
+  interventions: [],
   aces: 0,
   fundingSource: "",
 };
@@ -41,24 +46,24 @@ export function parseFile(file: ClientFile): ClientFile {
   };
 }
 
-export interface DemographicCount {
+export type DemographicCount = {
   option: string;
   count: number;
   percentage: number;
-}
+};
 
-export interface DemographicReport {
+export type DemographicReport = {
   counts: DemographicCount[];
-}
+};
 
 export const EMPTY_DEMOGRAPHIC_REPORT: DemographicReport = {
   counts: [],
 };
 
-export interface ClientQueryDTO {
+export type ClientQueryDTO = {
   partialName: string;
   filters: DemographicFilter[];
-}
+};
 export const DEFAULT_CLIENT_QUERY: ClientQueryDTO = {
   partialName: "",
   filters: [],

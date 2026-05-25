@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.xslx;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static uk.ratracejoe.sdq.xslx.Utils.*;
 
 import java.io.IOException;
@@ -8,8 +9,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
-import uk.ratracejoe.sdq.model.demographics.Ethnicity;
-import uk.ratracejoe.sdq.model.demographics.Gender;
+import uk.ratracejoe.sdq.model.demographics.*;
 
 class WorkbookDemographicExtractorTest {
   @Test
@@ -41,5 +41,30 @@ class WorkbookDemographicExtractorTest {
     assertThat(file).extracting(SdqClient::codeName).isEqualTo("revised");
     assertThat(file).extracting(SdqClient::gender).isEqualTo(Gender.NON_BINARY);
     assertThat(file).extracting(SdqClient::ethnicity).isEqualTo(Ethnicity.ASIAN);
+    assertThat(file)
+        .extracting(SdqClient::disabilityTypes, list(DisabilityType.class))
+        .containsExactlyInAnyOrder(
+            DisabilityType.LEARNING,
+            DisabilityType.COGNITIVE_OR_MEMORY,
+            DisabilityType.MENTAL_HEALTH_CONDITION);
+    assertThat(file)
+        .extracting(SdqClient::interventions, list(Intervention.class))
+        .satisfiesExactlyInAnyOrder(
+            d -> {
+              assertThat(d).extracting(Intervention::type).isEqualTo(InterventionType.CCPT);
+              assertThat(d).extracting(Intervention::sessions).isEqualTo(3);
+            },
+            d -> {
+              assertThat(d).extracting(Intervention::type).isEqualTo(InterventionType.PTP);
+              assertThat(d).extracting(Intervention::sessions).isEqualTo(2);
+            },
+            d -> {
+              assertThat(d).extracting(Intervention::type).isEqualTo(InterventionType.CPRT);
+              assertThat(d).extracting(Intervention::sessions).isEqualTo(8);
+            },
+            d -> {
+              assertThat(d).extracting(Intervention::type).isEqualTo(InterventionType.IA);
+              assertThat(d).extracting(Intervention::sessions).isEqualTo(4);
+            });
   }
 }

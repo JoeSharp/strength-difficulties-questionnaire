@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.*;
@@ -82,6 +83,7 @@ public class WorkbookDemographicExtractor {
                         cellNum.getAndIncrement(),
                         DisabilityType::fromDisplay,
                         DisabilityType::defaultValue))
+            .filter(Predicate.not(DisabilityType.NOT_APPLICABLE::equals))
             .toList();
 
     CareExperience careExperience =
@@ -104,6 +106,7 @@ public class WorkbookDemographicExtractor {
                       };
                   return new Intervention(type, sessions);
                 })
+            .filter(i -> !InterventionType.UKKNOWN.equals(i.type()))
             .toList();
     Integer aces = readIntCell(answersRow, cellNum.getAndIncrement());
     if (WorkbookFormat.REVISED_MAY_26.equals(format)) {

@@ -24,9 +24,10 @@ export const DEMOGRAPHIC_GETTERS: Record<DemographicField, DemographicGetter> =
     Ethnicity: (client) => client.ethnicity,
     EAL: (client) => client.englishAdditionalLanguage,
     DisabilityStatus: (client) => client.disabilityStatus,
-    DisabilityType: (client) => client.disabilityType,
+    DisabilityType: (client) => client.disabilityTypes.join(", "),
     CareExperience: (client) => client.careExperience,
-    InterventionType: (client) => client.interventionTypes.join(", "),
+    InterventionType: (client) =>
+      client.interventions.map((i) => `${i.type} (${i.sessions})`).join(", "),
     ACES: (client) => client.aces.toString(),
     FundingSource: (client) => client.fundingSource,
   };
