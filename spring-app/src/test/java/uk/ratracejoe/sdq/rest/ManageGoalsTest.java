@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ class ManageGoalsTest {
             .disabilityTypes(List.of(DisabilityType.LEARNING))
             .disabilityStatus(DisabilityStatus.DISABILITY)
             .fundingSource(FundingSource.EHCP)
-            .aces(2)
+            .aces(Map.of(AceType.GENERIC, 2))
             .build();
     SdqClient sdqClient = this.client.createClient(toCreate);
 

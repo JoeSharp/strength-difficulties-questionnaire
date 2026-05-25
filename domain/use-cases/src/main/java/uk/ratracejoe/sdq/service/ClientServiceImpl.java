@@ -1,12 +1,14 @@
 package uk.ratracejoe.sdq.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.*;
+import uk.ratracejoe.sdq.repository.AcesRepository;
 import uk.ratracejoe.sdq.repository.ClientRepository;
 import uk.ratracejoe.sdq.repository.DisabilityTypeRepository;
 import uk.ratracejoe.sdq.repository.InterventionRepository;
@@ -16,6 +18,7 @@ public class ClientServiceImpl implements ClientService {
   private final ClientRepository clientRepository;
   private final InterventionRepository interventionRepository;
   private final DisabilityTypeRepository disabilityTypeRepository;
+  private final AcesRepository acesRepository;
 
   @Override
   public SdqClient create(SdqClient newClient) {
@@ -24,6 +27,10 @@ public class ClientServiceImpl implements ClientService {
         .ifPresent(its -> its.forEach(it -> interventionRepository.save(client.clientId(), it)));
     Optional.ofNullable(newClient.disabilityTypes())
         .ifPresent(dts -> dts.forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt)));
+    Optional.ofNullable(newClient.aces())
+        .ifPresent(
+            aces ->
+                aces.forEach((key, value) -> acesRepository.save(client.clientId(), key, value)));
     return getByUUID(client.clientId());
   }
 
@@ -53,8 +60,10 @@ public class ClientServiceImpl implements ClientService {
     clientRepository.update(client);
     interventionRepository.deleteForClient(client.clientId());
     disabilityTypeRepository.deleteForClient(client.clientId());
+    acesRepository.deleteForClient(client.clientId());
     client.interventions().forEach(it -> interventionRepository.save(client.clientId(), it));
     client.disabilityTypes().forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt));
+    client.aces().forEach((key, value) -> acesRepository.save(client.clientId(), key, value));
     return enriched(clientRepository.get(client.clientId()));
   }
 
@@ -71,6 +80,10 @@ public class ClientServiceImpl implements ClientService {
   private SdqClient enriched(SdqClient client) {
     List<Intervention> interventions = interventionRepository.getForClient(client.clientId());
     List<DisabilityType> disabilityTypes = disabilityTypeRepository.getForClient(client.clientId());
-    return client.withInterventions(interventions).withDisabilityTypes(disabilityTypes);
+    Map<AceType, Integer> aces = acesRepository.getForClient(client.clientId());
+    return client
+        .withInterventions(interventions)
+        .withDisabilityTypes(disabilityTypes)
+        .withAces(aces);
   }
 }

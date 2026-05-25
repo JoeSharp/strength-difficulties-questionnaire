@@ -32,10 +32,9 @@ const ClientCard: React.FC<Props> = ({ includeHeader = true, client }) => {
           <div className="client-card__field" key={field}>
             <dt>{field}</dt>
             <dd>
-              {getLabelForDemographicValue(
-                field,
-                DEMOGRAPHIC_GETTERS[field](client),
-              )}
+              {
+                DEMOGRAPHIC_GETTERS[field](client, getLabelForDemographicValue)
+              }
             </dd>
           </div>
         ))}

@@ -2,6 +2,7 @@ package uk.ratracejoe.sdq.model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.With;
@@ -20,5 +21,5 @@ public record SdqClient(
     @With List<DisabilityType> disabilityTypes,
     CareExperience careExperience,
     @With List<Intervention> interventions,
-    Integer aces,
+    @With Map<AceType, Integer> aces,
     FundingSource fundingSource) {}

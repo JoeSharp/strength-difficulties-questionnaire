@@ -19,7 +19,7 @@ export type ClientFile = {
   disabilityTypes: string[];
   careExperience: string;
   interventions: Intervention[];
-  aces: number;
+  aces: Record<string, number>;
   fundingSource: string;
 };
 
@@ -35,7 +35,7 @@ export const EMPTY_CLIENT_FILE: ClientFile = {
   disabilityTypes: [],
   careExperience: "",
   interventions: [],
-  aces: 0,
+  aces: {},
   fundingSource: "",
 };
 

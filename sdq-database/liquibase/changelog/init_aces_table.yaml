@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Joe Sharp
+      labels: init
+      comment: Create initial ACES for Client table
+      changes:
+        - createTable:
+            tableName: aces
+            columns:
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ace_type
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: score
+                  type: INT
+
+        # Foreign key to client(client_id)
+        - addForeignKeyConstraint:
+            baseTableName: aces
+            baseColumnNames: client_id
+            referencedTableName: client
+            referencedColumnNames: client_id
+            constraintName: fk_client_aces
+            onDelete: CASCADE

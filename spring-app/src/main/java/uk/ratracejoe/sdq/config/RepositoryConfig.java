@@ -34,6 +34,11 @@ public class RepositoryConfig {
   }
 
   @Bean
+  public AcesRepository acesRepository(JdbcClient jdbcClient) {
+    return new AcesRepositoryImpl(jdbcClient);
+  }
+
+  @Bean
   public DisabilityTypeRepository disabilityTypeRepository(JdbcClient jdbcClient) {
     return new DisabilityTypeRepositoryImpl(jdbcClient);
   }

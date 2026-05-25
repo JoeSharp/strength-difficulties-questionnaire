@@ -16,6 +16,13 @@ public class SdqFixtures {
     sdqClient.clearDatabase();
   }
 
+  public ParsedFile fileIngested(String filename) {
+    var response = sdqClient.ingestFile(filename);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    assertThat(response.getBody()).hasSize(1);
+    return response.getBody().getFirst();
+  }
+
   public List<ParsedFile> givenAllTestFilesIngested() {
     var response =
         sdqClient.ingestFile(

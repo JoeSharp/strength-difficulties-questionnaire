@@ -45,7 +45,9 @@ public class RefDataServiceImpl implements RefDataService {
         DemographicField.InterventionType,
         Arrays.stream(InterventionType.values()).map(InterventionType::enumValue).toList(),
         DemographicField.FundingSource,
-        Arrays.stream(FundingSource.values()).map(FundingSource::enumValue).toList());
+        Arrays.stream(FundingSource.values()).map(FundingSource::enumValue).toList(),
+        DemographicField.ACES,
+        Arrays.stream(AceType.values()).map(AceType::enumValue).toList());
   }
 
   @Override

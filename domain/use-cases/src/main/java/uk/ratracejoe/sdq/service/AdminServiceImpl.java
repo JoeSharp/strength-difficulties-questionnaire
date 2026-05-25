@@ -12,6 +12,7 @@ public class AdminServiceImpl implements AdminService {
   private final InterventionRepository interventionRepository;
   private final DisabilityTypeRepository disabilityTypeRepository;
   private final ReportingPeriodRepository reportingPeriodRepository;
+  private final AcesRepository acesRepository;
 
   @Override
   public void clearDatabase() {
@@ -22,5 +23,6 @@ public class AdminServiceImpl implements AdminService {
     interventionRepository.deleteAll();
     disabilityTypeRepository.deleteAll();
     reportingPeriodRepository.deleteAll();
+    acesRepository.deleteAll();
   }
 }

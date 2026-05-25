@@ -5,6 +5,7 @@ import static org.assertj.core.api.InstanceOfAssertFactories.list;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class ManageClientTest {
                 List.of(
                     new Intervention(InterventionType.IA, 2),
                     new Intervention(InterventionType.CCPT, 3)))
-            .aces(2)
+            .aces(Map.of(AceType.GENERIC, 2))
             .build();
     SdqClient sdqClient = this.client.createClient(toCreate);
     assertThat(sdqClient)

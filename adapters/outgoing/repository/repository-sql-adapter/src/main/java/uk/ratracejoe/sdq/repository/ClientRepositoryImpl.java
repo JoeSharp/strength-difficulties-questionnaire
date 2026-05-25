@@ -138,7 +138,6 @@ public class ClientRepositoryImpl implements ClientRepository {
         Optional.ofNullable(rs.getString("care_experience"))
             .map(CareExperience::valueOf)
             .orElseGet(CareExperience::defaultValue);
-    Integer aces = rs.getInt("aces");
     FundingSource fundingSource =
         Optional.ofNullable(rs.getString("funding_source"))
             .map(FundingSource::valueOf)
@@ -155,7 +154,7 @@ public class ClientRepositoryImpl implements ClientRepository {
         Collections.emptyList(),
         careExperience,
         Collections.emptyList(),
-        aces,
+        Collections.emptyMap(),
         fundingSource);
   }
 

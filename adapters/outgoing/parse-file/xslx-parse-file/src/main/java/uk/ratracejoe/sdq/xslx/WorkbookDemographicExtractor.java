@@ -2,10 +2,7 @@ package uk.ratracejoe.sdq.xslx;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -108,10 +105,18 @@ public class WorkbookDemographicExtractor {
                 })
             .filter(i -> !InterventionType.UKKNOWN.equals(i.type()))
             .toList();
-    Integer aces = readIntCell(answersRow, cellNum.getAndIncrement());
+    Map<AceType, Integer> aces = new EnumMap<>(AceType.class);
+
+    Integer acesGeneric = readIntCell(answersRow, cellNum.getAndIncrement());
+    aces.put(AceType.GENERIC, acesGeneric);
     if (WorkbookFormat.REVISED_MAY_26.equals(format)) {
+      Row extendedAceHeadingsRow = sheet.getRow(answersRowNumber - 1);
       for (int i = 0; i < NUMBER_EXTENDED_ACES; i++) {
-        cellNum.incrementAndGet();
+        int column = cellNum.getAndIncrement();
+        String aceTypeStr = readStringCell(extendedAceHeadingsRow, column);
+        Integer aceScore = readIntCell(answersRow, column);
+        AceType aceType = AceType.fromDisplay(aceTypeStr);
+        aces.put(aceType, aceScore);
       }
     }
     FundingSource fundingSource =

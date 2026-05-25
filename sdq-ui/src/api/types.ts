@@ -16,20 +16,35 @@ export const DEMOGRAPHIC_FIELDS = [
 ] as const;
 
 export type DemographicField = (typeof DEMOGRAPHIC_FIELDS)[number];
-export type DemographicGetter = (client: ClientFile) => string;
+export type DemographicGetter = (
+  client: ClientFile,
+  getLabel: (field: DemographicField, value: string) => string,
+) => string;
 export const DEMOGRAPHIC_GETTERS: Record<DemographicField, DemographicGetter> =
   {
-    Gender: (client) => client.gender,
-    Council: (client) => client.council,
-    Ethnicity: (client) => client.ethnicity,
-    EAL: (client) => client.englishAdditionalLanguage,
-    DisabilityStatus: (client) => client.disabilityStatus,
-    DisabilityType: (client) => client.disabilityTypes.join(", "),
-    CareExperience: (client) => client.careExperience,
-    InterventionType: (client) =>
-      client.interventions.map((i) => `${i.type} (${i.sessions})`).join(", "),
-    ACES: (client) => client.aces.toString(),
-    FundingSource: (client) => client.fundingSource,
+    Gender: (client, getLabel) => getLabel("Gender", client.gender),
+    Council: (client, getLabel) => getLabel("Council", client.council),
+    Ethnicity: (client, getLabel) => getLabel("Ethnicity", client.ethnicity),
+    EAL: (client, getLabel) =>
+      getLabel("EAL", client.englishAdditionalLanguage),
+    DisabilityStatus: (client, getLabel) =>
+      getLabel("DisabilityStatus", client.disabilityStatus),
+    DisabilityType: (client, getLabel) =>
+      client.disabilityTypes
+        .map((dt) => getLabel("DisabilityType", dt))
+        .join(", "),
+    CareExperience: (client, getLabel) =>
+      getLabel("CareExperience", client.careExperience),
+    InterventionType: (client, getLabel) =>
+      client.interventions
+        .map((i) => `${getLabel("InterventionType", i.type)} (${i.sessions})`)
+        .join(", "),
+    ACES: (client, getLabel) =>
+      Object.entries(client.aces)
+        .map(([key, value]) => `${getLabel("ACES", key)}: ${value}`)
+        .join(", "),
+    FundingSource: (client, getLabel) =>
+      getLabel("FundingSource", client.fundingSource),
   };
 
 export type DemographicFilter = {
