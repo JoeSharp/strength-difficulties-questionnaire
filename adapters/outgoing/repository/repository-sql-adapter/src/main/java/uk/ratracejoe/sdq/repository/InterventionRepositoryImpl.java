@@ -1,14 +1,12 @@
 package uk.ratracejoe.sdq.repository;
 
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.model.demographics.Intervention;
-import uk.ratracejoe.sdq.model.demographics.InterventionType;
 
 @RequiredArgsConstructor
-public class InterventionRepositoryImpl implements InterventionRepository {
+public class InterventionRepositoryImpl {
   private final JdbcClient jdbcClient;
 
   public void save(UUID clientId, Intervention interventionType) {
@@ -26,31 +24,10 @@ public class InterventionRepositoryImpl implements InterventionRepository {
         .update();
   }
 
-  @Override
-  public List<Intervention> getForClient(UUID clientId) {
-    return jdbcClient
-        .sql(
-            "SELECT intervention_type, sessions FROM intervention_type WHERE client_id = :clientId")
-        .param("clientId", clientId)
-        .query(
-            (rs, rowNum) -> {
-              return new Intervention(
-                  InterventionType.valueOf(rs.getString("intervention_type")),
-                  rs.getInt("sessions"));
-            })
-        .list();
-  }
-
-  @Override
-  public int deleteAll() {
-    return jdbcClient.sql("DELETE FROM intervention_type").update();
-  }
-
-  @Override
   public int deleteForClient(UUID clientId) {
     return jdbcClient
-        .sql("DELETE FROM intervention_type WHERE client_id = ?")
-        .param(1, clientId)
+        .sql("DELETE FROM intervention_type WHERE client_id = :clientId")
+        .param("clientId", clientId)
         .update();
   }
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.Builder;
-import lombok.With;
 import uk.ratracejoe.sdq.model.demographics.*;
 
 @Builder
@@ -18,8 +17,8 @@ public record SdqClient(
     Ethnicity ethnicity,
     EnglishAsAdditionalLanguage englishAdditionalLanguage,
     DisabilityStatus disabilityStatus,
-    @With List<DisabilityType> disabilityTypes,
+    List<DisabilityType> disabilityTypes,
     CareExperience careExperience,
-    @With List<Intervention> interventions,
-    @With Map<AceType, Integer> aces,
+    List<Intervention> interventions,
+    Map<AceType, Integer> aces,
     FundingSource fundingSource) {}

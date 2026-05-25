@@ -1,8 +1,8 @@
 package uk.ratracejoe.sdq.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
+
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -63,11 +63,14 @@ public class SdqRepositoryImpl implements SdqRepository {
             (rs, rowNum) -> {
               String categoryJson = rs.getString("category_progress");
               String postureJson = rs.getString("posture_progress");
-              Map<String, Progress> byCategory = parseMap(categoryJson, new TypeReference<>() {});
+              Map<String, Progress> byCategory =
+                  parseJson(categoryJson, new TypeReference<>() {}, Collections::emptyMap);
               Map<Posture, Progress> byPosture =
-                  convertPosture(parseMap(postureJson, new TypeReference<>() {}));
+                  convertPosture(
+                      parseJson(postureJson, new TypeReference<>() {}, Collections::emptyMap));
 
-              Progress totalDifficulties = parseProgress(rs.getString("total_progress"));
+              Progress totalDifficulties =
+                  parseJson(rs.getString("total_progress"), Progress.class);
 
               return SdqProgressSummary.builder()
                   .clientId(clientId)
@@ -313,11 +316,14 @@ public class SdqRepositoryImpl implements SdqRepository {
               UUID clientId = rs.getObject("client_id", UUID.class);
               String categoryJson = rs.getString("category_progress");
               String postureJson = rs.getString("posture_progress");
-              Map<String, Progress> byCategory = parseMap(categoryJson, new TypeReference<>() {});
+              Map<String, Progress> byCategory =
+                  parseJson(categoryJson, new TypeReference<>() {}, Collections::emptyMap);
               Map<Posture, Progress> byPosture =
-                  convertPosture(parseMap(postureJson, new TypeReference<>() {}));
+                  convertPosture(
+                      parseJson(postureJson, new TypeReference<>() {}, Collections::emptyMap));
 
-              Progress totalDifficulties = parseProgress(rs.getString("total_progress"));
+              Progress totalDifficulties =
+                  parseJson(rs.getString("total_progress"), Progress.class);
 
               return SdqProgressSummary.builder()
                   .clientId(clientId)
@@ -328,14 +334,6 @@ public class SdqRepositoryImpl implements SdqRepository {
                   .build();
             })
         .list();
-  }
-
-  private Progress parseProgress(String json) {
-    try {
-      return MAPPER.readValue(json, Progress.class);
-    } catch (JsonProcessingException e) {
-      throw new SdqException("Could not parse progress", e);
-    }
   }
 
   private static final String GET_FILTERED_SUMMARY_SQL =
@@ -428,9 +426,11 @@ public class SdqRepositoryImpl implements SdqRepository {
               LocalDate periodDate = rs.getDate("period_date").toLocalDate();
               String categoryJson = rs.getString("category_subtotals");
               String postureJson = rs.getString("posture_subtotals");
-              Map<String, Integer> byCategory = parseMap(categoryJson, new TypeReference<>() {});
+              Map<String, Integer> byCategory =
+                  parseJson(categoryJson, new TypeReference<>() {}, Collections::emptyMap);
               Map<Posture, Integer> byPosture =
-                  convertPosture(parseMap(postureJson, new TypeReference<>() {}));
+                  convertPosture(
+                      parseJson(postureJson, new TypeReference<>() {}, Collections::emptyMap));
 
               int totalDifficulties = rs.getInt("total_difficulties");
 
@@ -495,9 +495,11 @@ public class SdqRepositoryImpl implements SdqRepository {
             (rs, rowNum) -> {
               String categoryJson = rs.getString("category_subtotals");
               String postureJson = rs.getString("posture_subtotals");
-              Map<String, Integer> byCategory = parseMap(categoryJson, new TypeReference<>() {});
+              Map<String, Integer> byCategory =
+                  parseJson(categoryJson, new TypeReference<>() {}, Collections::emptyMap);
               Map<Posture, Integer> byPosture =
-                  convertPosture(parseMap(postureJson, new TypeReference<>() {}));
+                  convertPosture(
+                      parseJson(postureJson, new TypeReference<>() {}, Collections::emptyMap));
 
               int totalDifficulties = rs.getInt("total_difficulties");
 
@@ -514,17 +516,6 @@ public class SdqRepositoryImpl implements SdqRepository {
     Map<Posture, T> result = new EnumMap<>(Posture.class);
     raw.forEach((k, v) -> result.put(Posture.valueOf(k), v));
     return result;
-  }
-
-  private static final ObjectMapper MAPPER = new ObjectMapper();
-
-  private static <T> Map<String, T> parseMap(String json, TypeReference<Map<String, T>> type) {
-    if (json == null) return Map.of();
-    try {
-      return MAPPER.readValue(json, type);
-    } catch (Exception e) {
-      throw new SdqException("Failed to parse JSON: " + json, e);
-    }
   }
 
   private List<SdqScore> getScores(UUID periodId, Assessor assessor) {

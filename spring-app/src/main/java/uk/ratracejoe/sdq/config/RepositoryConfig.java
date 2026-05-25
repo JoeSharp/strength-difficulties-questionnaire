@@ -29,21 +29,6 @@ public class RepositoryConfig {
   }
 
   @Bean
-  public InterventionRepository interventionTypeRepository(JdbcClient jdbcClient) {
-    return new InterventionRepositoryImpl(jdbcClient);
-  }
-
-  @Bean
-  public AcesRepository acesRepository(JdbcClient jdbcClient) {
-    return new AcesRepositoryImpl(jdbcClient);
-  }
-
-  @Bean
-  public DisabilityTypeRepository disabilityTypeRepository(JdbcClient jdbcClient) {
-    return new DisabilityTypeRepositoryImpl(jdbcClient);
-  }
-
-  @Bean
   public SdqRepository sdqRepository(
       JdbcClient jdbcClient, StatementRepository statementRepository) {
     return new SdqRepositoryImpl(jdbcClient, statementRepository);

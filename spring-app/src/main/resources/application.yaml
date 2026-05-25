@@ -5,6 +5,8 @@ spring:
     url: ${SDQ_DATABASE_URL}
     username: ${SDQ_DATABASE_USERNAME}
     password: ${SDQ_DATABASE_PASSWORD}
+    hikari:
+      leak-detection-threshold=5000:
   security.oauth2.client:
     registration:
       keycloak:

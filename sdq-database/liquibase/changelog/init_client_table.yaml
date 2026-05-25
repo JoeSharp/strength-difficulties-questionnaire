@@ -41,8 +41,5 @@ databaseChangeLog:
                   name: care_experience
                   type: TEXT
               - column:
-                  name: aces
-                  type: int
-              - column:
                   name: funding_source
                   type: TEXT

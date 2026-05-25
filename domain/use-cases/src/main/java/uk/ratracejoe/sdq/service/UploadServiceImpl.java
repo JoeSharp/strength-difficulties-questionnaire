@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.ClientFileParser;
 import uk.ratracejoe.sdq.exception.SdqException;
@@ -14,10 +13,7 @@ import uk.ratracejoe.sdq.repository.*;
 
 @RequiredArgsConstructor
 public class UploadServiceImpl implements UploadService {
-  private final AcesRepository acesRepository;
-  private final InterventionRepository interventionRepository;
-  private final DisabilityTypeRepository disabilityTypeRepository;
-  private final ClientRepository fileRepository;
+  private final ClientRepository clientRepository;
   private final ReportingPeriodRepository reportingPeriodRepository;
   private final SdqRepository sdqRepository;
   private final GoalRepository goalRepository;
@@ -26,18 +22,7 @@ public class UploadServiceImpl implements UploadService {
 
   public ParsedFile ingestFile(String filename, InputStream file) throws SdqException {
     ParsedFile parsedFile = fileParser.parse(filename, file);
-    UUID clientId = parsedFile.sdqClient().clientId();
-
-    fileRepository.createClient(parsedFile.sdqClient());
-    parsedFile.sdqClient().interventions().forEach(it -> interventionRepository.save(clientId, it));
-    parsedFile
-        .sdqClient()
-        .disabilityTypes()
-        .forEach(dt -> disabilityTypeRepository.save(clientId, dt));
-    parsedFile
-        .sdqClient()
-        .aces()
-        .forEach((aceType, score) -> acesRepository.save(clientId, aceType, score));
+    clientRepository.createClient(parsedFile.sdqClient());
     Optional.ofNullable(parsedFile.sdq())
         .ifPresent(
             sdq -> {

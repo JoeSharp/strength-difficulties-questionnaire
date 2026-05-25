@@ -1,5 +1,8 @@
 package uk.ratracejoe.sdq.repository;
 
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,15 +11,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.*;
 
-@RequiredArgsConstructor
 public class ClientRepositoryImpl implements ClientRepository {
   private final JdbcClient jdbcClient;
+  private final DisabilityTypeRepositoryImpl disabilityTypeRepository;
+  private final InterventionRepositoryImpl interventionRepository;
+  private final AcesRepositoryImpl acesRepository;
+
+  public ClientRepositoryImpl(JdbcClient jdbcClient) {
+    this.jdbcClient = jdbcClient;
+    this.disabilityTypeRepository = new DisabilityTypeRepositoryImpl(jdbcClient);
+    this.interventionRepository = new InterventionRepositoryImpl(jdbcClient);
+    this.acesRepository = new AcesRepositoryImpl(jdbcClient);
+  }
 
   public SdqClient createClient(SdqClient client) throws SdqException {
     UUID clientId = Optional.ofNullable(client.clientId()).orElseGet(UUID::randomUUID);
@@ -60,6 +71,15 @@ public class ClientRepositoryImpl implements ClientRepository {
     sql.append(placeholders);
     sql.append(")");
     jdbcClient.sql(sql.toString()).params(params).update();
+
+    Optional.ofNullable(client.interventions())
+        .ifPresent(its -> its.forEach(it -> interventionRepository.save(client.clientId(), it)));
+    Optional.ofNullable(client.disabilityTypes())
+        .ifPresent(dts -> dts.forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt)));
+    Optional.ofNullable(client.aces())
+        .ifPresent(
+            aces ->
+                aces.forEach((key, value) -> acesRepository.save(client.clientId(), key, value)));
     return get(clientId);
   }
 
@@ -81,15 +101,15 @@ public class ClientRepositoryImpl implements ClientRepository {
   @Override
   public SdqClient get(UUID clientId) {
     return jdbcClient
-        .sql("SELECT * FROM client WHERE client_id=?")
-        .param(1, clientId) // positional parameter
+        .sql(selectSQL("SELECT * FROM client WHERE client_id=:clientId"))
+        .param("clientId", clientId) // positional parameter
         .query((rs, rowNum) -> getFromResultSet(rs))
         .single();
   }
 
   public List<SdqClient> getAll() throws SdqException {
     return jdbcClient
-        .sql("SELECT * FROM client")
+        .sql(selectSQL("SELECT * from client"))
         .query((rs, rowNum) -> getFromResultSet(rs))
         .list();
   }
@@ -111,7 +131,7 @@ public class ClientRepositoryImpl implements ClientRepository {
   }
 
   private SdqClient getFromResultSet(ResultSet rs) throws SQLException {
-    UUID uuid = rs.getObject("client_id", UUID.class);
+    UUID clientId = rs.getObject("client_id", UUID.class);
     String codeName = rs.getString("code_name");
     Date dob = rs.getDate("date_of_birth");
     Gender gender =
@@ -142,8 +162,20 @@ public class ClientRepositoryImpl implements ClientRepository {
         Optional.ofNullable(rs.getString("funding_source"))
             .map(FundingSource::valueOf)
             .orElseGet(FundingSource::defaultValue);
+
+    String interventionsJson = rs.getString("interventions");
+    List<Intervention> interventions =
+        parseJson(interventionsJson, new TypeReference<>() {}, Collections::emptyList);
+    String disabilityTypesJson = rs.getString("disability_types");
+    List<DisabilityType> disabilityTypes =
+        parseJson(disabilityTypesJson, new TypeReference<>() {}, Collections::emptyList);
+
+    String acesJson = rs.getString("aces");
+    Map<AceType, Integer> aces =
+        parseJson(acesJson, new TypeReference<>() {}, Collections::emptyMap);
+
     return new SdqClient(
-        uuid,
+        clientId,
         codeName,
         dob.toLocalDate(),
         gender,
@@ -151,10 +183,10 @@ public class ClientRepositoryImpl implements ClientRepository {
         ethnicity,
         eal,
         disabilityStatus,
-        Collections.emptyList(),
+        disabilityTypes,
         careExperience,
-        Collections.emptyList(),
-        Collections.emptyMap(),
+        interventions,
+        aces,
         fundingSource);
   }
 
@@ -167,6 +199,14 @@ public class ClientRepositoryImpl implements ClientRepository {
     SdqClient existing = get(client.clientId());
 
     AtomicInteger paramIndex = new AtomicInteger(1);
+
+    interventionRepository.deleteForClient(client.clientId());
+    disabilityTypeRepository.deleteForClient(client.clientId());
+    acesRepository.deleteForClient(client.clientId());
+    client.interventions().forEach(it -> interventionRepository.save(client.clientId(), it));
+    client.disabilityTypes().forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt));
+    client.aces().forEach((key, value) -> acesRepository.save(client.clientId(), key, value));
+
     return jdbcClient
         .sql(updateSQL())
         .param(
@@ -263,10 +303,60 @@ public class ClientRepositoryImpl implements ClientRepository {
         columnName, columnName);
   }
 
+  static String selectSQL(String clientSelectSql) {
+    return String.format(
+        """
+        WITH client AS (
+            %s
+        ),
+        intervention_types AS (
+            SELECT
+                it.client_id,
+                jsonb_agg(
+                    jsonb_build_object(
+                        'type', it.intervention_type,
+                        'sessions', it.sessions
+                    )
+                ) AS interventions
+            FROM intervention_type it
+            JOIN client c ON c.client_id = it.client_id
+            GROUP BY it.client_id
+        ),
+        disability_types AS (
+            SELECT
+                dt.client_id,
+                jsonb_agg(dt.disability_type) AS disability_types
+            FROM disability_type dt
+            JOIN client c ON c.client_id = dt.client_id
+            GROUP BY dt.client_id
+        ),
+        aces AS (
+            SELECT
+                a.client_id,
+                jsonb_object_agg(a.ace_type, a.score) AS aces
+            FROM aces a
+            JOIN client c ON c.client_id = a.client_id
+            GROUP BY a.client_id
+        )
+        SELECT
+            c.*,
+            it.interventions,
+            dt.disability_types,
+            a.aces
+        FROM client c
+        LEFT JOIN intervention_types it ON it.client_id = c.client_id
+        LEFT JOIN disability_types dt ON dt.client_id = c.client_id
+        LEFT JOIN aces a ON a.client_id = c.client_id;
+                """,
+        clientSelectSql);
+  }
+
   static String selectFilteredSql(String partialName, List<DemographicFilter> filters) {
     boolean filterOnName = partialName != null && !partialName.isEmpty();
     StringBuilder sql = new StringBuilder();
-    sql.append("SELECT * FROM client");
+    sql.append("""
+    SELECT * FROM client
+    """);
     if (!filters.isEmpty() || filterOnName) {
       sql.append(" WHERE ");
       if (!filters.isEmpty()) {
@@ -280,7 +370,7 @@ public class ClientRepositoryImpl implements ClientRepository {
         sql.append("code_name LIKE CONCAT('%', :partial_name, '%')");
       }
     }
-    return sql.toString();
+    return selectSQL(sql.toString());
   }
 
   public static void addFilters(Map<String, Object> params, List<DemographicFilter> filters) {

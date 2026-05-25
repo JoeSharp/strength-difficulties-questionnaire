@@ -9,10 +9,7 @@ public class AdminServiceImpl implements AdminService {
   private final SdqRepository sdqRepository;
   private final GboRepository gboRepository;
   private final GoalRepository goalRepository;
-  private final InterventionRepository interventionRepository;
-  private final DisabilityTypeRepository disabilityTypeRepository;
   private final ReportingPeriodRepository reportingPeriodRepository;
-  private final AcesRepository acesRepository;
 
   @Override
   public void clearDatabase() {
@@ -20,9 +17,6 @@ public class AdminServiceImpl implements AdminService {
     goalRepository.deleteAll();
     sdqRepository.deleteAll();
     gboRepository.deleteAll();
-    interventionRepository.deleteAll();
-    disabilityTypeRepository.deleteAll();
     reportingPeriodRepository.deleteAll();
-    acesRepository.deleteAll();
   }
 }

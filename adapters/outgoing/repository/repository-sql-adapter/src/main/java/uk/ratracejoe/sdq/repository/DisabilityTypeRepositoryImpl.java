@@ -1,13 +1,12 @@
 package uk.ratracejoe.sdq.repository;
 
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.model.demographics.DisabilityType;
 
 @RequiredArgsConstructor
-public class DisabilityTypeRepositoryImpl implements DisabilityTypeRepository {
+public class DisabilityTypeRepositoryImpl {
   private final JdbcClient jdbcClient;
 
   public void save(UUID clientId, DisabilityType disabilityType) {
@@ -24,25 +23,10 @@ public class DisabilityTypeRepositoryImpl implements DisabilityTypeRepository {
         .update();
   }
 
-  @Override
-  public List<DisabilityType> getForClient(UUID clientId) {
-    return jdbcClient
-        .sql("SELECT disability_type FROM disability_type WHERE client_id = :clientId")
-        .param("clientId", clientId)
-        .query((rs, rowNum) -> DisabilityType.valueOf(rs.getString("disability_type")))
-        .list();
-  }
-
-  @Override
-  public int deleteAll() {
-    return jdbcClient.sql("DELETE FROM disability_type").update();
-  }
-
-  @Override
   public int deleteForClient(UUID clientId) {
     return jdbcClient
-        .sql("DELETE FROM disability_type WHERE client_id = ?")
-        .param(1, clientId)
+        .sql("DELETE FROM disability_type WHERE client_id = :clientId")
+        .param("clientId", clientId)
         .update();
   }
 }
