@@ -8,7 +8,7 @@ import uk.ratracejoe.sdq.model.EnumValue;
 public enum Gender {
   MALE("Male"),
   FEMALE("Female"),
-  NON_BINARY("Non-binary"),
+  NON_BINARY("Non-Binary"),
   OTHER("Other"),
   PREFER_NOT_TO_SAY("Prefer Not To Say");
 

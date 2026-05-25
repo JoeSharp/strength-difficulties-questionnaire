@@ -13,53 +13,80 @@ import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.*;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
+import uk.ratracejoe.sdq.model.WorkbookFormat;
 import uk.ratracejoe.sdq.model.demographics.*;
 
 public class WorkbookDemographicExtractor {
   public static final String DEMOGRAPHIC_SHEET_NAME = "Demographic Information";
-  private static final int ROW_NUMBER_ANSWERS = 1;
+  private static final int ROW_INTERVENTION_SESSIONS = 3;
   private static final int NUMBER_INTERVENTION_TYPES = 4;
+  private static final int NUMBER_DISABILITY_TYPES = 4;
+  private static final int NUMBER_EXTENDED_ACES = 9;
 
   public SdqClient parse(Workbook workbook, String filename) throws SdqException {
     Sheet sheet =
         Optional.ofNullable(workbook.getSheet(DEMOGRAPHIC_SHEET_NAME))
             .orElseThrow(() -> new SdqException("Could not find demographic information sheet"));
+    WorkbookFormat format = getFormat(sheet);
+    int answersRowNumber =
+        switch (format) {
+          case ORIGINAL -> 1;
+          case REVISED_MAY_26 -> 2;
+        };
+    int startingColumnNumber =
+        switch (format) {
+          case ORIGINAL -> 0;
+          case REVISED_MAY_26 -> 1;
+        };
 
-    Row row =
-        Optional.ofNullable(sheet.getRow(ROW_NUMBER_ANSWERS))
+    Row answersRow =
+        Optional.ofNullable(sheet.getRow(answersRowNumber))
             .orElseThrow(
                 () -> new SdqException("Could not find answers row within demographic sheet"));
+    Row interventionSessionsRow = sheet.getRow(ROW_INTERVENTION_SESSIONS);
 
-    AtomicInteger cellNum = new AtomicInteger(0);
-    LocalDate dateOfBirth = readDateCell(row, cellNum.getAndIncrement());
+    AtomicInteger cellNum = new AtomicInteger(startingColumnNumber);
+    LocalDate dateOfBirth = readDateCell(answersRow, cellNum.getAndIncrement());
     Gender gender =
-        readStringCell(row, cellNum.getAndIncrement(), Gender::fromDisplay, Gender::defaultValue);
+        readStringCell(
+            answersRow, cellNum.getAndIncrement(), Gender::fromDisplay, Gender::defaultValue);
     Council council =
-        readStringCell(row, cellNum.getAndIncrement(), Council::fromDisplay, Council::defaultValue);
+        readStringCell(
+            answersRow, cellNum.getAndIncrement(), Council::fromDisplay, Council::defaultValue);
     Ethnicity ethnicity =
         readStringCell(
-            row, cellNum.getAndIncrement(), Ethnicity::fromDisplay, Ethnicity::defaultValue);
+            answersRow, cellNum.getAndIncrement(), Ethnicity::fromDisplay, Ethnicity::defaultValue);
     EnglishAsAdditionalLanguage eal =
         readStringCell(
-            row,
+            answersRow,
             cellNum.getAndIncrement(),
             EnglishAsAdditionalLanguage::fromDisplay,
             EnglishAsAdditionalLanguage::defaultValue);
     DisabilityStatus disabilityStatus =
         readStringCell(
-            row,
+            answersRow,
             cellNum.getAndIncrement(),
             DisabilityStatus::fromDisplay,
             DisabilityStatus::defaultValue);
-    DisabilityType disabilityType =
-        readStringCell(
-            row,
-            cellNum.getAndIncrement(),
-            DisabilityType::fromDisplay,
-            DisabilityType::defaultValue);
+    int numberDisabilityTypes =
+        switch (format) {
+          case ORIGINAL -> 1;
+          case REVISED_MAY_26 -> NUMBER_DISABILITY_TYPES;
+        };
+    List<DisabilityType> disabilityType =
+        IntStream.range(0, numberDisabilityTypes)
+            .mapToObj(
+                i ->
+                    readStringCell(
+                        answersRow,
+                        cellNum.getAndIncrement(),
+                        DisabilityType::fromDisplay,
+                        DisabilityType::defaultValue))
+            .toList();
+
     CareExperience careExperience =
         readStringCell(
-            row,
+            answersRow,
             cellNum.getAndIncrement(),
             CareExperience::fromDisplay,
             CareExperience::defaultValue);
@@ -67,15 +94,26 @@ public class WorkbookDemographicExtractor {
         IntStream.range(0, NUMBER_INTERVENTION_TYPES)
             .mapToObj(
                 i -> {
-                  String typeStr = readStringCell(row, cellNum.getAndIncrement());
+                  int cellNumber = cellNum.getAndIncrement();
+                  String typeStr = readStringCell(answersRow, cellNumber);
                   InterventionType type = InterventionType.fromDisplay(typeStr);
-                  return new Intervention(type, 0);
+                  int sessions =
+                      switch (format) {
+                        case ORIGINAL -> 0;
+                        case REVISED_MAY_26 -> readIntCell(interventionSessionsRow, cellNumber);
+                      };
+                  return new Intervention(type, sessions);
                 })
             .toList();
-    Integer aces = readIntCell(row, cellNum.getAndIncrement());
+    Integer aces = readIntCell(answersRow, cellNum.getAndIncrement());
+    if (WorkbookFormat.REVISED_MAY_26.equals(format)) {
+      for (int i = 0; i < NUMBER_EXTENDED_ACES; i++) {
+        cellNum.incrementAndGet();
+      }
+    }
     FundingSource fundingSource =
         readStringCell(
-            row,
+            answersRow,
             cellNum.getAndIncrement(),
             FundingSource::fromDisplay,
             FundingSource::defaultValue);
@@ -94,6 +132,16 @@ public class WorkbookDemographicExtractor {
         interventions,
         aces,
         fundingSource);
+  }
+
+  private WorkbookFormat getFormat(Sheet demographicSheet) {
+    return Optional.ofNullable(demographicSheet.getRow(3))
+        .map(r -> r.getCell(0))
+        .map(Cell::getStringCellValue)
+        .map(s -> s.contains("Number of sessions"))
+        .filter(s -> s)
+        .map(s -> WorkbookFormat.REVISED_MAY_26)
+        .orElse(WorkbookFormat.ORIGINAL);
   }
 
   private LocalDate readDateCell(Row row, int cellNum) {

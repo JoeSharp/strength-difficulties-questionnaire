@@ -17,7 +17,7 @@ public record SdqClient(
     Ethnicity ethnicity,
     EnglishAsAdditionalLanguage englishAdditionalLanguage,
     DisabilityStatus disabilityStatus,
-    DisabilityType disabilityType,
+    @With List<DisabilityType> disabilityTypes,
     CareExperience careExperience,
     @With List<Intervention> interventions,
     Integer aces,

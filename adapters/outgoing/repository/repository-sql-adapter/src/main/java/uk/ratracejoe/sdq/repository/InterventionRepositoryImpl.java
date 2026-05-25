@@ -1,17 +1,14 @@
 package uk.ratracejoe.sdq.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import uk.ratracejoe.sdq.entity.InterventionTypeEntity;
-import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.demographics.Intervention;
 import uk.ratracejoe.sdq.model.demographics.InterventionType;
 
 @RequiredArgsConstructor
-public class InterventionTypeRepositoryImpl implements InterventionTypeRepository {
+public class InterventionRepositoryImpl implements InterventionRepository {
   private final JdbcClient jdbcClient;
 
   public void save(UUID clientId, Intervention interventionType) {
@@ -55,20 +52,5 @@ public class InterventionTypeRepositoryImpl implements InterventionTypeRepositor
         .sql("DELETE FROM intervention_type WHERE client_id = ?")
         .param(1, clientId)
         .update();
-  }
-
-  public List<InterventionTypeEntity> getByFile(UUID clientId) throws SdqException {
-    return jdbcClient
-        .sql("SELECT intervention_type FROM intervention_type WHERE client_id = :clientId")
-        .param("clientId", clientId)
-        .query(
-            (rs, rowNum) -> {
-              InterventionType interventionType =
-                  Optional.ofNullable(rs.getString("intervention_type"))
-                      .map(InterventionType::valueOf)
-                      .orElseGet(InterventionType::defaultValue);
-              return new InterventionTypeEntity(clientId, interventionType);
-            })
-        .list();
   }
 }

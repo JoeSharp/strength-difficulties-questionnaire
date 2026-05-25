@@ -15,21 +15,26 @@ public class ServiceConfig {
       SdqRepository sdqRepository,
       GboRepository gboRepository,
       GoalRepository goalRepository,
-      InterventionTypeRepository interventionTypeRepository,
+      InterventionRepository interventionRepository,
+      DisabilityTypeRepository disabilityTypeRepository,
       ReportingPeriodRepository reportingPeriodRepository) {
     return new AdminServiceImpl(
         clientRepository,
         sdqRepository,
         gboRepository,
         goalRepository,
-        interventionTypeRepository,
+        interventionRepository,
+        disabilityTypeRepository,
         reportingPeriodRepository);
   }
 
   @Bean
   public ClientService clientFileService(
-      ClientRepository clientRepository, InterventionTypeRepository interventionTypeRepository) {
-    return new ClientServiceImpl(clientRepository, interventionTypeRepository);
+      ClientRepository clientRepository,
+      InterventionRepository interventionRepository,
+      DisabilityTypeRepository disabilityTypeRepository) {
+    return new ClientServiceImpl(
+        clientRepository, interventionRepository, disabilityTypeRepository);
   }
 
   @Bean
@@ -55,7 +60,8 @@ public class ServiceConfig {
 
   @Bean
   public UploadService uploadService(
-      InterventionTypeRepository interventionTypeRepository,
+      InterventionRepository interventionRepository,
+      DisabilityTypeRepository disabilityTypeRepository,
       ClientRepository fileRepository,
       ReportingPeriodRepository reportingPeriodRepository,
       SdqRepository sdqRepository,
@@ -63,7 +69,8 @@ public class ServiceConfig {
       GoalRepository goalRepository,
       ClientFileParser fileParser) {
     return new UploadServiceImpl(
-        interventionTypeRepository,
+        interventionRepository,
+        disabilityTypeRepository,
         fileRepository,
         reportingPeriodRepository,
         sdqRepository,

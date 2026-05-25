@@ -38,9 +38,6 @@ databaseChangeLog:
                   name: disability_status
                   type: TEXT
               - column:
-                  name: disability_type
-                  type: TEXT
-              - column:
                   name: care_experience
                   type: TEXT
               - column:

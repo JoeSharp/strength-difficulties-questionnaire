@@ -1,4 +1,4 @@
-package uk.ratracejoe.sdq.xslx;
+package uk.ratracejoe.sdq.model;
 
 public enum WorkbookFormat {
   ORIGINAL,

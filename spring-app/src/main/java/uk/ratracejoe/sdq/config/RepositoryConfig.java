@@ -29,8 +29,13 @@ public class RepositoryConfig {
   }
 
   @Bean
-  public InterventionTypeRepository interventionTypeRepository(JdbcClient jdbcClient) {
-    return new InterventionTypeRepositoryImpl(jdbcClient);
+  public InterventionRepository interventionTypeRepository(JdbcClient jdbcClient) {
+    return new InterventionRepositoryImpl(jdbcClient);
+  }
+
+  @Bean
+  public DisabilityTypeRepository disabilityTypeRepository(JdbcClient jdbcClient) {
+    return new DisabilityTypeRepositoryImpl(jdbcClient);
   }
 
   @Bean

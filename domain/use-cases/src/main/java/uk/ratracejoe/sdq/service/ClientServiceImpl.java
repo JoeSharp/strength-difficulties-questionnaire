@@ -6,24 +6,24 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
-import uk.ratracejoe.sdq.model.demographics.DemographicField;
-import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
-import uk.ratracejoe.sdq.model.demographics.DemographicReport;
-import uk.ratracejoe.sdq.model.demographics.Intervention;
+import uk.ratracejoe.sdq.model.demographics.*;
 import uk.ratracejoe.sdq.repository.ClientRepository;
-import uk.ratracejoe.sdq.repository.InterventionTypeRepository;
+import uk.ratracejoe.sdq.repository.DisabilityTypeRepository;
+import uk.ratracejoe.sdq.repository.InterventionRepository;
 
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
   private final ClientRepository clientRepository;
-  private final InterventionTypeRepository interventionTypeRepository;
+  private final InterventionRepository interventionRepository;
+  private final DisabilityTypeRepository disabilityTypeRepository;
 
   @Override
   public SdqClient create(SdqClient newClient) {
     SdqClient client = clientRepository.createClient(newClient);
     Optional.ofNullable(newClient.interventions())
-        .ifPresent(
-            its -> its.forEach(it -> interventionTypeRepository.save(client.clientId(), it)));
+        .ifPresent(its -> its.forEach(it -> interventionRepository.save(client.clientId(), it)));
+    Optional.ofNullable(newClient.disabilityTypes())
+        .ifPresent(dts -> dts.forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt)));
     return getByUUID(client.clientId());
   }
 
@@ -34,28 +34,28 @@ public class ClientServiceImpl implements ClientService {
 
   @Override
   public List<SdqClient> getAll() throws SdqException {
-    return clientRepository.getAll().stream().map(this::withInterventionTypes).toList();
+    return clientRepository.getAll().stream().map(this::enriched).toList();
   }
 
   @Override
   public List<SdqClient> getFiltered(String partialName, List<DemographicFilter> filters)
       throws SdqException {
-    return clientRepository.getFiltered(partialName, filters).stream()
-        .map(this::withInterventionTypes)
-        .toList();
+    return clientRepository.getFiltered(partialName, filters).stream().map(this::enriched).toList();
   }
 
   @Override
   public SdqClient getByUUID(UUID clientId) throws SdqException {
-    return withInterventionTypes(clientRepository.get(clientId));
+    return enriched(clientRepository.get(clientId));
   }
 
   @Override
   public SdqClient update(SdqClient client) {
     clientRepository.update(client);
-    interventionTypeRepository.deleteForClient(client.clientId());
-    client.interventions().forEach(it -> interventionTypeRepository.save(client.clientId(), it));
-    return withInterventionTypes(clientRepository.get(client.clientId()));
+    interventionRepository.deleteForClient(client.clientId());
+    disabilityTypeRepository.deleteForClient(client.clientId());
+    client.interventions().forEach(it -> interventionRepository.save(client.clientId(), it));
+    client.disabilityTypes().forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt));
+    return enriched(clientRepository.get(client.clientId()));
   }
 
   @Override
@@ -68,8 +68,9 @@ public class ClientServiceImpl implements ClientService {
     return clientRepository.deleteByClientId(clientId);
   }
 
-  private SdqClient withInterventionTypes(SdqClient client) {
-    List<Intervention> interventions = interventionTypeRepository.getForClient(client.clientId());
-    return client.withInterventions(interventions);
+  private SdqClient enriched(SdqClient client) {
+    List<Intervention> interventions = interventionRepository.getForClient(client.clientId());
+    List<DisabilityType> disabilityTypes = disabilityTypeRepository.getForClient(client.clientId());
+    return client.withInterventions(interventions).withDisabilityTypes(disabilityTypes);
   }
 }

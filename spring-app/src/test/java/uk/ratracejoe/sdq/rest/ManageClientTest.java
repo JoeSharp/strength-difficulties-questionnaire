@@ -55,7 +55,7 @@ class ManageClientTest {
             .dateOfBirth(dob)
             .council(Council.CHELTENHAM)
             .careExperience(CareExperience.YES_ADOPTED)
-            .disabilityType(DisabilityType.LEARNING)
+            .disabilityTypes(List.of(DisabilityType.LEARNING))
             .disabilityStatus(DisabilityStatus.DISABILITY)
             .fundingSource(FundingSource.EHCP)
             .interventions(
@@ -75,7 +75,7 @@ class ManageClientTest {
             .clientId(sdqClient.clientId())
             .codeName("Arnold Rimmer")
             .careExperience(CareExperience.KINSHIP)
-            .disabilityType(DisabilityType.COGNITIVE_OR_MEMORY)
+            .disabilityTypes(List.of(DisabilityType.COGNITIVE_OR_MEMORY))
             .interventions(
                 List.of(
                     new Intervention(InterventionType.IA, 2),

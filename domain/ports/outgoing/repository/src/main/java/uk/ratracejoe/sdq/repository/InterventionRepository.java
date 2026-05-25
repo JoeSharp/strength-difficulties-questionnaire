@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import uk.ratracejoe.sdq.model.demographics.Intervention;
 
-public interface InterventionTypeRepository {
+public interface InterventionRepository {
   void save(UUID clientId, Intervention intervention);
 
   List<Intervention> getForClient(UUID clientId);

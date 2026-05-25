@@ -40,7 +40,7 @@ class ManageGoalsTest {
             .dateOfBirth(dob)
             .council(Council.CHELTENHAM)
             .careExperience(CareExperience.YES_ADOPTED)
-            .disabilityType(DisabilityType.LEARNING)
+            .disabilityTypes(List.of(DisabilityType.LEARNING))
             .disabilityStatus(DisabilityStatus.DISABILITY)
             .fundingSource(FundingSource.EHCP)
             .aces(2)

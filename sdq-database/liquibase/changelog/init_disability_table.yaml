@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Joe Sharp
+      labels: init
+      comment: Create initial Disability Type for Client table
+      changes:
+        - createTable:
+            tableName: disability_type
+            columns:
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: disability_type
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+        # Foreign key to client(client_id)
+        - addForeignKeyConstraint:
+            baseTableName: disability_type
+            baseColumnNames: client_id
+            referencedTableName: client
+            referencedColumnNames: client_id
+            constraintName: fk_client_disability_type
+            onDelete: CASCADE

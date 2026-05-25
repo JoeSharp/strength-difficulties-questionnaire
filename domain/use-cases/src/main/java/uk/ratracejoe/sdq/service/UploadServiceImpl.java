@@ -14,7 +14,8 @@ import uk.ratracejoe.sdq.repository.*;
 
 @RequiredArgsConstructor
 public class UploadServiceImpl implements UploadService {
-  private final InterventionTypeRepository interventionTypeRepository;
+  private final InterventionRepository interventionRepository;
+  private final DisabilityTypeRepository disabilityTypeRepository;
   private final ClientRepository fileRepository;
   private final ReportingPeriodRepository reportingPeriodRepository;
   private final SdqRepository sdqRepository;
@@ -27,10 +28,11 @@ public class UploadServiceImpl implements UploadService {
     UUID clientId = parsedFile.sdqClient().clientId();
 
     fileRepository.createClient(parsedFile.sdqClient());
+    parsedFile.sdqClient().interventions().forEach(it -> interventionRepository.save(clientId, it));
     parsedFile
         .sdqClient()
-        .interventions()
-        .forEach(it -> interventionTypeRepository.save(clientId, it));
+        .disabilityTypes()
+        .forEach(dt -> disabilityTypeRepository.save(clientId, dt));
     Optional.ofNullable(parsedFile.sdq())
         .ifPresent(
             sdq -> {

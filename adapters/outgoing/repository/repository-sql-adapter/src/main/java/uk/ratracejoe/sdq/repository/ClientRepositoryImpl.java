@@ -41,9 +41,6 @@ public class ClientRepositoryImpl implements ClientRepository {
     Optional.ofNullable(client.englishAdditionalLanguage())
         .map(EnglishAsAdditionalLanguage::name)
         .ifPresent(addField.apply("eal"));
-    Optional.ofNullable(client.disabilityType())
-        .map(DisabilityType::name)
-        .ifPresent(addField.apply("disability_type"));
     Optional.ofNullable(client.disabilityStatus())
         .map(DisabilityStatus::name)
         .ifPresent(addField.apply("disability_status"));
@@ -137,10 +134,6 @@ public class ClientRepositoryImpl implements ClientRepository {
         Optional.ofNullable(rs.getString("disability_status"))
             .map(DisabilityStatus::valueOf)
             .orElseGet(DisabilityStatus::defaultValue);
-    DisabilityType disabilityType =
-        Optional.ofNullable(rs.getString("disability_type"))
-            .map(DisabilityType::valueOf)
-            .orElseGet(DisabilityType::defaultValue);
     CareExperience careExperience =
         Optional.ofNullable(rs.getString("care_experience"))
             .map(CareExperience::valueOf)
@@ -159,7 +152,7 @@ public class ClientRepositoryImpl implements ClientRepository {
         ethnicity,
         eal,
         disabilityStatus,
-        disabilityType,
+        Collections.emptyList(),
         careExperience,
         Collections.emptyList(),
         aces,
@@ -202,9 +195,6 @@ public class ClientRepositoryImpl implements ClientRepository {
             Optional.ofNullable(client.disabilityStatus())
                 .orElseGet(existing::disabilityStatus)
                 .name())
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.disabilityType()).orElseGet(existing::disabilityType).name())
         .param(
             paramIndex.getAndIncrement(),
             Optional.ofNullable(client.careExperience()).orElseGet(existing::careExperience).name())
