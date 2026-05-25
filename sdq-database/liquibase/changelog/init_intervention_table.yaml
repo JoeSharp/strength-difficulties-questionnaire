@@ -18,6 +18,9 @@ databaseChangeLog:
                   type: TEXT
                   constraints:
                     nullable: false
+              - column:
+                  name: sessions
+                  type: INT
 
         # Foreign key to client(client_id)
         - addForeignKeyConstraint:

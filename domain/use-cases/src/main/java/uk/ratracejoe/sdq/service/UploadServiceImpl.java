@@ -8,7 +8,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.ClientFileParser;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.sdq.SdqReportingPeriod;
 import uk.ratracejoe.sdq.repository.*;
 
@@ -29,7 +29,7 @@ public class UploadServiceImpl implements UploadService {
     fileRepository.createClient(parsedFile.sdqClient());
     parsedFile
         .sdqClient()
-        .interventionTypes()
+        .interventions()
         .forEach(it -> interventionTypeRepository.save(clientId, it));
     Optional.ofNullable(parsedFile.sdq())
         .ifPresent(

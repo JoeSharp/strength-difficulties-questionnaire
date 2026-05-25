@@ -19,6 +19,6 @@ public record SdqClient(
     DisabilityStatus disabilityStatus,
     DisabilityType disabilityType,
     CareExperience careExperience,
-    @With List<InterventionType> interventionTypes,
+    @With List<Intervention> interventions,
     Integer aces,
     FundingSource fundingSource) {}

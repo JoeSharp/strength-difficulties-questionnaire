@@ -58,12 +58,16 @@ class ManageClientTest {
             .disabilityType(DisabilityType.LEARNING)
             .disabilityStatus(DisabilityStatus.DISABILITY)
             .fundingSource(FundingSource.EHCP)
-            .interventionTypes(List.of(InterventionType.IA, InterventionType.CCPT))
+            .interventions(
+                List.of(
+                    new Intervention(InterventionType.IA, 2),
+                    new Intervention(InterventionType.CCPT, 3)))
             .aces(2)
             .build();
     SdqClient sdqClient = this.client.createClient(toCreate);
     assertThat(sdqClient)
-        .extracting(SdqClient::interventionTypes, list(InterventionType.class))
+        .extracting(SdqClient::interventions, list(Intervention.class))
+        .extracting(Intervention::type)
         .containsExactlyInAnyOrder(InterventionType.IA, InterventionType.CCPT);
 
     SdqClient toUpdate =
@@ -72,7 +76,10 @@ class ManageClientTest {
             .codeName("Arnold Rimmer")
             .careExperience(CareExperience.KINSHIP)
             .disabilityType(DisabilityType.COGNITIVE_OR_MEMORY)
-            .interventionTypes(List.of(InterventionType.IA, InterventionType.PTP))
+            .interventions(
+                List.of(
+                    new Intervention(InterventionType.IA, 2),
+                    new Intervention(InterventionType.CCPT, 3)))
             .build();
     SdqClient updated = this.client.updateClient(toUpdate);
     SdqClient afterUpdate = this.client.getClient(sdqClient.clientId());
@@ -81,7 +88,8 @@ class ManageClientTest {
     assertThat(updated).extracting(SdqClient::fundingSource).isEqualTo(FundingSource.EHCP);
     assertThat(updated).extracting(SdqClient::careExperience).isEqualTo(CareExperience.KINSHIP);
     assertThat(updated)
-        .extracting(SdqClient::interventionTypes, list(InterventionType.class))
+        .extracting(SdqClient::interventions, list(Intervention.class))
+        .extracting(Intervention::type)
         .containsExactlyInAnyOrder(InterventionType.IA, InterventionType.PTP);
   }
 }

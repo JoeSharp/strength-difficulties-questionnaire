@@ -2,12 +2,12 @@ package uk.ratracejoe.sdq.repository;
 
 import java.util.List;
 import java.util.UUID;
-import uk.ratracejoe.sdq.model.demographics.InterventionType;
+import uk.ratracejoe.sdq.model.demographics.Intervention;
 
 public interface InterventionTypeRepository {
-  void save(UUID clientId, InterventionType interventionType);
+  void save(UUID clientId, Intervention intervention);
 
-  List<InterventionType> getForClient(UUID clientId);
+  List<Intervention> getForClient(UUID clientId);
 
   int deleteAll();
 

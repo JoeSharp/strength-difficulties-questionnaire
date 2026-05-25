@@ -7,27 +7,40 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.entity.InterventionTypeEntity;
 import uk.ratracejoe.sdq.exception.SdqException;
+import uk.ratracejoe.sdq.model.demographics.Intervention;
 import uk.ratracejoe.sdq.model.demographics.InterventionType;
 
 @RequiredArgsConstructor
 public class InterventionTypeRepositoryImpl implements InterventionTypeRepository {
   private final JdbcClient jdbcClient;
 
-  public void save(UUID clientId, InterventionType interventionType) {
+  public void save(UUID clientId, Intervention interventionType) {
     jdbcClient
         .sql(
-            "INSERT INTO intervention_type (client_id, intervention_type) VALUES (? ,?) ON CONFLICT DO NOTHING")
-        .param(1, clientId)
-        .param(2, interventionType.name())
+            """
+        INSERT INTO
+        intervention_type
+        (client_id, intervention_type, sessions)
+         VALUES (:clientId ,:interventionType, :sessions) ON CONFLICT DO NOTHING
+         """)
+        .param("clientId", clientId)
+        .param("interventionType", interventionType.type().name())
+        .param("sessions", interventionType.sessions())
         .update();
   }
 
   @Override
-  public List<InterventionType> getForClient(UUID clientId) {
+  public List<Intervention> getForClient(UUID clientId) {
     return jdbcClient
-        .sql("SELECT intervention_type FROM intervention_type WHERE client_id = ?")
-        .param(1, clientId)
-        .query(InterventionType.class)
+        .sql(
+            "SELECT intervention_type, sessions FROM intervention_type WHERE client_id = :clientId")
+        .param("clientId", clientId)
+        .query(
+            (rs, rowNum) -> {
+              return new Intervention(
+                  InterventionType.valueOf(rs.getString("intervention_type")),
+                  rs.getInt("sessions"));
+            })
         .list();
   }
 

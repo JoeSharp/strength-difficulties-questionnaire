@@ -9,7 +9,7 @@ import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.DemographicField;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.demographics.DemographicReport;
-import uk.ratracejoe.sdq.model.demographics.InterventionType;
+import uk.ratracejoe.sdq.model.demographics.Intervention;
 import uk.ratracejoe.sdq.repository.ClientRepository;
 import uk.ratracejoe.sdq.repository.InterventionTypeRepository;
 
@@ -21,7 +21,7 @@ public class ClientServiceImpl implements ClientService {
   @Override
   public SdqClient create(SdqClient newClient) {
     SdqClient client = clientRepository.createClient(newClient);
-    Optional.ofNullable(newClient.interventionTypes())
+    Optional.ofNullable(newClient.interventions())
         .ifPresent(
             its -> its.forEach(it -> interventionTypeRepository.save(client.clientId(), it)));
     return getByUUID(client.clientId());
@@ -54,9 +54,7 @@ public class ClientServiceImpl implements ClientService {
   public SdqClient update(SdqClient client) {
     clientRepository.update(client);
     interventionTypeRepository.deleteForClient(client.clientId());
-    client
-        .interventionTypes()
-        .forEach(it -> interventionTypeRepository.save(client.clientId(), it));
+    client.interventions().forEach(it -> interventionTypeRepository.save(client.clientId(), it));
     return withInterventionTypes(clientRepository.get(client.clientId()));
   }
 
@@ -71,8 +69,7 @@ public class ClientServiceImpl implements ClientService {
   }
 
   private SdqClient withInterventionTypes(SdqClient client) {
-    List<InterventionType> interventionTypes =
-        interventionTypeRepository.getForClient(client.clientId());
-    return client.withInterventionTypes(interventionTypes);
+    List<Intervention> interventions = interventionTypeRepository.getForClient(client.clientId());
+    return client.withInterventions(interventions);
   }
 }

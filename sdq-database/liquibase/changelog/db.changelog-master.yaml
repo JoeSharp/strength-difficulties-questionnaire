@@ -6,7 +6,7 @@ databaseChangeLog:
   - include:
       file: changelog/init_goal_based_outcome_table.yaml
   - include:
-      file: changelog/init_intervention_type_table.yaml
+      file: changelog/init_intervention_table.yaml
   - include:
       file: changelog/init_reporting_period_table.yaml
   - include:

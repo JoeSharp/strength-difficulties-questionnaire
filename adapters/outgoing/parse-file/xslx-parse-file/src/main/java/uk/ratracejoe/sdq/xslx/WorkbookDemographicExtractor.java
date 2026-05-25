@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.*;
 import uk.ratracejoe.sdq.exception.SdqException;
-import uk.ratracejoe.sdq.model.*;
+import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.*;
 
 public class WorkbookDemographicExtractor {
@@ -63,10 +63,14 @@ public class WorkbookDemographicExtractor {
             cellNum.getAndIncrement(),
             CareExperience::fromDisplay,
             CareExperience::defaultValue);
-    List<InterventionType> interventionTypes =
+    List<Intervention> interventions =
         IntStream.range(0, NUMBER_INTERVENTION_TYPES)
-            .mapToObj(i -> readStringCell(row, cellNum.getAndIncrement()))
-            .map(InterventionType::fromDisplay)
+            .mapToObj(
+                i -> {
+                  String typeStr = readStringCell(row, cellNum.getAndIncrement());
+                  InterventionType type = InterventionType.fromDisplay(typeStr);
+                  return new Intervention(type, 0);
+                })
             .toList();
     Integer aces = readIntCell(row, cellNum.getAndIncrement());
     FundingSource fundingSource =
@@ -87,7 +91,7 @@ public class WorkbookDemographicExtractor {
         disabilityStatus,
         disabilityType,
         careExperience,
-        interventionTypes,
+        interventions,
         aces,
         fundingSource);
   }
