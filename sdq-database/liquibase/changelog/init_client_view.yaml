@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-client-full-view
+      author: Joe Sharp
+      labels: init
+      changes:
+        - sql: |
+            CREATE OR REPLACE VIEW client_full AS
+            WITH client AS (
+                SELECT * FROM client
+            ),
+            intervention_types AS (
+                SELECT
+                    it.client_id,
+                    jsonb_agg(
+                        jsonb_build_object(
+                            'type', it.intervention_type,
+                            'sessions', it.sessions
+                        )
+                    ) AS interventions
+                FROM intervention_type it
+                GROUP BY it.client_id
+            ),
+            disability_types AS (
+                SELECT
+                    dt.client_id,
+                    jsonb_agg(dt.disability_type) AS disability_types
+                FROM disability_type dt
+                GROUP BY dt.client_id
+            ),
+            aces AS (
+                SELECT
+                    a.client_id,
+                    jsonb_object_agg(a.ace_type, a.score) AS aces
+                FROM aces a
+                GROUP BY a.client_id
+            )
+            SELECT
+                c.*,
+                it.interventions,
+                dt.disability_types,
+                a.aces
+            FROM client c
+            LEFT JOIN intervention_types it ON it.client_id = c.client_id
+            LEFT JOIN disability_types dt ON dt.client_id = c.client_id
+            LEFT JOIN aces a ON a.client_id = c.client_id;

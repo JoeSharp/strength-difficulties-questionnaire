@@ -101,7 +101,7 @@ public class ClientRepositoryImpl implements ClientRepository {
   @Override
   public SdqClient get(UUID clientId) {
     return jdbcClient
-        .sql(selectSQL("SELECT * FROM client WHERE client_id=:clientId"))
+        .sql("SELECT * FROM client_full WHERE client_id=:clientId")
         .param("clientId", clientId) // positional parameter
         .query((rs, rowNum) -> getFromResultSet(rs))
         .single();
@@ -109,7 +109,7 @@ public class ClientRepositoryImpl implements ClientRepository {
 
   public List<SdqClient> getAll() throws SdqException {
     return jdbcClient
-        .sql(selectSQL("SELECT * from client"))
+        .sql("SELECT * from client_full")
         .query((rs, rowNum) -> getFromResultSet(rs))
         .list();
   }

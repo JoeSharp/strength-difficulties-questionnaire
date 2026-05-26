@@ -27,3 +27,10 @@ databaseChangeLog:
             referencedColumnNames: client_id
             constraintName: fk_client_disability_type
             onDelete: CASCADE
+
+        - createIndex:
+            tableName: disability_type
+            indexName: idx_disability_type_client_id
+            columns:
+              - column:
+                  name: client_id

@@ -1,16 +1,17 @@
 package uk.ratracejoe.sdq.repository;
 
-import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-import java.time.LocalDate;
-import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.sdq.*;
+
+import java.time.LocalDate;
+import java.util.*;
+
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
 
 @RequiredArgsConstructor
 public class SdqRepositoryImpl implements SdqRepository {
@@ -86,78 +87,78 @@ public class SdqRepositoryImpl implements SdqRepository {
   private static final String GET_PROGRESS_SUMMARY_SQL =
       """
               WITH base AS (
-              SELECT
-                cl.client_id AS client_id,
-                p.period_date AS period_date,
-                s.statement AS statement_key,
-                st.category AS category,
-                c.posture AS posture,
-                s.score AS score
-              FROM
-                sdq s
-              INNER JOIN reporting_period p on
-                p.period_id = s.period_id
-              INNER JOIN client cl on
-                cl.client_id = p.client_id
-              INNER JOIN sdq_statement st on
-                st.statement_key = s.statement
-              INNER JOIN sdq_category c on
-                c.category = st.category
-              WHERE
-                assessor = :assessor
-                %s
+                  SELECT
+                    cl.client_id AS client_id,
+                    p.period_date AS period_date,
+                    s.statement AS statement_key,
+                    st.category AS category,
+                    c.posture AS posture,
+                    s.score AS score
+                  FROM
+                    sdq s
+                  INNER JOIN reporting_period p on
+                    p.period_id = s.period_id
+                  INNER JOIN client cl on
+                    cl.client_id = p.client_id
+                  INNER JOIN sdq_statement st on
+                    st.statement_key = s.statement
+                  INNER JOIN sdq_category c on
+                    c.category = st.category
+                  WHERE
+                    assessor = :assessor
+                    %s
               ),
               posture_totals AS (
-              SELECT
-                client_id,
-                period_date,
-                posture,
-                SUM(score) AS total
-              FROM
-                base
-              GROUP BY
-                client_id,
-                period_date,
-                posture
-                    ),
-                    category_totals AS (
-              SELECT
-                client_id,
-                period_date,
-                category,
-                SUM(score) AS total
-              FROM
-                base
-              GROUP BY
-                client_id,
-                period_date,
-                category
-                    ),
-                    total_difficulties AS (
-              SELECT
-                client_id,
-                period_date,
-                SUM(score) AS total
-              FROM
-                base
-              WHERE
-                posture <> 'ProSocial'
-              GROUP BY
-                client_id,
-                period_date
-                    ),
-                    category_progress AS (
-              SELECT
-                        client_id,
-                        category,
-                        period_date,
-                        total,
-                        first_value(total) over (
-                            partition by client_id,
-                category
-              ORDER BY
-                period_date
-                        ) AS first_total,
+                  SELECT
+                    client_id,
+                    period_date,
+                    posture,
+                    SUM(score) AS total
+                  FROM
+                    base
+                  GROUP BY
+                    client_id,
+                    period_date,
+                    posture
+              ),
+              category_totals AS (
+                  SELECT
+                    client_id,
+                    period_date,
+                    category,
+                    SUM(score) AS total
+                  FROM
+                    base
+                  GROUP BY
+                    client_id,
+                    period_date,
+                    category
+              ),
+              total_difficulties AS (
+                  SELECT
+                    client_id,
+                    period_date,
+                    SUM(score) AS total
+                  FROM
+                    base
+                  WHERE
+                    posture <> 'ProSocial'
+                  GROUP BY
+                    client_id,
+                    period_date
+              ),
+              category_progress AS (
+                SELECT
+                    client_id,
+                    category,
+                    period_date,
+                    total,
+                    first_value(total) over (
+                        partition by client_id,
+                        category
+                      ORDER BY
+                        period_date
+                      ) AS first_total,
                         last_value(total) over (
                             partition by client_id,
                 category
