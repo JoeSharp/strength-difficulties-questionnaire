@@ -1,17 +1,16 @@
 package uk.ratracejoe.sdq.repository;
 
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.time.LocalDate;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.sdq.*;
-
-import java.time.LocalDate;
-import java.util.*;
-
-import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
 
 @RequiredArgsConstructor
 public class SdqRepositoryImpl implements SdqRepository {
@@ -84,7 +83,7 @@ public class SdqRepositoryImpl implements SdqRepository {
         .single();
   }
 
-  private static final String GET_PROGRESS_SUMMARY_SQL = "SELECT * FROM sdq_summary_full %s";
+  private static final String GET_PROGRESS_SUMMARY_SQL = "SELECT * FROM sdq_progress_view %s";
 
   @Override
   public List<SdqProgressSummary> getSdqProgress(
@@ -130,81 +129,18 @@ public class SdqRepositoryImpl implements SdqRepository {
         .list();
   }
 
-  private static final String GET_FILTERED_SUMMARY_SQL =
-      """
-      WITH base AS (
-        SELECT
-          cl.client_id as client_id,
-          p.period_id as period_id,
-          p.period_date as period_date,
-          s.statement AS statement_key,
-          st.category AS category,
-          c.posture AS posture,
-          s.score AS score
-        FROM
-          sdq s
-          INNER JOIN reporting_period p ON p.period_id = s.period_id
-          INNER JOIN client cl ON cl.client_id = p.client_id
-          INNER JOIN sdq_statement st ON st.statement_key = s.statement
-          INNER JOIN sdq_category c ON c.category = st.category
-          WHERE assessor = :assessor
-          AND p.period_date >= :period_from
-          AND p.period_date <  :period_to
-          %s
-      ),
-      category_totals AS (
-          SELECT client_id, period_id, category, SUM(score) AS total
-          FROM base
-          GROUP BY client_id, period_id, category
-      ),
-      posture_totals AS (
-          SELECT client_id, period_id, posture, SUM(score) AS total
-          FROM base
-          GROUP BY client_id, period_id, posture
-      ),
-      total_difficulties AS (
-          SELECT client_id, period_id, SUM(score) AS total
-          FROM base
-          WHERE posture <> 'ProSocial'
-          GROUP BY client_id, period_id
-      ),
-      period_summary AS (
-        SELECT
-          b.client_id,
-          b.period_id,
-          b.period_date,
-          (
-              SELECT JSONB_OBJECT_AGG(category, total)
-              FROM category_totals ct
-              WHERE ct.client_id = b.client_id
-                AND ct.period_id = b.period_id
-          ) AS category_subtotals,
-          (
-              SELECT JSONB_OBJECT_AGG(posture, total)
-              FROM posture_totals pt
-              WHERE pt.client_id = b.client_id
-                AND pt.period_id = b.period_id
-          ) AS posture_subtotals,
-          (
-              SELECT total
-              FROM total_difficulties td
-              WHERE td.client_id = b.client_id
-                AND td.period_id = b.period_id
-          ) AS total_difficulties
-          FROM base b
-          GROUP BY b.client_id, b.period_id, b.period_date
-          ORDER BY b.client_id, b.period_date
-      )
-      SELECT * from period_summary
-                  """;
+  private static final String GET_FILTERED_SUMMARY_SQL = "SELECT * FROM sdq_summary_view %s";
 
   @Override
   public List<SdqSubmissionSummary> getFiltered(
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
     StringBuilder whereClause = new StringBuilder();
+    whereClause.append("WHERE assessor = :assessor");
     if (!filters.isEmpty()) {
+      whereClause.append(" AND period_date >= :period_from ");
+      whereClause.append(" AND period_date < :period_to ");
       whereClause.append(" AND ");
-      whereClause.append(ClientRepositoryImpl.filterSelectWhere("cl", filters));
+      whereClause.append(ClientRepositoryImpl.filterSelectWhere(filters));
     }
     Map<String, Object> params = new HashMap<>();
     params.put("period_from", from);

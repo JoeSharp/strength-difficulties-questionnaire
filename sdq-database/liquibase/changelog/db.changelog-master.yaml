@@ -22,4 +22,6 @@ databaseChangeLog:
   - include:
       file: changelog/init_client_view.yaml
   - include:
+      file: changelog/init_sdq_progress_view.yaml
+  - include:
       file: changelog/init_sdq_summary_view.yaml

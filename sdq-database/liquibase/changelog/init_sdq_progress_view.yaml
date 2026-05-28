@@ -1,0 +1,264 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-sdq-progress-view
+      author: Joe Sharp
+      labels: init
+      changes:
+        - sql: |
+                CREATE OR REPLACE VIEW sdq_progress_view as
+                WITH base AS (
+                    SELECT
+                        cl.client_id AS client_id,
+                        cl.date_of_birth as date_of_birth,
+                        cl.gender as gender,
+                        cl.council as council,
+                        cl.ethnicity as ethnicity,
+                        cl.eal as eal,
+                        cl.disability_status as disability_status,
+                        cl.care_experience as care_experience,
+                        cl.funding_source as funding_source,
+                        p.period_date AS period_date,
+                        s.statement AS statement_key,
+                        st.category AS category,
+                        c.posture AS posture,
+                        s.score AS score,
+                        s.assessor AS assessor
+                    FROM
+                        sdq s
+                    INNER JOIN reporting_period p on
+                        p.period_id = s.period_id
+                    INNER JOIN client cl on
+                        cl.client_id = p.client_id
+                    INNER JOIN sdq_statement st on
+                        st.statement_key = s.statement
+                    INNER JOIN sdq_category c on
+                        c.category = st.category
+                ),
+                posture_totals AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        posture,
+                        period_date,
+                        SUM(score) AS total
+                    FROM
+                        base
+                    GROUP BY
+                        client_id,
+                        assessor,
+                        posture,
+                        period_date
+                ),
+                category_totals AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        category,
+                        period_date,
+                        SUM(score) AS total
+                    FROM
+                        base
+                    GROUP BY
+                        client_id,
+                        assessor,
+                        category,
+                        period_date
+                ),
+                total_difficulties AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        period_date,
+                        SUM(score) AS total
+                    FROM
+                        base
+                    WHERE
+                        posture <> 'ProSocial'
+                    GROUP BY
+                        client_id,
+                        assessor,
+                        period_date
+                ),
+                category_progress AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        category,
+                        total,
+                        first_value(total) over (
+                            partition by client_id,
+                            category
+                            ORDER BY
+                            period_date
+                        ) AS first_total,
+                        last_value(total) over (
+                            partition by client_id,
+                            category
+                            ORDER BY
+                            period_date
+                            range between unbounded preceding and unbounded following
+                        ) AS last_total
+                    FROM
+                        category_totals
+                ),
+                posture_progress AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        posture,
+                        total,
+                        first_value(total) over (
+                            partition by client_id,
+                            posture
+                            ORDER BY
+                            period_date
+                        ) AS first_total,
+                        last_value(total) over (
+                            partition by client_id,
+                            posture
+                            ORDER BY
+                            period_date
+                            range between unbounded preceding and unbounded following
+                        ) AS last_total
+                    FROM
+                        posture_totals
+                ),
+                total_progress AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        total,
+                        first_value(total) over (
+                            partition by client_id
+                            ORDER BY
+                            period_date
+                        ) AS first_total,
+                        last_value(total) over (
+                            partition by client_id
+                            ORDER BY
+                            period_date
+                            range between unbounded preceding and unbounded following
+                        ) AS last_total
+                    FROM
+                        total_difficulties
+                ),
+                category_final AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        category,
+                        MIN(first_total) AS first_total,
+                        MAX(last_total) AS last_total,
+                        MAX(last_total) - MIN(first_total) AS delta
+                    FROM
+                        category_progress
+                    GROUP BY
+                        client_id,
+                        assessor,
+                        category
+                ),
+                posture_final AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        posture,
+                        MIN(first_total) AS first_total,
+                        MAX(last_total) AS last_total,
+                        MAX(last_total) - MIN(first_total) AS delta
+                    FROM
+                        posture_progress
+                    GROUP BY
+                        client_id,
+                        assessor,
+                        posture
+                ),
+                total_final AS (
+                    SELECT
+                        client_id,
+                        assessor,
+                        MIN(first_total) AS first_total,
+                        MAX(last_total) AS last_total,
+                        MAX(last_total) - MIN(first_total) AS delta
+                    FROM
+                        total_progress
+                    GROUP BY
+                        client_id,
+                        assessor
+                ),
+                progress_summary as (
+                    SELECT
+                        client_id,
+                        cf.assessor as assessor,
+                    JSONB_OBJECT_AGG(
+                        pf.posture,
+                        jsonb_build_object(
+                            'first', pf.first_total,
+                            'last', pf.last_total,
+                            'delta', pf.delta
+                        )
+                    ) AS posture_progress,
+                    JSONB_OBJECT_AGG(
+                        category,
+                        jsonb_build_object(
+                            'first', cf.first_total,
+                            'last', cf.last_total,
+                            'delta', cf.delta
+                        )
+                    ) AS category_progress,
+                    (
+                        SELECT
+                        jsonb_build_object(
+                            'first', tf.first_total,
+                            'last', tf.last_total,
+                            'delta', tf.delta
+                        )
+                        FROM
+                            total_final tf
+                        WHERE
+                            tf.client_id = cf.client_id
+                            AND tf.assessor = cf.assessor
+                    ) AS total_progress
+                    FROM
+                        category_final cf
+                    JOIN posture_final pf
+                        using (client_id)
+                    JOIN total_final tf
+                        using (client_id)
+                    GROUP BY
+                        client_id,
+                        cf.assessor
+                )
+                select
+                    p.client_id,
+                    p.assessor,
+                    b.date_of_birth,
+                    b.gender,
+                    b.council,
+                    b.ethnicity,
+                    b.eal,
+                    b.disability_status,
+                    b.care_experience,
+                    b.funding_source,
+                    b.first_period_date ,
+                    b.last_period_date,
+                    p.posture_progress,
+                    p.category_progress,
+                    p.total_progress
+                from
+                    progress_summary p
+                join (
+                    SELECT distinct
+                    client_id,
+                    ANY_VALUE(date_of_birth) as date_of_birth,
+                    ANY_VALUE(gender) as gender,
+                    ANY_VALUE(council) as council,
+                    ANY_VALUE(ethnicity) as ethnicity,
+                    ANY_VALUE(eal) as eal,
+                    ANY_VALUE(disability_status) as disability_status,
+                    ANY_VALUE(care_experience) as care_experience,
+                    ANY_VALUE(funding_source) as funding_source,
+                    MIN(period_date) as first_period_date,
+                    MAX(period_date) as last_period_date
+                    FROM base
+                    group by client_id
+                ) b on p.client_id = b.client_id;
