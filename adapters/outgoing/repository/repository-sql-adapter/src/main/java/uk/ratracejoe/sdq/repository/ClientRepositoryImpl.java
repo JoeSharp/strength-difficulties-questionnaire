@@ -386,4 +386,12 @@ public class ClientRepositoryImpl implements ClientRepository {
         .map(column -> String.format("%s.%s IN (:%s)", tableAlias, column, column))
         .collect(Collectors.joining(" AND "));
   }
+
+  public static String filterSelectWhere(List<DemographicFilter> fields) {
+    return fields.stream()
+        .map(DemographicFilter::field)
+        .map(ClientRepositoryImpl::demographicColumn)
+        .map(column -> String.format("%s IN (:%s)", column, column))
+        .collect(Collectors.joining(" AND "));
+  }
 }
