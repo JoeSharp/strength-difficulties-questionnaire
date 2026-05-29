@@ -7,6 +7,17 @@ interface Props {
   goals: GoalProgress[];
 }
 
+function progressString(firstScore: number, lastScore: number): string {
+  const progress = lastScore - firstScore;
+  if (progress > 0) {
+    return `+${progress}`;
+  } else if (progress < 0) {
+    return `-${progress}`;
+  } else {
+    return "0";
+  }
+}
+
 const GoalProgressTable: React.FC<Props> = ({ goals }) => {
   const { getLabelForGoalType } = useReference();
   return (
@@ -19,6 +30,7 @@ const GoalProgressTable: React.FC<Props> = ({ goals }) => {
           <th>Assessor</th>
           <th>First Score</th>
           <th>Last Score</th>
+          <th>Progress</th>
         </tr>
       </thead>
       <tbody>
@@ -32,6 +44,7 @@ const GoalProgressTable: React.FC<Props> = ({ goals }) => {
             <td>{goal.assessor}</td>
             <td>{goal.firstScore}</td>
             <td>{goal.lastScore}</td>
+            <td>{progressString(goal.firstScore, goal.lastScore)}</td>
           </tr>
         ))}
       </tbody>
