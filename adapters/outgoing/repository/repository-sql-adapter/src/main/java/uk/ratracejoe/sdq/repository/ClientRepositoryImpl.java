@@ -7,7 +7,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -73,13 +72,11 @@ public class ClientRepositoryImpl implements ClientRepository {
     jdbcClient.sql(sql.toString()).params(params).update();
 
     Optional.ofNullable(client.interventions())
-        .ifPresent(its -> its.forEach(it -> interventionRepository.save(client.clientId(), it)));
+        .ifPresent(its -> its.forEach(it -> interventionRepository.save(clientId, it)));
     Optional.ofNullable(client.disabilityTypes())
-        .ifPresent(dts -> dts.forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt)));
+        .ifPresent(dts -> dts.forEach(dt -> disabilityTypeRepository.save(clientId, dt)));
     Optional.ofNullable(client.aces())
-        .ifPresent(
-            aces ->
-                aces.forEach((key, value) -> acesRepository.save(client.clientId(), key, value)));
+        .ifPresent(aces -> aces.forEach((key, value) -> acesRepository.save(clientId, key, value)));
     return get(clientId);
   }
 
@@ -198,52 +195,46 @@ public class ClientRepositoryImpl implements ClientRepository {
   public int update(SdqClient client) {
     SdqClient existing = get(client.clientId());
 
-    AtomicInteger paramIndex = new AtomicInteger(1);
-
     interventionRepository.deleteForClient(client.clientId());
     disabilityTypeRepository.deleteForClient(client.clientId());
     acesRepository.deleteForClient(client.clientId());
-    client.interventions().forEach(it -> interventionRepository.save(client.clientId(), it));
-    client.disabilityTypes().forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt));
-    client.aces().forEach((key, value) -> acesRepository.save(client.clientId(), key, value));
+    Optional.ofNullable(client.interventions())
+        .ifPresent(its -> its.forEach(it -> interventionRepository.save(client.clientId(), it)));
+    Optional.ofNullable(client.disabilityTypes())
+        .ifPresent(dts -> dts.forEach(dt -> disabilityTypeRepository.save(client.clientId(), dt)));
+    Optional.ofNullable(client.aces())
+        .ifPresent(
+            aces ->
+                aces.forEach((key, value) -> acesRepository.save(client.clientId(), key, value)));
 
     return jdbcClient
         .sql(updateSQL())
+        .param("code_name", Optional.ofNullable(client.codeName()).orElseGet(existing::codeName))
         .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.codeName()).orElseGet(existing::codeName))
-        .param(
-            paramIndex.getAndIncrement(),
+            "date_of_birth",
             Optional.ofNullable(client.dateOfBirth()).orElseGet(existing::dateOfBirth))
+        .param("gender", Optional.ofNullable(client.gender()).orElseGet(existing::gender).name())
+        .param("council", Optional.ofNullable(client.council()).orElseGet(existing::council).name())
         .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.gender()).orElseGet(existing::gender).name())
-        .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.council()).orElseGet(existing::council).name())
-        .param(
-            paramIndex.getAndIncrement(),
+            "ethnicity",
             Optional.ofNullable(client.ethnicity()).orElseGet(existing::ethnicity).name())
         .param(
-            paramIndex.getAndIncrement(),
+            "eal",
             Optional.ofNullable(client.englishAdditionalLanguage())
                 .orElseGet(existing::englishAdditionalLanguage)
                 .name())
         .param(
-            paramIndex.getAndIncrement(),
+            "disability_status",
             Optional.ofNullable(client.disabilityStatus())
                 .orElseGet(existing::disabilityStatus)
                 .name())
         .param(
-            paramIndex.getAndIncrement(),
+            "care_experience",
             Optional.ofNullable(client.careExperience()).orElseGet(existing::careExperience).name())
         .param(
-            paramIndex.getAndIncrement(),
-            Optional.ofNullable(client.aces()).orElseGet(existing::aces))
-        .param(
-            paramIndex.getAndIncrement(),
+            "funding_source",
             Optional.ofNullable(client.fundingSource()).orElseGet(existing::fundingSource).name())
-        .param(paramIndex.getAndIncrement(), client.clientId())
+        .param("client_id", client.clientId())
         .update();
   }
 
@@ -264,20 +255,18 @@ public class ClientRepositoryImpl implements ClientRepository {
           "ethnicity",
           "eal",
           "disability_status",
-          "disability_type",
           "care_experience",
-          "aces",
           "funding_source");
 
   static String updateSQL() {
     StringBuilder sb = new StringBuilder();
     sb.append("UPDATE client SET ");
     String fieldNames =
-        String.join(",", UPDATE_FIELDS.stream().map(f -> String.format("%s = ?", f)).toList());
+        String.join(",", UPDATE_FIELDS.stream().map(f -> String.format("%s = :%s", f, f)).toList());
     sb.append(fieldNames);
     sb.append(" WHERE ");
     sb.append("client_id");
-    sb.append("  = ?");
+    sb.append("  = :client_id");
     return sb.toString();
   }
 

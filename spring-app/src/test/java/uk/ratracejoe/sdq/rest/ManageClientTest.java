@@ -80,7 +80,7 @@ class ManageClientTest {
             .interventions(
                 List.of(
                     new Intervention(InterventionType.IA, 2),
-                    new Intervention(InterventionType.CCPT, 3)))
+                    new Intervention(InterventionType.PTP, 3)))
             .build();
     SdqClient updated = this.client.updateClient(toUpdate);
     SdqClient afterUpdate = this.client.getClient(sdqClient.clientId());

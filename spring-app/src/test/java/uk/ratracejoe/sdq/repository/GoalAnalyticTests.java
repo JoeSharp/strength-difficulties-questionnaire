@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -62,17 +63,27 @@ class GoalAnalyticTests {
         client
             .getGoalsWithProgress(
                 GoalQueryDTO.builder()
-                    .assessor(Assessor.School)
+                    .assessor(Assessor.Parent1)
                     .filters(
                         List.of(
                             new DemographicFilter(
-                                DemographicField.Gender, List.of(Gender.MALE.name()))))
+                                DemographicField.Gender, List.of(Gender.FEMALE.name()))))
                     .minProgress(3)
                     .from(LocalDate.of(2024, 5, 1))
                     .to(LocalDate.of(2025, 11, 1))
                     .build())
             .getBody();
-    assertThat(result).hasSize(1);
+    assertThat(result).hasSize(3);
+    assertThat(result)
+        .extracting(
+            g -> g.goal().type(),
+            g -> g.goal().description(),
+            GoalProgress::firstScore,
+            GoalProgress::lastScore)
+        .containsExactlyInAnyOrder(
+            tuple(GoalType.TRAUMA_RECOVERY, "Goal 2 for Test File 7.xlsx", 2, 7),
+            tuple(GoalType.TRAUMA_RECOVERY, "Goal 1 for Test File 6.xlsx", 3, 8),
+            tuple(GoalType.BEHAVIOURAL, "Goal 2 for Test File 6.xlsx", 2, 7));
   }
 
   @Test

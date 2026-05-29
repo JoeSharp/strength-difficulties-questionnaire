@@ -16,8 +16,6 @@ public interface GoalRepository {
 
   int deleteAll();
 
-  List<GoalProgress> getGoalsByAssessor(Assessor assessor, LocalDate from, LocalDate to);
-
   List<GoalProgress> getGoalsWithProgress(
       Assessor assessor,
       List<DemographicFilter> filters,

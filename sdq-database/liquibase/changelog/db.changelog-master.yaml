@@ -27,3 +27,5 @@ databaseChangeLog:
       file: changelog/views/init_sdq_summary_view.yaml
   - include:
       file: changelog/views/init_sdq_single_summary_view.yaml
+  - include:
+      file: changelog/views/init_goal_progress_view.yaml

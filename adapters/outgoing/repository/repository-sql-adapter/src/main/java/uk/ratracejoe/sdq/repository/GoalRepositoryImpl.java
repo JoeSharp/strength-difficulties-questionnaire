@@ -57,25 +57,10 @@ public class GoalRepositoryImpl implements GoalRepository {
     return jdbcClient
         .sql(
             """
-                    SELECT DISTINCT
-                      g.client_id as client_id,
-                      o.goal_id as goal_id,
-                      g.type as goal_type,
-                      g.description as goal_description,
-                    FIRST_VALUE(o.score) OVER (
-                            PARTITION BY g.client_id, o.goal_id
-                            ORDER BY o.period_date
-                    ) AS first_score,
-                    LAST_VALUE(o.score) OVER (
-                            PARTITION BY g.client_id, o.goal_id
-                            ORDER BY o.period_date
-                            RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-                    ) AS last_score
-                    FROM gbo_score o
-                    JOIN goal g ON g.goal_id = o.goal_id
-                    WHERE g.goal_id = :goal_id
-                    AND o.assessor = :assessor
-                    """)
+            SELECT * FROM goal_progress_view
+            WHERE g.goal_id = :goal_id
+            AND o.assessor = :assessor
+            """)
         .param("goal_id", goalId)
         .param("assessor", assessor.name())
         .query(
@@ -131,54 +116,6 @@ public class GoalRepositoryImpl implements GoalRepository {
   }
 
   @Override
-  public List<GoalProgress> getGoalsByAssessor(Assessor assessor, LocalDate from, LocalDate to) {
-    return jdbcClient
-        .sql(
-            """
-            SELECT DISTINCT
-              g.client_id as client_id,
-              o.goal_id as goal_id,
-              g.type as goal_type,
-              g.description as goal_description,
-            FIRST_VALUE(o.score) OVER (
-                    PARTITION BY g.client_id, o.goal_id
-                    ORDER BY o.period_date
-            ) AS first_score,
-            LAST_VALUE(o.score) OVER (
-                    PARTITION BY g.client_id, o.goal_id
-                    ORDER BY o.period_date
-                    RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-            ) AS last_score
-            FROM gbo_score o
-            JOIN goal g ON g.goal_id = o.goal_id
-            WHERE o.period_date >= :period_from
-            AND o.period_date < :period_to
-            AND o.assessor = :assessor
-            """)
-        .param("period_from", from)
-        .param("period_to", to)
-        .param("assessor", assessor.name())
-        .query(
-            (rs, rowNum) ->
-                GoalProgress.builder()
-                    .assessor(assessor)
-                    .goal(
-                        Goal.builder()
-                            .clientId(rs.getObject("client_id", UUID.class))
-                            .goalId(rs.getObject("goal_id", UUID.class))
-                            .type(
-                                Optional.ofNullable(rs.getString("goal_type"))
-                                    .map(GoalType::valueOf)
-                                    .orElseGet(GoalType::defaultValue))
-                            .description(rs.getString("goal_description"))
-                            .build())
-                    .firstScore(rs.getInt("first_score"))
-                    .lastScore(rs.getInt("last_score"))
-                    .build())
-        .list();
-  }
-
-  @Override
   public List<GoalProgress> getGoalsWithProgress(
       Assessor assessor,
       List<DemographicFilter> filters,
@@ -203,24 +140,9 @@ public class GoalRepositoryImpl implements GoalRepository {
         String.format(
             """
     WITH scored AS (
-            SELECT DISTINCT
-            g.client_id as client_id,
-            g.type as goal_type,
-            o.goal_id as goal_id,
-            g.description as goal_description,
-            FIRST_VALUE(o.score) OVER (
-                    PARTITION BY g.client_id, o.goal_id
-                    ORDER BY o.period_date
-            ) AS first_score,
-            LAST_VALUE(o.score) OVER (
-                    PARTITION BY g.client_id, o.goal_id
-                    ORDER BY o.period_date
-                    RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-            ) AS last_score
-            FROM gbo_score o
-            JOIN goal g ON g.goal_id = o.goal_id
-            WHERE o.period_date >= :period_from
-            AND o.period_date <  :period_to
+      SELECT * FROM goal_progress_view
+      WHERE last_period_date >= :period_from
+      AND last_period_date < :period_to
     )
     SELECT *
     FROM scored s
@@ -263,7 +185,7 @@ public class GoalRepositoryImpl implements GoalRepository {
   public int update(Goal goal) {
     return jdbcClient
         .sql(
-            "UPDATE goal SET type = :goal_type description = :description WHERE goal_id = :goal_id")
+            "UPDATE goal SET type = :goal_type, description = :description WHERE goal_id = :goal_id")
         .param("description", goal.description())
         .param(
             "goal_type",

@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-sdq-summary-view
+      author: Joe Sharp
+      labels: init
+      changes:
+        - sql: |
+                CREATE OR REPLACE VIEW goal_progress_view as
+                SELECT DISTINCT
+                        g.client_id as client_id,
+                        o.goal_id as goal_id,
+                        g.type as goal_type,
+                        g.description as goal_description,
+                        o.assessor as assessor,
+                        FIRST_VALUE(o.period_date) over (
+                              PARTITION BY g.client_id, o.goal_id, o.assessor
+                              ORDER BY o.period_date
+                        ) as first_period_date,
+                        FIRST_VALUE(o.score) OVER (
+                                PARTITION BY g.client_id, o.goal_id, o.assessor
+                                ORDER BY o.period_date
+                        ) AS first_score,
+                        LAST_VALUE(o.period_date) over (
+                          PARTITION BY g.client_id, o.goal_id, o.assessor
+                          ORDER BY o.period_date
+                          RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+                        ) as last_period_date,
+                        LAST_VALUE(o.score) OVER (
+                                PARTITION BY g.client_id, o.goal_id, o.assessor
+                                ORDER BY o.period_date
+                                RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+                        ) AS last_score
+                FROM gbo_score o
+                JOIN goal g ON g.goal_id = o.goal_id;
