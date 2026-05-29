@@ -3,10 +3,11 @@ import useQueryGoalProgress from "@/api/GboApi/useQueryGoalProgress";
 import GoalProgressTable from "@/components/GoalProgressTable";
 import GoalQueryForm from "@/components/GoalQueryForm";
 import type { GoalQueryDTO } from "@/api/GboApi/gboApi";
+import { DEFAULT_ASSESSOR } from "@/api/types";
 
 const DEFAULT_GOAL_QUERY: GoalQueryDTO = {
   goalTypes: [],
-  assessor: "School",
+  assessor: DEFAULT_ASSESSOR,
   filters: [],
   minProgress: 1,
   from: "2024-01-01",

@@ -1,12 +1,10 @@
 import React from "react";
-import type { Assessor } from "@/api/types";
+import { ASSESSORS, type Assessor } from "@/api/types";
 
 interface Props {
   value: Assessor;
   onChange: (v: Assessor) => void;
 }
-
-const OPTIONS: Assessor[] = ["Child", "School", "Parent1", "Parent2"];
 
 const AssessorPicker: React.FC<Props> = ({ value, onChange }) => {
   const onInternalChange: React.ChangeEventHandler<HTMLSelectElement> = ({
@@ -17,7 +15,7 @@ const AssessorPicker: React.FC<Props> = ({ value, onChange }) => {
 
   return (
     <select value={value} onChange={onInternalChange}>
-      {OPTIONS.map((option) => (
+      {ASSESSORS.map((option) => (
         <option key={option} value={option}>
           {option}
         </option>

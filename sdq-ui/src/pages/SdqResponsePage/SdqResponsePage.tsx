@@ -1,13 +1,14 @@
 import React from "react";
 import type { SdqQueryDTO } from "@/api/SdqApi/sdqApi";
 import useQuerySdq from "@/api/SdqApi/useQuerySdq";
+import { DEFAULT_ASSESSOR } from "@/api/types";
 import useQuerySdqProgress from "@/api/SdqApi/useQuerySdqProgress";
 import SdqQueryForm from "@/components/SdqQueryForm";
 import SdqSummaryTable from "@/components/SdqSummaryTable";
-import SdqProgressTable from "../../components/SdqProgressTable";
+import SdqProgressTable from "@/components/SdqProgressTable";
 
 const DEFAULT_GOAL_QUERY: SdqQueryDTO = {
-  assessor: "School",
+  assessor: DEFAULT_ASSESSOR,
   filters: [],
   from: "2024-01-01",
   to: "2026-01-01",

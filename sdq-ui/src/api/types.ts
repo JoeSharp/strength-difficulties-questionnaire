@@ -1,6 +1,8 @@
 import type { ClientFile } from "./ClientApi/clientApi";
 
-export type Assessor = "Parent1" | "Parent2" | "School" | "Child";
+export const ASSESSORS = ["Parent1", "Parent2", "School", "Child"] as const;
+export type Assessor = (typeof ASSESSORS)[number];
+export const DEFAULT_ASSESSOR: Assessor = "Parent1";
 
 export const DEMOGRAPHIC_FIELDS = [
   "Gender",
