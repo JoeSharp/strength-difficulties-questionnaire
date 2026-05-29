@@ -57,7 +57,7 @@ public class SdqRepositoryImpl implements SdqRepository {
     params.put("assessor", assessor.name());
     params.put("client_id", clientId);
     return jdbcClient
-        .sql(String.format(GET_PROGRESS_SUMMARY_SQL, whereClause))
+        .sql(String.format("SELECT * FROM sdq_progress_view %s", whereClause))
         .params(params)
         .query(
             (rs, rowNum) -> {
@@ -83,8 +83,6 @@ public class SdqRepositoryImpl implements SdqRepository {
         .single();
   }
 
-  private static final String GET_PROGRESS_SUMMARY_SQL = "SELECT * FROM sdq_progress_view %s";
-
   @Override
   public List<SdqProgressSummary> getSdqProgress(
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
@@ -102,7 +100,7 @@ public class SdqRepositoryImpl implements SdqRepository {
     params.put("assessor", assessor.name());
     ClientRepositoryImpl.addFilters(params, filters);
     return jdbcClient
-        .sql(String.format(GET_PROGRESS_SUMMARY_SQL, whereClause))
+        .sql(String.format("SELECT * FROM sdq_progress_view %s", whereClause))
         .params(params)
         .query(
             (rs, rowNum) -> {
@@ -129,8 +127,6 @@ public class SdqRepositoryImpl implements SdqRepository {
         .list();
   }
 
-  private static final String GET_FILTERED_SUMMARY_SQL = "SELECT * FROM sdq_summary_view %s";
-
   @Override
   public List<SdqSubmissionSummary> getFiltered(
       Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
@@ -148,7 +144,7 @@ public class SdqRepositoryImpl implements SdqRepository {
     params.put("assessor", assessor.name());
     ClientRepositoryImpl.addFilters(params, filters);
     return jdbcClient
-        .sql(String.format(GET_FILTERED_SUMMARY_SQL, whereClause))
+        .sql(String.format("SELECT * FROM sdq_summary_view %s", whereClause))
         .params(params)
         .query(
             (rs, rowNum) -> {
@@ -176,49 +172,11 @@ public class SdqRepositoryImpl implements SdqRepository {
         .list();
   }
 
-  private static final String GET_SUMMARY_SQL =
-      """
-          WITH base AS (
-            SELECT
-              s.statement AS statement_key,
-              st.category AS category,
-              s.score AS score,
-              c.posture AS posture
-            FROM
-              sdq s
-              INNER JOIN sdq_statement st ON st.statement_key = s.statement
-              INNER JOIN sdq_category c ON c.category = st.category
-              WHERE period_id = :periodId AND assessor = :assessor
-          ),
-
-          category_totals AS (
-            SELECT category, SUM(score) AS total
-            FROM base
-            GROUP BY category
-          ),
-
-          posture_totals AS (
-            SELECT posture, SUM(score) AS total
-            FROM base
-            GROUP BY posture
-          ),
-
-          total_difficulties AS (
-            SELECT SUM(score) AS total
-            FROM base
-            WHERE posture <> 'ProSocial'
-          )
-
-          SELECT
-            (SELECT JSONB_OBJECT_AGG(category, total) FROM category_totals) AS category_subtotals,
-            (SELECT JSONB_OBJECT_AGG(posture, total) FROM posture_totals) AS posture_subtotals,
-            (SELECT total FROM total_difficulties) AS total_difficulties;
-              """;
-
   @Override
   public SdqSubmissionSummary getSummary(UUID periodId, Assessor assessor) {
     return jdbcClient
-        .sql(GET_SUMMARY_SQL)
+        .sql(
+            "SELECT * from sdq_single_summary_view WHERE period_id = :periodId AND assessor = :assessor")
         .param("periodId", periodId)
         .param("assessor", assessor.name())
         .query(

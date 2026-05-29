@@ -1,27 +1,29 @@
 databaseChangeLog:
   - include:
-      file: changelog/init_client_table.yaml
+      file: changelog/tables/init_client_table.yaml
   - include:
-      file: changelog/init_goal_table.yaml
+      file: changelog/tables/init_goal_table.yaml
   - include:
-      file: changelog/init_goal_based_outcome_table.yaml
+      file: changelog/tables/init_goal_based_outcome_table.yaml
   - include:
-      file: changelog/init_intervention_table.yaml
+      file: changelog/tables/init_intervention_table.yaml
   - include:
-      file: changelog/init_disability_table.yaml
+      file: changelog/tables/init_disability_table.yaml
   - include:
-      file: changelog/init_aces_table.yaml
+      file: changelog/tables/init_aces_table.yaml
   - include:
-      file: changelog/init_reporting_period_table.yaml
+      file: changelog/tables/init_reporting_period_table.yaml
   - include:
-      file: changelog/init_sdq_category_table.yaml
+      file: changelog/tables/init_sdq_category_table.yaml
   - include:
-      file: changelog/init_sdq_statement_table.yaml
+      file: changelog/tables/init_sdq_statement_table.yaml
   - include:
-      file: changelog/init_sdq_table.yaml
+      file: changelog/tables/init_sdq_table.yaml
   - include:
-      file: changelog/init_client_view.yaml
+      file: changelog/views/init_client_view.yaml
   - include:
-      file: changelog/init_sdq_progress_view.yaml
+      file: changelog/views/init_sdq_progress_view.yaml
   - include:
-      file: changelog/init_sdq_summary_view.yaml
+      file: changelog/views/init_sdq_summary_view.yaml
+  - include:
+      file: changelog/views/init_sdq_single_summary_view.yaml

@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-sdq-single-summary-view
+      author: Joe Sharp
+      labels: init
+      changes:
+        - sql: |
+                CREATE OR REPLACE VIEW sdq_single_summary_view as
+                WITH base AS (
+                        SELECT
+                                s.period_id,
+                                s.assessor,
+                                s.statement AS statement_key,
+                                st.category AS category,
+                                s.score AS score,
+                                c.posture AS posture
+                        FROM
+                                sdq s
+                        INNER JOIN sdq_statement st ON st.statement_key = s.statement
+                        INNER JOIN sdq_category c ON c.category = st.category
+                ),
+                period_info AS (
+                        SELECT DISTINCT
+                                period_id,
+                                assessor
+                        FROM base
+                ),
+                category_totals AS (
+                        SELECT period_id, assessor, category, SUM(score) AS total
+                        FROM base
+                        GROUP BY period_id, assessor, category
+                ),
+                posture_totals AS (
+                        SELECT period_id, assessor, posture, SUM(score) AS total
+                        FROM base
+                        GROUP BY period_id, assessor, posture
+                ),
+                total_difficulties AS (
+                        SELECT period_id, assessor, SUM(score) AS total
+                        FROM base
+                        WHERE posture <> 'ProSocial'
+                        GROUP BY period_id, assessor
+                ),
+                period_summary AS (
+                        SELECT
+                                pi.period_id,
+                                pi.assessor,
+                                (
+                                        select
+                                                JSONB_OBJECT_AGG(category, total)
+                                        FROM
+                                                category_totals
+                                        WHERE
+                                                period_id = pi.period_id
+                                        AND
+                                                assessor = pi.assessor
+                                ) AS category_subtotals,
+                                (
+                                        select
+                                                JSONB_OBJECT_AGG(posture, total)
+                                        FROM posture_totals
+                                        WHERE period_id = pi.period_id
+                                        AND assessor = pi.assessor
+                                ) AS posture_subtotals,
+                                (
+                                        SELECT
+                                                total
+                                        FROM total_difficulties
+                                        WHERE period_id = pi.period_id
+                                        AND assessor = pi.assessor
+                                ) AS total_difficulties
+                        FROM period_info pi
+                        WHERE period_id = pi.period_id
+                        AND assessor = pi.assessor
+                )
+                SELECT * FROM period_summary;
