@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -104,7 +104,7 @@ public class SdqApiClient {
         .toEntity(SdqProgressSummary.class);
   }
 
-  public HttpEntity<List<SdqProgressSummary>> querySdqProgress(SdqQueryDTO query) {
+  public ResponseEntity<Map<UUID, List<SdqProgressSummary>>> querySdqProgress(SdqQueryDTO query) {
     return restClient
         .post()
         .uri(REST_URL_SDQ + "/query/progress")
@@ -114,7 +114,7 @@ public class SdqApiClient {
         .toEntity(new ParameterizedTypeReference<>() {});
   }
 
-  public HttpEntity<List<SdqSubmissionSummary>> querySdq(SdqQueryDTO query) {
+  public ResponseEntity<Map<UUID, List<SdqSubmissionSummary>>> querySdq(SdqQueryDTO query) {
     return restClient
         .post()
         .uri(REST_URL_SDQ + "/query")

@@ -134,16 +134,16 @@ public class SdqRepositoryImpl implements SdqRepository {
   public List<SdqSubmissionSummary> getFiltered(
       List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
     List<String> conditions = new ArrayList<>();
-    conditions.add("assessor = :assessor");
-    conditions.add("period_date >= :period_from ");
-    conditions.add("period_date < :period_to ");
+    conditions.add("assessor IN (:assessors)");
+    conditions.add("period_date >= :period_from");
+    conditions.add("period_date < :period_to");
     if (!filters.isEmpty()) {
       ClientRepositoryImpl.filterSelectWhere(filters).forEach(conditions::add);
     }
     Map<String, Object> params = new HashMap<>();
     params.put("period_from", from);
     params.put("period_to", to);
-    params.put("assessor", assessors.stream().map(Assessor::name).toList());
+    params.put("assessors", assessors.stream().map(Assessor::name).toList());
     ClientRepositoryImpl.addFilters(params, filters);
     return jdbcClient
         .sql(String.format("SELECT * FROM sdq_summary_view %s", whereClause(conditions)))

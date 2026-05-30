@@ -2,17 +2,17 @@ import type { Assessor, DemographicFilter } from "../types";
 
 export const BASE_SDQ_URL = "/api/sdq";
 
-export interface SdqScore {
+export type SdqScore = {
   statement: string;
   score: number;
-}
+};
 
-export interface SdqSubmission {
+export type SdqSubmission = {
   clientId: string;
   period: number;
   assessor: Assessor;
   scores: SdqScore[];
-}
+};
 
 export const STATEMENT = [
   "CONSIDERATE",
@@ -57,29 +57,35 @@ export const POSTURES: string[] = [
   "ProSocial",
 ];
 
-export interface StatementResponse {
+export type StatementResponse = {
   statement: Statement;
   score: number;
-}
+};
 
-export interface ReportingPeriod {
+export type ReportingPeriod = {
   clientId: string;
   periodId: string;
   period: string;
-}
+};
 
-export interface SdqReportingPeriod {
+export type SdqReportingPeriod = {
   period: ReportingPeriod;
   responses: Record<Assessor, SdqSubmission[]>;
-}
+};
 
-export interface SdqSubmissionSummary {
+export type SdqSubmissionSummary = {
   clientId: string;
+  assessor: Assessor;
   period: string;
   categorySubTotals: Record<string, number>;
   postureSubTotals: Record<string, number>;
   totalDifficulties: number;
-}
+};
+
+export type SdqSubmissionSummaryByClient = Record<
+  string,
+  SdqSubmissionSummary[]
+>;
 
 export type Progress = {
   last: number;
@@ -87,17 +93,19 @@ export type Progress = {
   delta: number;
 };
 
-export interface SdqProgressSummary {
+export type SdqProgressSummary = {
   clientId: string;
   assessor: Assessor;
   categoryProgress: Record<string, Progress>;
   postureProgress: Record<string, Progress>;
   totalDifficulties: Progress;
-}
+};
 
-export interface SdqQueryDTO {
+export type SdqProgressSummaryByClient = Record<string, SdqProgressSummary[]>;
+
+export type SdqQueryDTO = {
   assessors: Assessor[];
   filters: DemographicFilter[];
   from: string;
   to: string;
-}
+};

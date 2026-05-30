@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.rest;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,13 +49,13 @@ public class SdqController {
   }
 
   @PostMapping("/query")
-  public List<SdqSubmissionSummary> query(@RequestBody SdqQueryDTO query) {
+  public Map<UUID, List<SdqSubmissionSummary>> query(@RequestBody SdqQueryDTO query) {
     return sdqService.querySdqSummaries(
         query.assessors(), query.filters(), query.from(), query.to());
   }
 
   @PostMapping("/query/progress")
-  public List<SdqProgressSummary> queryProgress(@RequestBody SdqQueryDTO query) {
+  public Map<UUID, List<SdqProgressSummary>> queryProgress(@RequestBody SdqQueryDTO query) {
     return sdqService.querySdqProgress(
         query.assessors(), query.filters(), query.from(), query.to());
   }

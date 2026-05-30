@@ -4,13 +4,13 @@ import useAppNotificationContext from "@/context/AppNotificationContext";
 import {
   BASE_SDQ_URL,
   type SdqQueryDTO,
-  type SdqProgressSummary,
+  type SdqProgressSummaryByClient,
 } from "./sdqApi";
 
 function useQuerySdqProgress() {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
-  return useMutation<SdqProgressSummary[], Error, SdqQueryDTO>({
+  return useMutation<SdqProgressSummaryByClient, Error, SdqQueryDTO>({
     mutationFn: async (query) => {
       const jobId = beginJob("Querying SDQ summaries");
 

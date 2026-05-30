@@ -2,7 +2,9 @@ package uk.ratracejoe.sdq.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
@@ -39,15 +41,17 @@ public class SdqServiceImpl implements SdqService {
   }
 
   @Override
-  public List<SdqProgressSummary> querySdqProgress(
+  public Map<UUID, List<SdqProgressSummary>> querySdqProgress(
       List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
-    return sdqRepository.getSdqProgress(assessors, filters, from, to);
+    return sdqRepository.getSdqProgress(assessors, filters, from, to).stream()
+        .collect(Collectors.groupingBy(SdqProgressSummary::clientId));
   }
 
   @Override
-  public List<SdqSubmissionSummary> querySdqSummaries(
+  public Map<UUID, List<SdqSubmissionSummary>> querySdqSummaries(
       List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
-    return sdqRepository.getFiltered(assessors, filters, from, to);
+    return sdqRepository.getFiltered(assessors, filters, from, to).stream()
+        .collect(Collectors.groupingBy(SdqSubmissionSummary::clientId));
   }
 
   @Override

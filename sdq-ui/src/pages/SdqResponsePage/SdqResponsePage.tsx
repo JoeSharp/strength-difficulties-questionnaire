@@ -40,15 +40,13 @@ function SdqResponsePage() {
 
       {sdqSummaries.data && (
         <>
-          <h3>{sdqSummaries.data.length} matching SDQ responses found</h3>
+          <h3>Matching SDQ responses found</h3>
           <SdqSummaryTable summaries={sdqSummaries.data} />
         </>
       )}
       {sdqProgress.data && (
         <>
-          <h3>
-            {sdqProgress.data.length} matching SDQ progress summaries found
-          </h3>
+          <h3>Matching SDQ progress summaries found</h3>
           <SdqProgressTable summaries={sdqProgress.data} />
         </>
       )}
