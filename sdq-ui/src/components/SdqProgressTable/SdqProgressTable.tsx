@@ -19,11 +19,11 @@ const SdqProgressTable: React.FC<Props> = ({ summaries }) => {
         </tr>
       </thead>
       <tbody>
-        {Object.entries(summaries).map(([clientId, summariesForClient], i) => {
+        {Object.entries(summaries).map(([clientId, summariesForClient]) => {
           const rowSpan = summariesForClient.length;
 
           return summariesForClient.map((summary, index) => (
-            <tr key={i}>
+            <tr key={`${clientId}-${index}`}>
               {index === 0 && <td rowSpan={rowSpan}>{clientId}</td>}
               <td>{summary.assessor}</td>
               <td>

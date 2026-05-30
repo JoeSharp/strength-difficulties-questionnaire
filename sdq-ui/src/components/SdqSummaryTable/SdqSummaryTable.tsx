@@ -21,7 +21,7 @@ const SdqSummaryTable: React.FC<Props> = ({ summaries }) => {
         </tr>
       </thead>
       <tbody>
-        {Object.entries(summaries).map(([clientId, summariesForClient], i) => {
+        {Object.entries(summaries).map(([clientId, summariesForClient]) => {
           const rowSpan = summariesForClient.length;
 
           return summariesForClient.map((summary, index) => (
