@@ -1,19 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import useInProgressContext from "@/context/InProgressContext";
 import useAppNotificationContext from "@/context/AppNotificationContext";
-import { BASE_GOAL_URL, type Goal } from "./gboApi";
+import { BASE_GOAL_URL, type GoalProgress } from "./gboApi";
+import type { Assessor } from "../types";
 
-function useGoalsForClient(clientId: string) {
+function useGoalsForClient(clientId: string, assessor: Assessor) {
   const { addMessage } = useAppNotificationContext();
   const { beginJob, endJob } = useInProgressContext();
 
-  return useQuery<Goal[], void>({
-    queryKey: ["goalsForClient", clientId],
+  return useQuery<GoalProgress[], void>({
+    queryKey: ["goalsProgressForClient", clientId, assessor],
     queryFn: async () => {
       const jobId = beginJob("Fetching goals");
 
       try {
-        const response = await fetch(`${BASE_GOAL_URL}/forClient/${clientId}`);
+        const response = await fetch(
+          `${BASE_GOAL_URL}/forClient/${clientId}/progress/${assessor}`,
+        );
 
         if (!response.ok) {
           addMessage(
@@ -29,7 +32,7 @@ function useGoalsForClient(clientId: string) {
         endJob(jobId);
       }
     },
-    enabled: !!clientId,
+    enabled: !!clientId && !!assessor,
   });
 }
 

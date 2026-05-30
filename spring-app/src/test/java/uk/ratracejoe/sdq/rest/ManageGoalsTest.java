@@ -13,23 +13,54 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ratracejoe.sdq.SdqApiClient;
+import uk.ratracejoe.sdq.SdqFixtures;
 import uk.ratracejoe.sdq.model.Assessor;
+import uk.ratracejoe.sdq.model.ParsedFile;
 import uk.ratracejoe.sdq.model.SdqClient;
 import uk.ratracejoe.sdq.model.demographics.*;
 import uk.ratracejoe.sdq.model.gbo.GboSubmission;
 import uk.ratracejoe.sdq.model.gbo.Goal;
+import uk.ratracejoe.sdq.model.gbo.GoalProgress;
 import uk.ratracejoe.sdq.utils.PeriodSupplier;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ManageGoalsTest {
   private SdqApiClient client;
+  private SdqFixtures fixtures;
   @LocalServerPort int port;
 
   @BeforeEach
   void beforeAll() {
-    client = new SdqApiClient(port);
+    fixtures = new SdqFixtures(port);
+    client = fixtures.getSdqClient();
     client.clearDatabase();
+  }
+
+  @Test
+  void getGoalsProgressForClient() {
+    // Given
+    ParsedFile file = fixtures.fileIngested("Test File 4.xlsx");
+
+    // When
+    List<GoalProgress> goals =
+        this.client.getGoalsProgressForClient(file.sdqClient().clientId(), Assessor.School);
+
+    // Then
+    assertThat(goals).hasSizeGreaterThan(2);
+  }
+
+  @Test
+  void getGoalProgress() {
+    // Given
+    ParsedFile file = fixtures.fileIngested("Test File 4.xlsx");
+
+    // When
+    Goal firstGoal = this.client.getGoalsForClient(file.sdqClient().clientId()).getFirst();
+    GoalProgress progress = this.client.getGoalProgress(firstGoal.goalId(), Assessor.School);
+
+    // Then
+    assertThat(progress).extracting(GoalProgress::goal).isEqualTo(firstGoal);
   }
 
   @Test

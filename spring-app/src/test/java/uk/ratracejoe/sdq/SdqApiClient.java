@@ -95,6 +95,15 @@ public class SdqApiClient {
         .toEntity(SdqSubmissionSummary.class);
   }
 
+  public ResponseEntity<SdqProgressSummary> getSdqSubmissionProgress(
+      UUID clientId, Assessor assessor) {
+    return restClient
+        .get()
+        .uri(REST_URL_SDQ + "/{periodId}/{assessor}/progress", clientId, assessor)
+        .retrieve()
+        .toEntity(SdqProgressSummary.class);
+  }
+
   public HttpEntity<List<SdqProgressSummary>> querySdqProgress(SdqQueryDTO query) {
     return restClient
         .post()
@@ -196,6 +205,24 @@ public class SdqApiClient {
         .uri(String.format("%s/%s", REST_URL_GOAL, goalId))
         .retrieve()
         .toEntity(Goal.class)
+        .getBody();
+  }
+
+  public List<GoalProgress> getGoalsProgressForClient(UUID clientId, Assessor assessor) {
+    return restClient
+        .get()
+        .uri(String.format("%s/forClient/%s/progress/%s", REST_URL_GOAL, clientId, assessor))
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<List<GoalProgress>>() {})
+        .getBody();
+  }
+
+  public GoalProgress getGoalProgress(UUID goalId, Assessor assessor) {
+    return restClient
+        .get()
+        .uri(String.format("%s/%s/progress/%s", REST_URL_GOAL, goalId, assessor))
+        .retrieve()
+        .toEntity(GoalProgress.class)
         .getBody();
   }
 

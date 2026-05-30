@@ -25,7 +25,7 @@ export interface GboSubmission {
 
 export interface GoalQueryDTO {
   goalTypes: string[];
-  assessor: Assessor;
+  assessors: Assessor[];
   filters: DemographicFilter[];
   minProgress: number;
   from: string;

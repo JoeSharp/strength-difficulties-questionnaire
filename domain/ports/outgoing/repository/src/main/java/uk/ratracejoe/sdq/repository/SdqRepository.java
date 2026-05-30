@@ -21,10 +21,10 @@ public interface SdqRepository {
   SdqProgressSummary getProgressForClient(UUID clientId, Assessor assessor);
 
   List<SdqProgressSummary> getSdqProgress(
-      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
+      List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
   List<SdqSubmissionSummary> getFiltered(
-      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
+      List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
   SdqSubmissionSummary getSummary(UUID periodId, Assessor assessor);
 }

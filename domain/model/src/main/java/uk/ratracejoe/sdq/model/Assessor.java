@@ -4,5 +4,6 @@ public enum Assessor {
   Parent1,
   Parent2,
   School,
-  Child
+  Child,
+  Unknown
 }

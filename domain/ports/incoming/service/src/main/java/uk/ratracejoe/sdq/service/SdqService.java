@@ -22,10 +22,10 @@ public interface SdqService {
   List<ReportingPeriod> getReportingPeriods(UUID clientId);
 
   List<SdqProgressSummary> querySdqProgress(
-      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
+      List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
   List<SdqSubmissionSummary> querySdqSummaries(
-      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to);
+      List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
   SdqProgressSummary getSdqProgressForClient(UUID clientId, Assessor assessor);
 }

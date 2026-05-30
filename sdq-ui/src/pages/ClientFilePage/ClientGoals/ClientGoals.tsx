@@ -1,6 +1,6 @@
-import useGoalsForClient from "@/api/GboApi/useGoalsForClient";
+import useGoalsProgressForClient from "@/api/GboApi/useGoalsProgressForClient";
 import type { Assessor } from "@/api/types";
-import GoalRow from "./GoalRow";
+import GoalProgressTable from "@/components/GoalProgressTable";
 
 type Props = {
   clientId: string;
@@ -8,36 +8,11 @@ type Props = {
 };
 
 const ClientGoals: React.FC<Props> = ({ clientId, assessor }) => {
-  const { data: goals } = useGoalsForClient(clientId);
+  const { data: goals } = useGoalsProgressForClient(clientId, assessor);
   return (
     <div>
       <h2>Goals</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Description</th>
-            <th>First Score</th>
-            <th>Last Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {goals ? (
-            goals.map((goal) => (
-              <GoalRow
-                key={goal.goalId}
-                goalId={goal.goalId}
-                assessor={assessor}
-              />
-            ))
-          ) : (
-            <tr>
-              <td colSpan={4}>No goals found.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <GoalProgressTable goals={goals} />
     </div>
   );
 };

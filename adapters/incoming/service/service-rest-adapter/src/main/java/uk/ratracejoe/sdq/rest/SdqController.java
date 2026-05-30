@@ -50,11 +50,12 @@ public class SdqController {
   @PostMapping("/query")
   public List<SdqSubmissionSummary> query(@RequestBody SdqQueryDTO query) {
     return sdqService.querySdqSummaries(
-        query.assessor(), query.filters(), query.from(), query.to());
+        query.assessors(), query.filters(), query.from(), query.to());
   }
 
   @PostMapping("/query/progress")
   public List<SdqProgressSummary> queryProgress(@RequestBody SdqQueryDTO query) {
-    return sdqService.querySdqProgress(query.assessor(), query.filters(), query.from(), query.to());
+    return sdqService.querySdqProgress(
+        query.assessors(), query.filters(), query.from(), query.to());
   }
 }

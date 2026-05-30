@@ -19,7 +19,7 @@ public interface GoalService {
   List<Goal> getGoalsForClient(UUID clientId);
 
   List<GoalProgress> getGoalsWithProgress(
-      Assessor assessor,
+      List<Assessor> assessors,
       List<DemographicFilter> filters,
       int minProgress,
       List<GoalType> goalTypes,
@@ -31,4 +31,6 @@ public interface GoalService {
   Goal getGoal(UUID goalId);
 
   GoalProgress getGoalProgress(UUID goalId, Assessor assessor);
+
+  List<GoalProgress> getGoalsProgressForClient(UUID clientId, Assessor assessor);
 }

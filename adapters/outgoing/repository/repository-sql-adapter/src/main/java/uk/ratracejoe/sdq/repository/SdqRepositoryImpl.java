@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.repository;
 
 import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.whereClause;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.time.LocalDate;
@@ -52,12 +53,11 @@ public class SdqRepositoryImpl implements SdqRepository {
 
   @Override
   public SdqProgressSummary getProgressForClient(UUID clientId, Assessor assessor) {
-    String whereClause = "AND cl.client_id = :client_id";
     Map<String, Object> params = new HashMap<>();
     params.put("assessor", assessor.name());
-    params.put("client_id", clientId);
+    params.put("clientId", clientId);
     return jdbcClient
-        .sql(String.format("SELECT * FROM sdq_progress_view %s", whereClause))
+        .sql("SELECT * FROM sdq_progress_view WHERE client_id = :clientId AND assessor = :assessor")
         .params(params)
         .query(
             (rs, rowNum) -> {
@@ -80,27 +80,27 @@ public class SdqRepositoryImpl implements SdqRepository {
                   .totalDifficulties(totalDifficulties)
                   .build();
             })
-        .single();
+        .optional()
+        .orElseThrow(() -> new SdqException("No progress found for client"));
   }
 
   @Override
   public List<SdqProgressSummary> getSdqProgress(
-      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
-    StringBuilder whereClause = new StringBuilder();
-    whereClause.append("WHERE assessor = :assessor");
+      List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
+    List<String> conditions = new ArrayList<>();
+    conditions.add("assessor IN (:assessors)");
     if (!filters.isEmpty()) {
-      whereClause.append(" AND last_period_date >= :period_from ");
-      whereClause.append(" AND last_period_date < :period_to ");
-      whereClause.append(" AND ");
-      whereClause.append(ClientRepositoryImpl.filterSelectWhere(filters));
+      conditions.add("last_period_date >= :period_from");
+      conditions.add("last_period_date < :period_to");
+      ClientRepositoryImpl.filterSelectWhere(filters).forEach(conditions::add);
     }
     Map<String, Object> params = new HashMap<>();
     params.put("period_from", from);
     params.put("period_to", to);
-    params.put("assessor", assessor.name());
+    params.put("assessors", assessors.stream().map(Assessor::name).toList());
     ClientRepositoryImpl.addFilters(params, filters);
     return jdbcClient
-        .sql(String.format("SELECT * FROM sdq_progress_view %s", whereClause))
+        .sql(String.format("SELECT * FROM sdq_progress_view %s", whereClause(conditions)))
         .params(params)
         .query(
             (rs, rowNum) -> {
@@ -118,7 +118,10 @@ public class SdqRepositoryImpl implements SdqRepository {
 
               return SdqProgressSummary.builder()
                   .clientId(clientId)
-                  .assessor(assessor)
+                  .assessor(
+                      Optional.ofNullable(rs.getString("assessor"))
+                          .map(Assessor::valueOf)
+                          .orElse(Assessor.Unknown))
                   .categoryProgress(byCategory)
                   .postureProgress(byPosture)
                   .totalDifficulties(totalDifficulties)
@@ -129,22 +132,21 @@ public class SdqRepositoryImpl implements SdqRepository {
 
   @Override
   public List<SdqSubmissionSummary> getFiltered(
-      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
-    StringBuilder whereClause = new StringBuilder();
-    whereClause.append("WHERE assessor = :assessor");
+      List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
+    List<String> conditions = new ArrayList<>();
+    conditions.add("assessor = :assessor");
+    conditions.add("period_date >= :period_from ");
+    conditions.add("period_date < :period_to ");
     if (!filters.isEmpty()) {
-      whereClause.append(" AND period_date >= :period_from ");
-      whereClause.append(" AND period_date < :period_to ");
-      whereClause.append(" AND ");
-      whereClause.append(ClientRepositoryImpl.filterSelectWhere(filters));
+      ClientRepositoryImpl.filterSelectWhere(filters).forEach(conditions::add);
     }
     Map<String, Object> params = new HashMap<>();
     params.put("period_from", from);
     params.put("period_to", to);
-    params.put("assessor", assessor.name());
+    params.put("assessor", assessors.stream().map(Assessor::name).toList());
     ClientRepositoryImpl.addFilters(params, filters);
     return jdbcClient
-        .sql(String.format("SELECT * FROM sdq_summary_view %s", whereClause))
+        .sql(String.format("SELECT * FROM sdq_summary_view %s", whereClause(conditions)))
         .params(params)
         .query(
             (rs, rowNum) -> {
@@ -163,7 +165,10 @@ public class SdqRepositoryImpl implements SdqRepository {
               return SdqSubmissionSummary.builder()
                   .clientId(clientId)
                   .period(periodDate)
-                  .assessor(assessor)
+                  .assessor(
+                      Optional.ofNullable(rs.getString("assessor"))
+                          .map(Assessor::valueOf)
+                          .orElse(Assessor.Unknown))
                   .categorySubTotals(byCategory)
                   .postureSubTotals(byPosture)
                   .totalDifficulties(totalDifficulties)

@@ -8,7 +8,7 @@ import SdqSummaryTable from "@/components/SdqSummaryTable";
 import SdqProgressTable from "@/components/SdqProgressTable";
 
 const DEFAULT_GOAL_QUERY: SdqQueryDTO = {
-  assessor: DEFAULT_ASSESSOR,
+  assessors: [DEFAULT_ASSESSOR],
   filters: [],
   from: "2024-01-01",
   to: "2026-01-01",

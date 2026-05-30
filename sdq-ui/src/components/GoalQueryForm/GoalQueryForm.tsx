@@ -2,9 +2,9 @@ import React from "react";
 import type { GoalQueryDTO } from "@/api/GboApi/gboApi";
 
 import type { Assessor, DemographicFilter } from "@/api/types";
-import AssessorPicker from "../AssessorPicker";
 import DemographicFilterForm from "../DemographicFilterForm";
 import GoalTypePicker from "./GoalTypePicker";
+import AssessorMultiPicker from "../AssessorMultiPicker";
 
 interface Props {
   value: GoalQueryDTO;
@@ -45,10 +45,12 @@ const GoalQueryForm: React.FC<Props> = ({ value, onChange }) => {
     }));
   };
 
-  const onAssessorChange = (assessor: Assessor) => {
+  const onAssessorsChange: (assessors: Assessor[]) => void = (
+    assessors: Assessor[],
+  ) => {
     onChange((prev) => ({
       ...prev,
-      assessor,
+      assessors,
     }));
   };
 
@@ -99,8 +101,11 @@ const GoalQueryForm: React.FC<Props> = ({ value, onChange }) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="assessor">Assessor</label>
-          <AssessorPicker value={value.assessor} onChange={onAssessorChange} />
+          <label htmlFor="assessors">Assessors</label>
+          <AssessorMultiPicker
+            value={value.assessors}
+            onChange={onAssessorsChange}
+          />
         </div>
         <div className="form-group">
           <label htmlFor="goalTypes">Goal Types</label>

@@ -12,6 +12,7 @@ const SdqProgressTable: React.FC<Props> = ({ summaries }) => {
       <thead>
         <tr>
           <th>Client ID</th>
+          <th>Assessor</th>
           <th>Categories</th>
           <th>Postures</th>
           <th>Total Difficulties</th>
@@ -21,6 +22,7 @@ const SdqProgressTable: React.FC<Props> = ({ summaries }) => {
         {summaries.map((summary, i) => (
           <tr key={i}>
             <td>{summary.clientId}</td>
+            <td>{summary.assessor}</td>
             <td>
               <KeyedProgressCell data={summary.categoryProgress} />
             </td>

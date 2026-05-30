@@ -2,8 +2,8 @@ import React from "react";
 import type { SdqQueryDTO } from "@/api/SdqApi/sdqApi";
 
 import type { Assessor, DemographicFilter } from "@/api/types";
-import AssessorPicker from "../AssessorPicker/AssessorPicker";
 import DemographicFilterForm from "../DemographicFilterForm";
+import AssessorMultiPicker from "../AssessorMultiPicker";
 
 interface Props {
   value: SdqQueryDTO;
@@ -28,10 +28,12 @@ const SdqQueryForm: React.FC<Props> = ({ value, onChange }) => {
     }));
   };
 
-  const onAssessorChange = (assessor: Assessor) => {
+  const onAssessorsChange: (assessors: Assessor[]) => void = (
+    assessors: Assessor[],
+  ) => {
     onChange((prev) => ({
       ...prev,
-      assessor,
+      assessors,
     }));
   };
 
@@ -73,8 +75,11 @@ const SdqQueryForm: React.FC<Props> = ({ value, onChange }) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="assessor">Assessor</label>
-          <AssessorPicker value={value.assessor} onChange={onAssessorChange} />
+          <label htmlFor="assessors">Assessors</label>
+          <AssessorMultiPicker
+            value={value.assessors}
+            onChange={onAssessorsChange}
+          />
         </div>
       </div>
       <DemographicFilterForm value={value.filters} onChange={onFiltersChange} />

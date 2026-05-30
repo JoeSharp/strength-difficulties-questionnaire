@@ -7,7 +7,7 @@ import { DEFAULT_ASSESSOR } from "@/api/types";
 
 const DEFAULT_GOAL_QUERY: GoalQueryDTO = {
   goalTypes: [],
-  assessor: DEFAULT_ASSESSOR,
+  assessors: [DEFAULT_ASSESSOR],
   filters: [],
   minProgress: 1,
   from: "2024-01-01",

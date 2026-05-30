@@ -29,7 +29,7 @@ public class GoalController {
   @PostMapping("/query")
   public List<GoalProgress> getGoalsWithProgress(@RequestBody GoalQueryDTO query) {
     return goalService.getGoalsWithProgress(
-        query.assessor(),
+        query.assessors(),
         Optional.ofNullable(query.filters()).orElseGet(Collections::emptyList),
         query.minProgress(),
         Optional.ofNullable(query.goalTypes()).orElseGet(Collections::emptyList),
@@ -40,6 +40,12 @@ public class GoalController {
   @GetMapping("/forClient/{clientId}")
   public List<Goal> getGoalsForClient(@PathVariable UUID clientId) {
     return goalService.getGoalsForClient(clientId);
+  }
+
+  @GetMapping("/forClient/{clientId}/progress/{assessor}")
+  public List<GoalProgress> getGoalsProgressForClient(
+      @PathVariable UUID clientId, @PathVariable Assessor assessor) {
+    return goalService.getGoalsProgressForClient(clientId, assessor);
   }
 
   @GetMapping("/{goalId}")

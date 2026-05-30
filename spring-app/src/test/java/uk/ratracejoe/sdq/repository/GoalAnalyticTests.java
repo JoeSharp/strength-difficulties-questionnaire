@@ -63,7 +63,7 @@ class GoalAnalyticTests {
         client
             .getGoalsWithProgress(
                 GoalQueryDTO.builder()
-                    .assessor(Assessor.Parent1)
+                    .assessors(List.of(Assessor.Parent1))
                     .filters(
                         List.of(
                             new DemographicFilter(
@@ -94,7 +94,7 @@ class GoalAnalyticTests {
         client
             .getGoalsWithProgress(
                 GoalQueryDTO.builder()
-                    .assessor(Assessor.School)
+                    .assessors(List.of(Assessor.School))
                     .minProgress(1)
                     .goalTypes(List.of(GoalType.BEHAVIOURAL, GoalType.EMOTIONAL))
                     .from(LocalDate.of(2024, 5, 1))

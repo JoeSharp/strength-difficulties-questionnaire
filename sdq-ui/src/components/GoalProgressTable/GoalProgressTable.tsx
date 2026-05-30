@@ -4,7 +4,7 @@ import useReference from "@/api/ReferenceApi/useReference";
 import ClientLink from "@/components/ClientLink";
 
 interface Props {
-  goals: GoalProgress[];
+  goals?: GoalProgress[];
 }
 
 function progressString(firstScore: number, lastScore: number): string {
@@ -19,6 +19,10 @@ function progressString(firstScore: number, lastScore: number): string {
 }
 
 const GoalProgressTable: React.FC<Props> = ({ goals }) => {
+  if (!goals) {
+    return <div>No goal progress found.</div>;
+  }
+
   const { getLabelForGoalType } = useReference();
   return (
     <table>

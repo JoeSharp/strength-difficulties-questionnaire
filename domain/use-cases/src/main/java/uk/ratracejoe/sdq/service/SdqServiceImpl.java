@@ -40,14 +40,14 @@ public class SdqServiceImpl implements SdqService {
 
   @Override
   public List<SdqProgressSummary> querySdqProgress(
-      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
-    return sdqRepository.getSdqProgress(assessor, filters, from, to);
+      List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
+    return sdqRepository.getSdqProgress(assessors, filters, from, to);
   }
 
   @Override
   public List<SdqSubmissionSummary> querySdqSummaries(
-      Assessor assessor, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
-    return sdqRepository.getFiltered(assessor, filters, from, to);
+      List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
+    return sdqRepository.getFiltered(assessors, filters, from, to);
   }
 
   @Override

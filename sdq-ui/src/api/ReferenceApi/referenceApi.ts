@@ -11,8 +11,8 @@ export const DEMOGRAPHIC_FIELDS = [
   "FundingSource",
 ] as const;
 export type DemographicField = (typeof DEMOGRAPHIC_FIELDS)[number];
-export type Option = {
-  value: string;
+export type Option<T = string> = {
+  value: T;
   label: string;
 };
 

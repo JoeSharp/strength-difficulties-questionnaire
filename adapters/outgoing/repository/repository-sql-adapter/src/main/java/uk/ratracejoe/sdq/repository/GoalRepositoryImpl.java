@@ -1,8 +1,11 @@
 package uk.ratracejoe.sdq.repository;
 
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.whereClause;
+
 import java.time.LocalDate;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
@@ -58,28 +61,12 @@ public class GoalRepositoryImpl implements GoalRepository {
         .sql(
             """
             SELECT * FROM goal_progress_view
-            WHERE g.goal_id = :goal_id
-            AND o.assessor = :assessor
+            WHERE goal_id = :goal_id
+            AND assessor = :assessor
             """)
         .param("goal_id", goalId)
         .param("assessor", assessor.name())
-        .query(
-            (rs, rowNum) ->
-                GoalProgress.builder()
-                    .assessor(assessor)
-                    .goal(
-                        Goal.builder()
-                            .clientId(rs.getObject("client_id", UUID.class))
-                            .goalId(rs.getObject("goal_id", UUID.class))
-                            .type(
-                                Optional.ofNullable(rs.getString("goal_type"))
-                                    .map(GoalType::valueOf)
-                                    .orElseGet(GoalType::defaultValue))
-                            .description(rs.getString("goal_description"))
-                            .build())
-                    .firstScore(rs.getInt("first_score"))
-                    .lastScore(rs.getInt("last_score"))
-                    .build())
+        .query(getGoalProgressRowMapper(assessor))
         .optional()
         .orElseGet(
             () ->
@@ -89,6 +76,40 @@ public class GoalRepositoryImpl implements GoalRepository {
                     .firstScore(0)
                     .assessor(assessor)
                     .build());
+  }
+
+  @Override
+  public List<GoalProgress> getGoalsProgressForClient(UUID clientId, Assessor assessor) {
+    return jdbcClient
+        .sql(
+            """
+                    SELECT * FROM goal_progress_view
+                    WHERE client_id = :clientId
+                    AND assessor = :assessor
+                    """)
+        .param("clientId", clientId)
+        .param("assessor", assessor.name())
+        .query(getGoalProgressRowMapper(assessor))
+        .list();
+  }
+
+  private static RowMapper<GoalProgress> getGoalProgressRowMapper(Assessor assessor) {
+    return (rs, rowNum) ->
+        GoalProgress.builder()
+            .assessor(assessor)
+            .goal(
+                Goal.builder()
+                    .clientId(rs.getObject("client_id", UUID.class))
+                    .goalId(rs.getObject("goal_id", UUID.class))
+                    .type(
+                        Optional.ofNullable(rs.getString("goal_type"))
+                            .map(GoalType::valueOf)
+                            .orElseGet(GoalType::defaultValue))
+                    .description(rs.getString("goal_description"))
+                    .build())
+            .firstScore(rs.getInt("first_score"))
+            .lastScore(rs.getInt("last_score"))
+            .build();
   }
 
   @Override
@@ -117,24 +138,18 @@ public class GoalRepositoryImpl implements GoalRepository {
 
   @Override
   public List<GoalProgress> getGoalsWithProgress(
-      Assessor assessor,
+      List<Assessor> assessors,
       List<DemographicFilter> filters,
       int minProgress,
       List<GoalType> goalTypes,
       LocalDate from,
       LocalDate to) {
-    StringBuilder whereClause = new StringBuilder();
-    if (!filters.isEmpty() || !goalTypes.isEmpty()) {
-      whereClause.append(" WHERE ");
-      if (!filters.isEmpty()) {
-        whereClause.append(ClientRepositoryImpl.filterSelectWhere("c", filters));
-      }
-      if (!goalTypes.isEmpty()) {
-        if (!filters.isEmpty()) {
-          whereClause.append(" AND ");
-        }
-        whereClause.append(" s.goal_type IN (:goal_types)");
-      }
+    List<String> conditions = new ArrayList<>();
+    if (!filters.isEmpty()) {
+      ClientRepositoryImpl.filterSelectWhere("c", filters).forEach(conditions::add);
+    }
+    if (!goalTypes.isEmpty()) {
+      conditions.add("s.goal_type IN (:goal_types)");
     }
     String sql =
         String.format(
@@ -150,13 +165,13 @@ public class GoalRepositoryImpl implements GoalRepository {
     %s
     AND (s.last_score - s.first_score) >= :minProgress;
             """,
-            whereClause);
+            whereClause(conditions));
     Map<String, Object> params = new HashMap<>();
     params.put("period_from", from);
     params.put("period_to", to);
     ClientRepositoryImpl.addFilters(params, filters);
     params.put("minProgress", minProgress);
-    params.put("assessor", assessor.name());
+    params.put("assessors", assessors.stream().map(Assessor::name).toList());
     params.put("goal_types", goalTypes.stream().map(GoalType::name).toList());
     return jdbcClient
         .sql(sql)
@@ -174,7 +189,10 @@ public class GoalRepositoryImpl implements GoalRepository {
                                     .orElseGet(GoalType::defaultValue))
                             .description(rs.getString("goal_description"))
                             .build())
-                    .assessor(assessor)
+                    .assessor(
+                        Optional.ofNullable(rs.getString("assessor"))
+                            .map(Assessor::valueOf)
+                            .orElse(Assessor.Unknown))
                     .firstScore(rs.getInt("first_score"))
                     .lastScore(rs.getInt("last_score"))
                     .build())

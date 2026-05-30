@@ -39,6 +39,23 @@ class SdqSummaryTests {
   }
 
   @Test
+  void querySdqNoFilter() {
+    fixtures.givenAllTestFilesIngested();
+
+    List<SdqSubmissionSummary> summaries =
+        client
+            .querySdq(
+                SdqQueryDTO.builder()
+                    .assessors(List.of(Assessor.School))
+                    .from(LocalDate.of(2024, 5, 1))
+                    .to(LocalDate.of(2025, 11, 1))
+                    .build())
+            .getBody();
+
+    assertThat(summaries).hasSizeGreaterThan(6);
+  }
+
+  @Test
   void querySdq() {
     fixtures.givenAllTestFilesIngested();
 
@@ -46,7 +63,7 @@ class SdqSummaryTests {
         client
             .querySdq(
                 SdqQueryDTO.builder()
-                    .assessor(Assessor.School)
+                    .assessors(List.of(Assessor.School))
                     .filters(
                         List.of(
                             new DemographicFilter(
@@ -60,14 +77,31 @@ class SdqSummaryTests {
   }
 
   @Test
-  void querySdqProgress() {
+  void querySdqProgressWithNoFilters() {
     fixtures.givenAllTestFilesIngested();
 
     List<SdqProgressSummary> progress =
         client
             .querySdqProgress(
                 SdqQueryDTO.builder()
-                    .assessor(Assessor.School)
+                    .assessors(List.of(Assessor.School))
+                    .from(LocalDate.of(2024, 5, 1))
+                    .to(LocalDate.of(2025, 11, 1))
+                    .build())
+            .getBody();
+
+    assertThat(progress).hasSizeGreaterThan(2);
+  }
+
+  @Test
+  void querySdqProgressWithMultipleAssessors() {
+    fixtures.givenAllTestFilesIngested();
+
+    List<SdqProgressSummary> progress =
+        client
+            .querySdqProgress(
+                SdqQueryDTO.builder()
+                    .assessors(List.of(Assessor.Parent1, Assessor.School))
                     .filters(
                         List.of(
                             new DemographicFilter(
@@ -77,7 +111,9 @@ class SdqSummaryTests {
                     .build())
             .getBody();
 
-    assertThat(progress).hasSize(2);
+    assertThat(progress)
+        .extracting(SdqProgressSummary::assessor)
+        .containsOnly(Assessor.Parent1, Assessor.School);
   }
 
   @Test

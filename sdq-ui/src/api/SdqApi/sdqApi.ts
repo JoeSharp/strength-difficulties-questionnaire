@@ -96,7 +96,7 @@ export interface SdqProgressSummary {
 }
 
 export interface SdqQueryDTO {
-  assessor: Assessor;
+  assessors: Assessor[];
   filters: DemographicFilter[];
   from: string;
   to: string;

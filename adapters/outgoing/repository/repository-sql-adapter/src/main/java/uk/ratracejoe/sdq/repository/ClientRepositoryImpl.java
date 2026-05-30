@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.repository;
 
 import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.whereClause;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.sql.Date;
@@ -10,6 +11,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.SdqClient;
@@ -342,24 +344,14 @@ public class ClientRepositoryImpl implements ClientRepository {
 
   static String selectFilteredSql(String partialName, List<DemographicFilter> filters) {
     boolean filterOnName = partialName != null && !partialName.isEmpty();
-    StringBuilder sql = new StringBuilder();
-    sql.append("""
-    SELECT * FROM client
-    """);
-    if (!filters.isEmpty() || filterOnName) {
-      sql.append(" WHERE ");
-      if (!filters.isEmpty()) {
-        sql.append(filterSelectWhere("client", filters));
-      }
-      if (filterOnName) {
-        if (!filters.isEmpty()) {
-          sql.append(" AND ");
-        }
-
-        sql.append("code_name LIKE CONCAT('%', :partial_name, '%')");
-      }
+    List<String> conditions = new ArrayList<>();
+    if (!filters.isEmpty()) {
+      filterSelectWhere("client", filters).forEach(conditions::add);
     }
-    return selectSQL(sql.toString());
+    if (filterOnName) {
+      conditions.add("code_name LIKE CONCAT('%', :partial_name, '%')");
+    }
+    return selectSQL(String.format("SELECT * FROM client %s", whereClause(conditions)));
   }
 
   public static void addFilters(Map<String, Object> params, List<DemographicFilter> filters) {
@@ -368,19 +360,18 @@ public class ClientRepositoryImpl implements ClientRepository {
     }
   }
 
-  public static String filterSelectWhere(String tableAlias, List<DemographicFilter> fields) {
+  public static Stream<String> filterSelectWhere(
+      String tableAlias, List<DemographicFilter> fields) {
     return fields.stream()
         .map(DemographicFilter::field)
         .map(ClientRepositoryImpl::demographicColumn)
-        .map(column -> String.format("%s.%s IN (:%s)", tableAlias, column, column))
-        .collect(Collectors.joining(" AND "));
+        .map(column -> String.format("%s.%s IN (:%s)", tableAlias, column, column));
   }
 
-  public static String filterSelectWhere(List<DemographicFilter> fields) {
+  public static Stream<String> filterSelectWhere(List<DemographicFilter> fields) {
     return fields.stream()
         .map(DemographicFilter::field)
         .map(ClientRepositoryImpl::demographicColumn)
-        .map(column -> String.format("%s IN (:%s)", column, column))
-        .collect(Collectors.joining(" AND "));
+        .map(column -> String.format("%s IN (:%s)", column, column));
   }
 }

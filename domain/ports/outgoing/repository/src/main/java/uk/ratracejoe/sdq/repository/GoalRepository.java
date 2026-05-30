@@ -17,7 +17,7 @@ public interface GoalRepository {
   int deleteAll();
 
   List<GoalProgress> getGoalsWithProgress(
-      Assessor assessor,
+      List<Assessor> assessors,
       List<DemographicFilter> filters,
       int minProgress,
       List<GoalType> goalTypes,
@@ -29,4 +29,6 @@ public interface GoalRepository {
   Goal get(UUID goalId);
 
   GoalProgress getGoalProgress(UUID goalId, Assessor assessor);
+
+  List<GoalProgress> getGoalsProgressForClient(UUID clientId, Assessor assessor);
 }

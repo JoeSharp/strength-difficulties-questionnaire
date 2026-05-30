@@ -43,13 +43,14 @@ public class GoalServiceImpl implements GoalService {
 
   @Override
   public List<GoalProgress> getGoalsWithProgress(
-      Assessor assessor,
+      List<Assessor> assessors,
       List<DemographicFilter> filters,
       int minProgress,
       List<GoalType> goalTypes,
       LocalDate from,
       LocalDate to) {
-    return goalRepository.getGoalsWithProgress(assessor, filters, minProgress, goalTypes, from, to);
+    return goalRepository.getGoalsWithProgress(
+        assessors, filters, minProgress, goalTypes, from, to);
   }
 
   @Override
@@ -66,5 +67,10 @@ public class GoalServiceImpl implements GoalService {
   @Override
   public GoalProgress getGoalProgress(UUID goalId, Assessor assessor) {
     return goalRepository.getGoalProgress(goalId, assessor);
+  }
+
+  @Override
+  public List<GoalProgress> getGoalsProgressForClient(UUID clientId, Assessor assessor) {
+    return goalRepository.getGoalsProgressForClient(clientId, assessor);
   }
 }
