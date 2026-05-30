@@ -48,10 +48,13 @@ public class SdqServiceImpl implements SdqService {
   }
 
   @Override
-  public Map<UUID, List<SdqSubmissionSummary>> querySdqSummaries(
+  public Map<UUID, Map<LocalDate, List<SdqSubmissionSummary>>> querySdqSummaries(
       List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to) {
     return sdqRepository.getFiltered(assessors, filters, from, to).stream()
-        .collect(Collectors.groupingBy(SdqSubmissionSummary::clientId));
+        .collect(
+            Collectors.groupingBy(
+                SdqSubmissionSummary::clientId,
+                Collectors.groupingBy(SdqSubmissionSummary::period)));
   }
 
   @Override

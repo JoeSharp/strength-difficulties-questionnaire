@@ -86,17 +86,21 @@ databaseChangeLog:
                         category,
                         total,
                         first_value(total) over (
-                            partition by client_id,
-                            category
+                            PARTITION BY
+                                client_id,
+                                assessor,
+                                category
                             ORDER BY
-                            period_date
+                                period_date
                         ) AS first_total,
                         last_value(total) over (
-                            partition by client_id,
-                            category
+                            PARTITION BY
+                                client_id,
+                                assessor,
+                                category
                             ORDER BY
-                            period_date
-                            range between unbounded preceding and unbounded following
+                                period_date
+                            RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
                         ) AS last_total
                     FROM
                         category_totals
@@ -108,17 +112,21 @@ databaseChangeLog:
                         posture,
                         total,
                         first_value(total) over (
-                            partition by client_id,
-                            posture
+                            PARTITION BY
+                                client_id,
+                                assessor,
+                                posture
                             ORDER BY
-                            period_date
+                                period_date
                         ) AS first_total,
                         last_value(total) over (
-                            partition by client_id,
-                            posture
+                            PARTITION BY
+                                client_id,
+                                assessor,
+                                posture
                             ORDER BY
-                            period_date
-                            range between unbounded preceding and unbounded following
+                                period_date
+                            RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
                         ) AS last_total
                     FROM
                         posture_totals
@@ -129,14 +137,18 @@ databaseChangeLog:
                         assessor,
                         total,
                         first_value(total) over (
-                            partition by client_id
+                            PARTITION BY
+                                client_id,
+                                assessor
                             ORDER BY
-                            period_date
+                                period_date
                         ) AS first_total,
                         last_value(total) over (
-                            partition by client_id
+                            PARTITION BY
+                                client_id,
+                                assessor
                             ORDER BY
-                            period_date
+                                period_date
                             range between unbounded preceding and unbounded following
                         ) AS last_total
                     FROM

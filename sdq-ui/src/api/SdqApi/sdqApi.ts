@@ -82,9 +82,14 @@ export type SdqSubmissionSummary = {
   totalDifficulties: number;
 };
 
-export type SdqSubmissionSummaryByClient = Record<
+export type SdqSubmissionSummaryByPeriod = Record<
   string,
   SdqSubmissionSummary[]
+>;
+
+export type SdqSubmissionSummaryByClient = Record<
+  string,
+  SdqSubmissionSummaryByPeriod
 >;
 
 export type Progress = {

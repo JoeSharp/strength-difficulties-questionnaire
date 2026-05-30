@@ -9,6 +9,7 @@ databaseChangeLog:
                 WITH base AS (
                         SELECT
                                 s.period_id,
+                                p.period_date,
                                 s.assessor,
                                 s.statement AS statement_key,
                                 st.category AS category,
@@ -18,10 +19,12 @@ databaseChangeLog:
                                 sdq s
                         INNER JOIN sdq_statement st ON st.statement_key = s.statement
                         INNER JOIN sdq_category c ON c.category = st.category
+                        INNER JOIN reporting_period p ON p.period_id = s.period_id
                 ),
                 period_info AS (
                         SELECT DISTINCT
                                 period_id,
+                                period_date,
                                 assessor
                         FROM base
                 ),
@@ -44,9 +47,10 @@ databaseChangeLog:
                 period_summary AS (
                         SELECT
                                 pi.period_id,
+                                pi.period_date,
                                 pi.assessor,
                                 (
-                                        select
+                                        SELECT
                                                 JSONB_OBJECT_AGG(category, total)
                                         FROM
                                                 category_totals
@@ -56,7 +60,7 @@ databaseChangeLog:
                                                 assessor = pi.assessor
                                 ) AS category_subtotals,
                                 (
-                                        select
+                                        SELECT
                                                 JSONB_OBJECT_AGG(posture, total)
                                         FROM posture_totals
                                         WHERE period_id = pi.period_id

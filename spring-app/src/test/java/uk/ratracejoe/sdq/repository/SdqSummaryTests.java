@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,7 +45,7 @@ class SdqSummaryTests {
   void querySdqNoFilter() {
     fixtures.givenAllTestFilesIngested();
 
-    List<SdqSubmissionSummary> summaries =
+    Map<UUID, Map<LocalDate, List<SdqSubmissionSummary>>> summaries =
         client
             .querySdq(
                 SdqQueryDTO.builder()
@@ -59,7 +62,7 @@ class SdqSummaryTests {
   void querySdq() {
     fixtures.givenAllTestFilesIngested();
 
-    List<SdqSubmissionSummary> summaries =
+    Map<UUID, Map<LocalDate, List<SdqSubmissionSummary>>> summaries =
         client
             .querySdq(
                 SdqQueryDTO.builder()
@@ -73,14 +76,15 @@ class SdqSummaryTests {
                     .build())
             .getBody();
 
-    assertThat(summaries).hasSize(6);
+    // Two Clients
+    assertThat(summaries).hasSize(2);
   }
 
   @Test
   void querySdqProgressWithNoFilters() {
     fixtures.givenAllTestFilesIngested();
 
-    List<SdqProgressSummary> progress =
+    Map<UUID, List<SdqProgressSummary>> progress =
         client
             .querySdqProgress(
                 SdqQueryDTO.builder()
@@ -97,7 +101,7 @@ class SdqSummaryTests {
   void querySdqProgressWithMultipleAssessors() {
     fixtures.givenAllTestFilesIngested();
 
-    List<SdqProgressSummary> progress =
+    Map<UUID, List<SdqProgressSummary>> progress =
         client
             .querySdqProgress(
                 SdqQueryDTO.builder()
@@ -111,7 +115,8 @@ class SdqSummaryTests {
                     .build())
             .getBody();
 
-    assertThat(progress)
+    assertThat(progress.values())
+        .flatMap(Function.identity())
         .extracting(SdqProgressSummary::assessor)
         .containsOnly(Assessor.Parent1, Assessor.School);
   }

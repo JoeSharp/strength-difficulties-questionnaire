@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -114,7 +115,8 @@ public class SdqApiClient {
         .toEntity(new ParameterizedTypeReference<>() {});
   }
 
-  public ResponseEntity<Map<UUID, List<SdqSubmissionSummary>>> querySdq(SdqQueryDTO query) {
+  public ResponseEntity<Map<UUID, Map<LocalDate, List<SdqSubmissionSummary>>>> querySdq(
+      SdqQueryDTO query) {
     return restClient
         .post()
         .uri(REST_URL_SDQ + "/query")

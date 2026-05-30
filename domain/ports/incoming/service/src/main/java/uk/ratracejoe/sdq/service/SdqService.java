@@ -25,7 +25,7 @@ public interface SdqService {
   Map<UUID, List<SdqProgressSummary>> querySdqProgress(
       List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
-  Map<UUID, List<SdqSubmissionSummary>> querySdqSummaries(
+  Map<UUID, Map<LocalDate, List<SdqSubmissionSummary>>> querySdqSummaries(
       List<Assessor> assessors, List<DemographicFilter> filters, LocalDate from, LocalDate to);
 
   SdqProgressSummary getSdqProgressForClient(UUID clientId, Assessor assessor);

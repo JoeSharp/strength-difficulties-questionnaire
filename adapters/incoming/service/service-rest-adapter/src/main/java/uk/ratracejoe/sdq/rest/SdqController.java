@@ -1,5 +1,6 @@
 package uk.ratracejoe.sdq.rest;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,7 +50,8 @@ public class SdqController {
   }
 
   @PostMapping("/query")
-  public Map<UUID, List<SdqSubmissionSummary>> query(@RequestBody SdqQueryDTO query) {
+  public Map<UUID, Map<LocalDate, List<SdqSubmissionSummary>>> query(
+      @RequestBody SdqQueryDTO query) {
     return sdqService.querySdqSummaries(
         query.assessors(), query.filters(), query.from(), query.to());
   }

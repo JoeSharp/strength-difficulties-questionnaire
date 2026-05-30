@@ -22,26 +22,45 @@ const SdqSummaryTable: React.FC<Props> = ({ summaries }) => {
       </thead>
       <tbody>
         {Object.entries(summaries).map(([clientId, summariesForClient]) => {
-          const rowSpan = summariesForClient.length;
+          const clientRowSpan = Object.values(summariesForClient).reduce(
+            (acc, curr) => acc + curr.length,
+            0,
+          );
+          let isFirstClientRow = true;
 
-          return summariesForClient.map((summary, index) => (
-            <tr key={`${clientId}-${index}`}>
-              {index === 0 && (
-                <td rowSpan={rowSpan}>
-                  <ClientLink clientId={summary.clientId} />
-                </td>
-              )}
-              <td>{summary.period}</td>
-              <td>{summary.assessor}</td>
-              <td>
-                <KeyedCountCell data={summary.categorySubTotals} />
-              </td>
-              <td>
-                <KeyedCountCell data={summary.postureSubTotals} />
-              </td>
-              <td>{summary.totalDifficulties}</td>
-            </tr>
-          ));
+          return Object.entries(summariesForClient).map(
+            ([period, summariesForPeriod]) => {
+              const periodRowSpan = summariesForPeriod.length;
+              let isFirstPeriodRow = true;
+
+              return summariesForPeriod.map((summary, summaryIndex) => (
+                <tr key={`${clientId}-${period}-${summaryIndex}`}>
+                  {isFirstClientRow && (
+                    <td rowSpan={clientRowSpan}>
+                      <ClientLink clientId={clientId} />
+                    </td>
+                  )}
+                  {isFirstPeriodRow && (
+                    <td key={`${clientId}-${period}`} rowSpan={periodRowSpan}>
+                      {period}
+                    </td>
+                  )}
+                  <td>{summary.assessor}</td>
+                  <td>
+                    <KeyedCountCell data={summary.categorySubTotals} />
+                  </td>
+                  <td>
+                    <KeyedCountCell data={summary.postureSubTotals} />
+                  </td>
+                  <td>{summary.totalDifficulties}</td>
+
+                  {/* flip flags at end of row */}
+                  {(isFirstClientRow = false)}
+                  {(isFirstPeriodRow = false)}
+                </tr>
+              ));
+            },
+          );
         })}
       </tbody>
     </table>

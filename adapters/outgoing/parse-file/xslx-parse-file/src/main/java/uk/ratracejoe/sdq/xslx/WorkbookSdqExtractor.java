@@ -20,7 +20,7 @@ public class WorkbookSdqExtractor {
   private static final Logger LOGGER = getLogger(WorkbookSdqExtractor.class);
 
   private static final String SHEET_NAME_PREFIX = "SDQ Period";
-  private static final Integer INVALID_SCORE = -1;
+  private static final Integer INVALID_SCORE = 0;
   private static final int[] COL_SCORES = {4, 5, 6};
 
   private static final List<AssessorRow> FIRST_ROWS =
