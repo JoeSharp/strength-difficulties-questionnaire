@@ -1,7 +1,8 @@
 set dotenv-load := true
 
 DB_MODULE := env_var("DB_MODULE")
-APP_MODULE := env_var("APP_MODULE")
+API_MODULE_JAVA := env_var("API_MODULE_JAVA")
+API_MODULE_RUST := env_var("API_MODULE_RUST")
 UI_MODULE := env_var("UI_MODULE")
 APPLICATION_NAME := env_var("APPLICATION_NAME")
 SDQ_DATABASE_NAME := env_var("SDQ_DATABASE_NAME")
@@ -26,8 +27,11 @@ build-ui: install-ui
 
 # Copy the static resources of the UI into the public backend folder.
 copy-ui: build-ui
-    rm -rf {{APP_MODULE}}/src/main/resources/static
-    cp -R sdq-ui/dist {{APP_MODULE}}/src/main/resources/static
+    rm -rf {{API_MODULE_JAVA}}/src/main/resources/static
+    cp -R sdq-ui/dist {{API_MODULE_JAVA}}/src/main/resources/static
+
+rust-service-dev:
+    cargo run --manifest-path sdq-api-rust/Cargo.toml
 
 # Run the service via gradle
 run-service-dev:
@@ -109,4 +113,5 @@ connect-db:
 connect-test-db:
     echo "Connecting to test database"
     docker exec -it {{APPLICATION_NAME}}-test-db psql -d {{SDQ_DATABASE_NAME}} -U test
+
 
