@@ -66,11 +66,11 @@ run-tests: docker-run-test-deps gradle-run-tests
 
 # Run the app images as they are
 docker-run-app-no-build:
-    docker compose -f local/docker-compose.yaml --profile include-app up -d --wait
+    docker compose -f local/docker-compose.yaml --profile api-rust up -d --wait
 
 # Run the entire system up within Docker
 docker-run-app:
-    docker compose -f local/docker-compose.yaml --profile include-app up --build -d --wait
+    docker compose -f local/docker-compose.yaml --profile api-rust up --build -d --wait
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that
@@ -79,18 +79,21 @@ docker-run-deps:
 
 # Stop the application stack
 docker-stop:
-    docker compose -f local/docker-compose.yaml --profile include-app down
+    docker compose -f local/docker-compose.yaml --profile api-java --profile api-rust down
 
 # Stop the test dependencies
 docker-stop-test:
-    docker compose -f local/docker-compose.test.yaml --profile include-app down
+    docker compose -f local/docker-compose.test.yaml --profile api-java --profile api-rust down
 
 # Stop any docker containers relating to this application
 docker-stop-all: docker-stop docker-stop-test
 
+docker-build-rust-api:
+    docker build -t sdq-api-rust -f Dockerfile.rust .
+
 # Build the Docker image for the application
 docker-build-app:
-    docker build -t sdq-app .
+    docker build -t sdq-app -f Dockerfile.java .
 
 # Build the Docker image for the database migration
 docker-build-db-migration:

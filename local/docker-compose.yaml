@@ -1,14 +1,37 @@
 services:
 
+  sdq-api-rust:
+    build:
+      context: ..
+      dockerfile: Dockerfile.rust
+    image: sdq-api-rust
+    container_name: sdq-api-rust
+    networks:
+      - sdq
+    profiles:
+      - api-rust
+    environment:
+      SDQ_DATABASE_HOST: ${APPLICATION_NAME}-db:5432
+      SDQ_DATABASE_NAME: ${SDQ_DATABASE_NAME}
+      SDQ_DATABASE_USERNAME: ${SDQ_DATABASE_USERNAME}
+      SDQ_DATABASE_PASSWORD: ${SDQ_DATABASE_PASSWORD}
+    ports:
+      # Required when running the UI in dev mode on top of the service in docker
+      - "8081:3000"
+    depends_on:
+      sdq-db-migration:
+        condition: service_completed_successfully
+
   sdq-service:
     build:
       context: ..
+      dockerfile: Dockerfile.java
     image: sdq-app
     container_name: sdq-app
     networks:
       - sdq
     profiles:
-      - include-app
+      - api-java
     environment:
       SDQ_DATABASE_URL: jdbc:postgresql://${APPLICATION_NAME}-db:5432/${SDQ_DATABASE_NAME}
       SDQ_DATABASE_USERNAME: ${SDQ_DATABASE_USERNAME}

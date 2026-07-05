@@ -1,0 +1,58 @@
+# Make sure RUST_VERSION matches the Rust version
+ARG RUST_VERSION=1.96.1
+ARG APP_NAME=sdq-api-rust
+
+################################################################################
+# Stage 1: Build UI
+FROM node:24-alpine AS ui-builder
+ARG UI_MODULE=sdq-ui
+WORKDIR /ui
+
+# Copy only package files first for caching
+COPY ${UI_MODULE}/package.json ${UI_MODULE}/package-lock.json ./
+RUN npm install
+
+# Copy the rest of the UI source
+COPY ../sdq-ui/ .
+
+# Build the UI (produces /ui/dist)
+RUN npm run build
+
+# Stage 2: Build Rust Backend
+FROM dhi.io/rust:${RUST_VERSION}-alpine3.22-dev AS backend-builder
+ARG APP_NAME
+WORKDIR /app
+
+# Install host build dependencies.
+RUN apk add --no-cache clang lld musl-dev git
+
+# Build the application.
+RUN --mount=type=bind,source=sdq-api-rust/src,target=src \
+    --mount=type=bind,source=sdq-api-rust/Cargo.toml,target=Cargo.toml \
+    --mount=type=bind,source=sdq-api-rust/Cargo.lock,target=Cargo.lock \
+    --mount=type=cache,target=/app/target/ \
+    --mount=type=cache,target=/usr/local/cargo/git/db \
+    --mount=type=cache,target=/usr/local/cargo/registry/ \
+    cargo build --locked --release && \
+    cp ./target/release/$APP_NAME /bin/server
+
+################################################################################
+# Create a new stage for running the application that contains the minimal
+# We use dhi.io/static for the final stage because itâs a minimal Docker Hardened Image runtime (basically âjust # enough OS to run the binaryâ), which helps keep the image small and with a lower attack surface compared to a # # full Alpine/Debian runtime.
+################################################################################
+
+FROM dhi.io/static:20250419 AS final
+
+# Copy the executable from the "build" stage.
+COPY --from=backend-builder /bin/server /bin/
+COPY --from=ui-builder /ui/dist /dist
+
+# Configure rocket to listen on all interfaces.
+ENV ROCKET_ADDRESS=0.0.0.0
+ENV STATIC_RESOURCES_DIR=/dist
+
+# Expose the port that the application listens on.
+EXPOSE 3000
+
+# What the container should run when it is started.
+CMD ["/bin/server"]
