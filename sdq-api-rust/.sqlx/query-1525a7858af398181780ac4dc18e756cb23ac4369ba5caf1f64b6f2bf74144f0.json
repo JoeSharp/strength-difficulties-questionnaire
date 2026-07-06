@@ -1,0 +1,38 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n    SELECT\n        client_id,\n        code_name\n    FROM client_full\n    ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "client_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "client_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "code_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "code_name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      true,
+      true
+    ]
+  },
+  "hash": "1525a7858af398181780ac4dc18e756cb23ac4369ba5caf1f64b6f2bf74144f0"
+}

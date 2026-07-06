@@ -1,24 +1,35 @@
 use axum::{Json, extract::State};
 use axum::{Router, routing::get};
+use chrono::NaiveDate;
 use dotenvy::dotenv;
 use serde::Serialize;
 use sqlx::PgPool;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 use tower_http::services::ServeDir;
+use uuid::Uuid;
 
 #[derive(Serialize)]
-struct Greeting {
-    message: String,
+pub struct SdqClient {
+    pub client_id: Option<Uuid>,
+    pub code_name: Option<String>,
 }
 
-async fn get_clients(State(pool): State<PgPool>) -> Json<Greeting> {
-    let row: (String,) = sqlx::query_as("SELECT code_name from client")
-        .fetch_one(&pool)
-        .await
-        .unwrap();
+async fn get_clients(State(pool): State<PgPool>) -> Json<Vec<SdqClient>> {
+    let clients = sqlx::query_as!(
+        SdqClient,
+        r#"
+    SELECT
+        client_id,
+        code_name
+    FROM client_full
+    "#
+    )
+    .fetch_all(&pool)
+    .await
+    .unwrap();
 
-    Json(Greeting { message: row.0 })
+    Json(clients)
 }
 
 const SPLASH: &str = r#"
@@ -62,7 +73,7 @@ async fn main() {
         .expect("Could not connect to Postgres");
 
     let api = Router::new()
-        .route("/clients", get(get_clients))
+        .route("/client", get(get_clients))
         .with_state(pool);
 
     // build our application with a single route

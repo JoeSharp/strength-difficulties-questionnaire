@@ -70,7 +70,7 @@ docker-run-app-no-build:
 
 # Run the entire system up within Docker
 docker-run-app:
-    docker compose -f local/docker-compose.yaml --profile api-rust up --build -d --wait
+    docker compose -f local/docker-compose.yaml --profile api-rust --profile api-java up --build -d --wait
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev for that
