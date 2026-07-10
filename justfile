@@ -33,6 +33,9 @@ copy-ui: build-ui
 rust-service-dev:
     cargo run --manifest-path sdq-api-rust/Cargo.toml
 
+rust-service-verify:
+    cd sdq-api-rust && DATABASE_URL=postgres://test:testPassword123@localhost:5435/sdq cargo sqlx prepare && cd ..
+
 # Run the service via gradle
 run-service-dev:
     ./gradlew :spring-app:bootRun
@@ -116,5 +119,4 @@ connect-db:
 connect-test-db:
     echo "Connecting to test database"
     docker exec -it {{APPLICATION_NAME}}-test-db psql -d {{SDQ_DATABASE_NAME}} -U test
-
 
