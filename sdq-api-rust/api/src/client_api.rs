@@ -2,6 +2,7 @@ use axum::{Json, extract::State};
 use axum::{Router, routing::get, routing::post};
 use sdq_model::{DemographicFilter, SdqClient};
 
+use crate::api_error::AppError;
 use crate::build_api::AppState;
 
 #[derive(Debug, serde::Deserialize)]
@@ -11,22 +12,26 @@ struct ClientQueryDTO {
     pub filters: Vec<DemographicFilter>,
 }
 
-async fn get_clients(State(state): State<AppState>) -> Json<Vec<SdqClient>> {
-    let clients = state.client_service.get_clients().await.unwrap();
-    Json(clients)
+async fn get_clients(State(state): State<AppState>) -> Result<Json<Vec<SdqClient>>, AppError> {
+    state
+        .client_service
+        .get_clients()
+        .await
+        .map(Json)
+        .map_err(|e| AppError::Sdq(e))
 }
 
 async fn search_clients(
     State(state): State<AppState>,
     Json(payload): Json<serde_json::Value>,
-) -> Json<Vec<SdqClient>> {
+) -> Result<Json<Vec<SdqClient>>, AppError> {
     let payload: ClientQueryDTO = serde_json::from_value(payload).unwrap();
-    let clients = state
+    state
         .client_service
         .search_clients(payload.partial_name, payload.filters)
         .await
-        .unwrap();
-    Json(clients)
+        .map(Json)
+        .map_err(|e| AppError::Sdq(e))
 }
 
 pub fn build_client_api() -> Router<AppState> {

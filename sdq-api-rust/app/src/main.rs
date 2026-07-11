@@ -11,29 +11,6 @@ use std::sync::Arc;
 use tower_http::services::ServeDir;
 use tracing_subscriber::{EnvFilter, fmt};
 
-pub enum AppError {
-    Sdq(SdqError),
-}
-
-impl From<sqlx::Error> for AppError {
-    fn from(e: sqlx::Error) -> Self {
-        AppError::Sdq(SdqError::InternalError(e.to_string()))
-    }
-}
-
-impl IntoResponse for AppError {
-    fn into_response(self) -> axum::response::Response {
-        match self {
-            AppError::Sdq(SdqError::InternalError(msg)) => {
-                (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
-            }
-            AppError::Sdq(SdqError::InvalidInput(msg)) => {
-                (StatusCode::BAD_REQUEST, msg).into_response()
-            }
-        }
-    }
-}
-
 const SPLASH: &str = r#"
   _______/  |________   ____   ____    _____/  |_|  |__                              
  /  ___/\   __\_  __ \_/ __ \ /    \  / ___\   __\  |  \                             
