@@ -7,8 +7,8 @@ use uuid::Uuid;
 
 #[derive(Debug)]
 pub enum SdqError {
-    InvalidInput,
-    InternalError,
+    InvalidInput(String),
+    InternalError(String),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]

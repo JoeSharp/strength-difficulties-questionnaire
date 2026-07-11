@@ -3,7 +3,7 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use dotenvy::dotenv;
 use sdq_api::build_api::{AppState, build_api};
-use sdq_db::ClientServiceSqlxImpl;
+use sdq_db::client_service::ClientServiceSqlxImpl;
 use sdq_model::SdqError;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
@@ -17,18 +17,18 @@ pub enum AppError {
 
 impl From<sqlx::Error> for AppError {
     fn from(e: sqlx::Error) -> Self {
-        AppError::Sdq(SdqError::InternalError)
+        AppError::Sdq(SdqError::InternalError(e.to_string()))
     }
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
         match self {
-            AppError::Sdq(SdqError::InternalError) => {
-                (StatusCode::INTERNAL_SERVER_ERROR, "Internal error").into_response()
+            AppError::Sdq(SdqError::InternalError(msg)) => {
+                (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
             }
-            AppError::Sdq(SdqError::InvalidInput) => {
-                (StatusCode::BAD_REQUEST, "Invalid input").into_response()
+            AppError::Sdq(SdqError::InvalidInput(msg)) => {
+                (StatusCode::BAD_REQUEST, msg).into_response()
             }
         }
     }
