@@ -8,7 +8,7 @@ use dotenvy::dotenv;
 use serde::Serialize;
 use serde_json::Value;
 use sqlx::postgres::PgPoolOptions;
-use sqlx::{PgPool, QueryBuilder};
+use sqlx::{AssertSqlSafe, PgPool};
 use std::collections::HashMap;
 use std::env;
 use std::str::FromStr;
@@ -829,6 +829,7 @@ impl From<RawSdqClient> for SdqClient {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ClientQueryDTO {
     pub partial_name: Option<String>,
     pub filters: Vec<DemographicFilter>,
@@ -898,43 +899,73 @@ pub async fn reference_info_handler() -> Json<ReferenceInfoDTO> {
     })
 }
 
+struct IncrementingIndex {
+    index: usize,
+}
+
+impl IncrementingIndex {
+    fn create() -> IncrementingIndex {
+        IncrementingIndex { index: 0 }
+    }
+
+    fn next_index(&mut self) -> usize {
+        self.index += 1;
+        self.index
+    }
+}
+
 pub async fn search_clients(
-    pool: &sqlx::PgPool,
-    query: ClientQueryDTO,
+    pool: &PgPool,
+    request: ClientQueryDTO,
 ) -> Result<Vec<RawSdqClient>, sqlx::Error> {
-    let mut builder = QueryBuilder::new("SELECT * FROM client_full");
+    // 1. Build SQL string completely
+    let sql = {
+        let mut s = String::from("SELECT * FROM client_full");
+        let mut conditions = Vec::new();
+        let mut placeholder = IncrementingIndex::create();
 
-    // Only add WHERE if needed
-    if !query.filters.is_empty() || query.partial_name.is_some() {
-        builder.push(" WHERE ");
-        let mut separated = builder.separated(" AND ");
-
-        // demographic filters
-        for filter in &query.filters {
+        for filter in &request.filters {
             let column = filter.field.column();
 
-            separated.push(format!("{} IN (", column));
-            let inner = separated.push_unseparated(", ");
+            let placeholders: Vec<String> = (0..filter.values.len())
+                .map(|_| format!("${}", placeholder.next_index()))
+                .collect();
 
-            for value in &filter.values {
-                inner.push_bind(value);
-            }
-
-            separated.push(")");
+            conditions.push(format!("{} IN ({})", column, placeholders.join(", ")));
         }
 
-        // partial name
-        if let Some(name) = &query.partial_name {
-            separated.push("code_name ILIKE ");
-            separated.push_bind(format!("%{}%", name));
+        if request.partial_name.is_some() {
+            conditions.push(format!("code_name ILIKE ${}", placeholder.next_index()));
+        }
+
+        if !conditions.is_empty() {
+            s.push_str(" WHERE ");
+            s.push_str(&conditions.join(" AND "));
+        }
+
+        // IMPORTANT: return the final string
+        s
+    };
+
+    // 2. SQL string is now FINAL — no more mutations
+    let safe_sql = AssertSqlSafe(sql.as_str());
+    let mut query = sqlx::query_as::<_, RawSdqClient>(safe_sql);
+
+    // 3. Bind values
+    for filter in &request.filters {
+        for value in &filter.values {
+            query = query.bind(value);
         }
     }
-    let sql = builder.sql();
 
-    let query = builder.build_query_as::<RawSdqClient>();
+    if let Some(name) = request.partial_name {
+        query = query.bind(format!("%{}%", name));
+    }
+
+    tracing::info!("Running Query {:?}", sql);
+    // 4. Execute
     query.fetch_all(pool).await.map_err(|e| {
         tracing::error!("Search query failed: {:?}", e);
-        tracing::error!("SQL was: {:?}", sql);
         e
     })
 }
@@ -949,8 +980,7 @@ pub async fn search_clients_handler(
 }
 
 async fn get_clients(State(pool): State<PgPool>) -> Json<Vec<SdqClient>> {
-    let raw_clients = sqlx::query_as!(
-        RawSdqClient,
+    let clients: Vec<SdqClient> = sqlx::query_as::<_, RawSdqClient>(
         r#"
     SELECT
         client_id,
@@ -967,7 +997,7 @@ async fn get_clients(State(pool): State<PgPool>) -> Json<Vec<SdqClient>> {
         disability_types,
         aces
     FROM client_full
-    "#
+    "#,
     )
     .fetch_all(&pool)
     .await
@@ -975,9 +1005,10 @@ async fn get_clients(State(pool): State<PgPool>) -> Json<Vec<SdqClient>> {
         tracing::error!("Search query failed: {:?}", e);
         e
     })
-    .unwrap();
-
-    let clients: Vec<SdqClient> = raw_clients.into_iter().map(SdqClient::from).collect();
+    .unwrap()
+    .into_iter()
+    .map(SdqClient::from)
+    .collect();
     Json(clients)
 }
 
@@ -1022,10 +1053,15 @@ async fn main() {
         .await
         .expect("Could not connect to Postgres");
 
+    let client_api = Router::new()
+        .route("/", get(get_clients))
+        .route("/search", post(search_clients_handler));
+
+    let reference_api = Router::new().route("/", get(reference_info_handler));
+
     let api = Router::new()
-        .route("/reference", get(reference_info_handler))
-        .route("/client", get(get_clients))
-        .route("/client/search", post(search_clients_handler))
+        .nest("/reference", reference_api)
+        .nest("/client", client_api)
         .with_state(pool);
 
     // build our application with a single route
