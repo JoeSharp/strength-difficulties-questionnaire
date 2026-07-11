@@ -25,7 +25,7 @@ async fn search_clients(
     State(state): State<AppState>,
     Json(payload): Json<serde_json::Value>,
 ) -> Result<Json<Vec<SdqClient>>, AppError> {
-    let payload: ClientQueryDTO = serde_json::from_value(payload).unwrap();
+    let payload: ClientQueryDTO = serde_json::from_value(payload).map_err(|e| AppError::Json(e))?;
     state
         .client_service
         .search_clients(payload.partial_name, payload.filters)
