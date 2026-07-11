@@ -1,0 +1,9 @@
+[package]
+name = "sdq-service"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sdq-model = { path = "../model" }
+
+async-trait = "0.1"

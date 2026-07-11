@@ -1,7 +1,15 @@
 use std::collections::HashMap;
 
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter, EnumString};
+use uuid::Uuid;
+
+#[derive(Debug)]
+pub enum SdqError {
+    InvalidInput,
+    InternalError,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -266,4 +274,28 @@ pub enum DemographicField {
     InterventionType,
     #[strum(serialize = "FundingSource", to_string = "Funding Source")]
     FundingSource,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct DemographicFilter {
+    pub field: DemographicField,
+    pub values: Vec<String>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SdqClient {
+    pub client_id: Option<Uuid>,
+    pub code_name: Option<String>,
+    pub date_of_birth: Option<NaiveDate>,
+    pub gender: Option<Gender>,
+    pub council: Option<Council>,
+    pub ethnicity: Option<String>,
+    pub eal: Option<String>,
+    pub disability_status: Option<String>,
+    pub care_experience: Option<String>,
+    pub funding_source: Option<String>,
+    pub interventions: Vec<Intervention>,
+    pub disability_types: Vec<String>,
+    pub aces: AceCounts,
 }

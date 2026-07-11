@@ -30,7 +30,7 @@ copy-ui: build-ui
     rm -rf {{API_MODULE_JAVA}}/src/main/resources/static
     cp -R sdq-ui/dist {{API_MODULE_JAVA}}/src/main/resources/static
 
-rust-service-dev:
+rust-service-dev: copy-ui
     cargo run --manifest-path sdq-api-rust/app/Cargo.toml
 
 # Run the service via gradle
