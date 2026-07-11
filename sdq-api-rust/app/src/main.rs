@@ -1,10 +1,7 @@
 use axum::Router;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
 use dotenvy::dotenv;
 use sdq_api::build_api::{AppState, build_api};
 use sdq_db::client_service::ClientServiceSqlxImpl;
-use sdq_model::SdqError;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 use std::sync::Arc;

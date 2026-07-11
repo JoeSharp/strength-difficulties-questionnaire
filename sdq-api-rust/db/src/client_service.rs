@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 use chrono::NaiveDate;
 use sdq_model::{
-    AceType, CareExperience, Council, DemographicFilter, DisabilityStatus, DisabilityType,
-    EnglishAsAdditionalLanguage, Ethnicity, FundingSource, Gender, Intervention, SdqClient,
-    SdqError,
+    AceType, CareExperience, Council, DemographicField, DemographicFilter, DisabilityStatus,
+    DisabilityType, EnglishAsAdditionalLanguage, Ethnicity, FundingSource, Gender, Intervention,
+    SdqClient, SdqError,
 };
 use sdq_service::ClientService;
 use serde_json::Value;
@@ -11,8 +11,6 @@ use sqlx::{AssertSqlSafe, PgPool};
 use std::collections::HashMap;
 use std::str::FromStr;
 use uuid::Uuid;
-
-use crate::column_name::ColumnName;
 
 impl From<RawSdqClient> for SdqClient {
     fn from(raw: RawSdqClient) -> Self {
@@ -83,35 +81,32 @@ pub struct RawSdqClient {
     pub aces: Option<Value>,
 }
 
+fn column(field: &DemographicField) -> &'static str {
+    match field {
+        DemographicField::Gender => "gender",
+        DemographicField::Council => "council",
+        DemographicField::Ethnicity => "ethnicity",
+        DemographicField::EAL => "eal",
+        DemographicField::DisabilityStatus => "disability_status",
+        DemographicField::DisabilityType => "disability_type",
+        DemographicField::CareExperience => "care_experience",
+        DemographicField::ACES => "aces",
+        DemographicField::FundingSource => "funding_source",
+        _ => "foo", // sort this out!
+    }
+}
+
 #[async_trait]
 impl ClientService for ClientServiceSqlxImpl {
     async fn get_clients(&self) -> Result<Vec<SdqClient>, SdqError> {
-        sqlx::query_as::<_, RawSdqClient>(
-            r#"
-    SELECT
-        client_id,
-        code_name,
-        date_of_birth,
-        gender,
-        council,
-        ethnicity,
-        eal,
-        disability_status,
-        care_experience,
-        funding_source,
-        interventions,
-        disability_types,
-        aces
-    FROM client_full
-    "#,
-        )
-        .fetch_all(&self.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!("Search query failed: {:?}", e);
-            SdqError::InternalError(e.to_string())
-        })
-        .map(|raw_vec| raw_vec.into_iter().map(SdqClient::from).collect())
+        sqlx::query_as::<_, RawSdqClient>("SELECT * FROM client_full")
+            .fetch_all(&self.pool)
+            .await
+            .map_err(|e| {
+                tracing::error!("Search query failed: {:?}", e);
+                SdqError::InternalError(e.to_string())
+            })
+            .map(|raw_vec| raw_vec.into_iter().map(SdqClient::from).collect())
     }
 
     async fn search_clients(
@@ -119,58 +114,53 @@ impl ClientService for ClientServiceSqlxImpl {
         partial_name: Option<String>,
         filters: Vec<DemographicFilter>,
     ) -> Result<Vec<SdqClient>, SdqError> {
-        // 1. Build SQL string completely
-        let sql = {
-            let mut s = String::from("SELECT * FROM client_full");
+        let (sql, values) = {
+            let mut sql = String::from("SELECT * FROM client_full");
+            let mut values: Vec<String> = Vec::new();
             let mut conditions = Vec::new();
             let mut placeholder = IncrementingIndex::create();
 
             for filter in &filters {
-                let column = filter.field.column();
+                let column = column(&filter.field);
 
                 let placeholders: Vec<String> = (0..filter.values.len())
                     .map(|_| format!("${}", placeholder.next_index()))
                     .collect();
 
                 conditions.push(format!("{} IN ({})", column, placeholders.join(", ")));
+                for value in &filter.values {
+                    values.push(value.clone());
+                }
             }
 
-            if partial_name
-                .as_ref()
-                .filter(|s| !s.trim().is_empty())
-                .is_some()
-            {
+            if let Some(name) = partial_name.as_ref().filter(|s| !s.trim().is_empty()) {
                 conditions.push(format!("code_name ILIKE ${}", placeholder.next_index()));
+
+                values.push(format!("%{}%", name));
             }
 
             if !conditions.is_empty() {
-                s.push_str(" WHERE ");
-                s.push_str(&conditions.join(" AND "));
+                sql.push_str(" WHERE ");
+                sql.push_str(&conditions.join(" AND "));
             }
 
             // IMPORTANT: return the final string
-            s
+            (sql, values)
         };
 
-        // 2. SQL string is now FINAL — no more mutations
-        let safe_sql = AssertSqlSafe(sql.as_str());
-        let mut query = sqlx::query_as::<_, RawSdqClient>(safe_sql);
+        let query = {
+            let safe_sql = AssertSqlSafe(sql.as_str());
+            let mut q = sqlx::query_as::<_, RawSdqClient>(safe_sql);
 
-        // 3. Bind values
-        tracing::info!("Running Query {:?}", sql);
-        for filter in &filters {
-            tracing::info!("Binding values for filter {:?}", filter);
-            for value in &filter.values {
-                query = query.bind(value);
+            tracing::info!("Running Query {:?}", sql);
+            for (i, value) in values.iter().enumerate() {
+                tracing::info!("Binding value for placeholder ${}: {:?}", i + 1, value);
+                q = q.bind(value);
             }
-        }
 
-        if let Some(name) = partial_name.as_ref().filter(|s| !s.trim().is_empty()) {
-            tracing::info!("Binding value for partial_name {:?}", name);
-            query = query.bind(format!("%{}%", name));
-        }
+            q
+        };
 
-        // 4. Execute
         query
             .fetch_all(&self.pool)
             .await

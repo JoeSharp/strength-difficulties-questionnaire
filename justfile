@@ -30,22 +30,27 @@ copy-ui: build-ui
     rm -rf {{API_MODULE_JAVA}}/src/main/resources/static
     cp -R sdq-ui/dist {{API_MODULE_JAVA}}/src/main/resources/static
 
-rust-service-dev: copy-ui
+run-service-dev-rust: 
     cargo run --manifest-path sdq-api-rust/app/Cargo.toml
 
+run-dev-rust: copy-ui run-service-dev-rust
+
+build-api-rust:
+    cargo build --manifest-path sdq-api-rust/app/Cargo.toml
+
 # Run the service via gradle
-run-service-dev:
+run-service-dev-java:
     ./gradlew :spring-app:bootRun
 
 # Build the UI and Run the service via gradle
-run-dev: copy-ui run-service-dev
+run-dev-java: copy-ui run-service-dev-java
 
 # Build the JAR file
-run-build-jar:
+build-api-java:
     ./gradlew :spring-app:bootJar
 
 # Build the UI and bundle into application JAR file
-build-jar: copy-ui run-build-jar
+build-java: copy-ui build-api-java
 
 # Runs the user interface in hot reloading mode.
 run-ui-dev: install-ui
@@ -73,7 +78,7 @@ docker-run-app:
     docker compose -f local/docker-compose.yaml --profile api-rust --profile api-java up --build -d --wait
 
 # Run the app dependencies in docker, but not the app itself
-# Use run-service-dev for that
+# Use run-service-dev-java for that
 docker-run-deps:
     docker compose -f local/docker-compose.yaml up --build -d --wait
 
