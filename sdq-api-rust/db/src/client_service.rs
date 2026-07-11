@@ -1,9 +1,14 @@
 use async_trait::async_trait;
 use chrono::NaiveDate;
-use sdq_model::{AceCounts, Council, DemographicFilter, Gender, Intervention, SdqClient, SdqError};
+use sdq_model::{
+    AceType, CareExperience, Council, DemographicFilter, DisabilityStatus, DisabilityType,
+    EnglishAsAdditionalLanguage, Ethnicity, FundingSource, Gender, Intervention, SdqClient,
+    SdqError,
+};
 use sdq_service::ClientService;
 use serde_json::Value;
 use sqlx::{AssertSqlSafe, PgPool};
+use std::collections::HashMap;
 use std::str::FromStr;
 use uuid::Uuid;
 
@@ -11,7 +16,7 @@ use crate::column_name::ColumnName;
 
 impl From<RawSdqClient> for SdqClient {
     fn from(raw: RawSdqClient) -> Self {
-        let disability_types: Vec<String> = raw
+        let disability_types: Vec<DisabilityType> = raw
             .disability_types
             .and_then(|v| serde_json::from_value(v).ok())
             .unwrap_or_default();
@@ -19,7 +24,7 @@ impl From<RawSdqClient> for SdqClient {
             .interventions
             .and_then(|v| serde_json::from_value(v).ok())
             .unwrap_or_default();
-        let aces: AceCounts = raw
+        let aces: HashMap<AceType, i32> = raw
             .aces
             .and_then(|v| serde_json::from_value(v).ok())
             .unwrap_or_default();
@@ -29,11 +34,19 @@ impl From<RawSdqClient> for SdqClient {
             date_of_birth: raw.date_of_birth,
             gender: raw.gender.and_then(|g| Gender::from_str(&g).ok()),
             council: raw.council.and_then(|g| Council::from_str(&g).ok()),
-            ethnicity: raw.ethnicity,
-            eal: raw.eal,
-            disability_status: raw.disability_status,
-            care_experience: raw.care_experience,
-            funding_source: raw.funding_source,
+            ethnicity: raw.ethnicity.and_then(|e| Ethnicity::from_str(&e).ok()),
+            eal: raw
+                .eal
+                .and_then(|e| EnglishAsAdditionalLanguage::from_str(&e).ok()),
+            disability_status: raw
+                .disability_status
+                .and_then(|d| DisabilityStatus::from_str(&d).ok()),
+            care_experience: raw
+                .care_experience
+                .and_then(|c| CareExperience::from_str(&c).ok()),
+            funding_source: raw
+                .funding_source
+                .and_then(|f| FundingSource::from_str(&f).ok()),
             interventions,
             disability_types,
             aces,

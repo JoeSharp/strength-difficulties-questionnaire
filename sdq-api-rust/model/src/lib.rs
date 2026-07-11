@@ -199,7 +199,9 @@ pub enum InterventionType {
     Unknown,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+#[derive(
+    PartialEq, Eq, Hash, Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display,
+)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum AceType {
     #[strum(serialize = "COMMUNITY", to_string = "Community")]
@@ -247,14 +249,6 @@ pub struct Intervention {
     pub sessions: i32,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
-pub struct AceCounts(pub HashMap<String, i32>);
-
-impl Default for AceCounts {
-    fn default() -> AceCounts {
-        AceCounts(HashMap::new())
-    }
-}
 #[derive(
     Eq, Hash, PartialEq, Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display,
 )]
@@ -290,12 +284,12 @@ pub struct SdqClient {
     pub date_of_birth: Option<NaiveDate>,
     pub gender: Option<Gender>,
     pub council: Option<Council>,
-    pub ethnicity: Option<String>,
-    pub eal: Option<String>,
-    pub disability_status: Option<String>,
-    pub care_experience: Option<String>,
-    pub funding_source: Option<String>,
+    pub ethnicity: Option<Ethnicity>,
+    pub eal: Option<EnglishAsAdditionalLanguage>,
+    pub disability_status: Option<DisabilityStatus>,
+    pub care_experience: Option<CareExperience>,
+    pub funding_source: Option<FundingSource>,
     pub interventions: Vec<Intervention>,
-    pub disability_types: Vec<String>,
-    pub aces: AceCounts,
+    pub disability_types: Vec<DisabilityType>,
+    pub aces: HashMap<AceType, i32>,
 }
