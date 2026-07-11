@@ -31,10 +31,7 @@ copy-ui: build-ui
     cp -R sdq-ui/dist {{API_MODULE_JAVA}}/src/main/resources/static
 
 rust-service-dev:
-    cargo run --manifest-path sdq-api-rust/Cargo.toml
-
-rust-service-verify:
-    cd sdq-api-rust && DATABASE_URL=postgres://test:testPassword123@localhost:5435/sdq cargo sqlx prepare && cd ..
+    cargo run --manifest-path sdq-api-rust/app/Cargo.toml
 
 # Run the service via gradle
 run-service-dev:
