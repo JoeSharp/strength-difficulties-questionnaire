@@ -28,6 +28,33 @@ const SPLASH: &str = r#"
     |__|           \/     \/                      \/     \/     \/                \/ 
 "#;
 
+struct DbConfig {
+    pub username: String,
+    pub password: String,
+    pub host: String,
+    pub name: String,
+}
+
+fn read_db_config_from_env() -> DbConfig {
+    let username = env::var("SDQ_DATABASE_USERNAME").expect("SDQ_DATABASE_USERNAME not in env");
+    let password = env::var("SDQ_DATABASE_PASSWORD").expect("SDQ_DATABASE_PASSWORD not in env");
+    let host = env::var("SDQ_DATABASE_HOST").expect("SDQ_DATABASE_HOST not in env");
+    let name = env::var("SDQ_DATABASE_NAME").expect("SDQ_DATABASE_NAME not in env");
+
+    DbConfig {
+        username,
+        password,
+        host,
+        name,
+    }
+}
+
+fn get_static_resource_service() -> ServeDir {
+    let static_resources_dir =
+        env::var("STATIC_RESOURCES_DIR").expect("STATIC_RESOURCES_DIR not in env");
+    ServeDir::new(static_resources_dir)
+}
+
 #[tokio::main]
 async fn main() {
     fmt().with_env_filter(EnvFilter::new("info")).init();
@@ -35,14 +62,11 @@ async fn main() {
 
     println!("{}", &SPLASH);
 
-    let user = env::var("SDQ_DATABASE_USERNAME").expect("SDQ_DATABASE_USERNAME not in env");
-    let pass = env::var("SDQ_DATABASE_PASSWORD").expect("SDQ_DATABASE_PASSWORD not in env");
-    let host = env::var("SDQ_DATABASE_HOST").expect("SDQ_DATABASE_HOST not in env");
-    let name = env::var("SDQ_DATABASE_NAME").expect("SDQ_DATABASE_NAME not in env");
-    let static_resources_dir =
-        env::var("STATIC_RESOURCES_DIR").expect("STATIC_RESOURCES_DIR not in env");
-
-    let database_url = format!("postgres://{}:{}@{}/{}", user, pass, host, name);
+    let db_config = read_db_config_from_env();
+    let database_url = format!(
+        "postgres://{}:{}@{}/{}",
+        db_config.username, db_config.password, db_config.host, db_config.name
+    );
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url)
@@ -58,7 +82,7 @@ async fn main() {
     // build our application with a single route
     let app = Router::new()
         .nest("/api", api)
-        .fallback_service(ServeDir::new(static_resources_dir));
+        .fallback_service(get_static_resource_service());
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
