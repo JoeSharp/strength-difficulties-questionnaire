@@ -1,9 +1,9 @@
 services:
 
   sdq-api-rust:
-    build:
-      context: ..
-      dockerfile: Dockerfile.rust
+    #build:
+    #  context: ..
+    #  dockerfile: Dockerfile.rust
     image: sdq-api-rust
     container_name: sdq-api-rust
     networks:
@@ -23,9 +23,9 @@ services:
         condition: service_completed_successfully
 
   sdq-service:
-    build:
-      context: ..
-      dockerfile: Dockerfile.java
+    #build:
+    #  context: ..
+    #  dockerfile: Dockerfile.java
     image: sdq-app
     container_name: sdq-app
     networks:

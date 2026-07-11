@@ -95,7 +95,7 @@ docker-build-rust-api:
     docker build -t sdq-api-rust -f Dockerfile.rust .
 
 # Build the Docker image for the application
-docker-build-app:
+docker-build-java-api:
     docker build -t sdq-app -f Dockerfile.java .
 
 # Build the Docker image for the database migration

@@ -1,0 +1,170 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n    SELECT\n        client_id,\n        code_name,\n        date_of_birth,\n        gender,\n        council,\n        ethnicity,\n        eal,\n        disability_status,\n        care_experience,\n        funding_source,\n        interventions,\n        disability_types,\n        aces\n    FROM client_full\n    ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "client_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "client_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "code_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "code_name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "date_of_birth",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "date_of_birth"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "gender",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "gender"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "council",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "council"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "ethnicity",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "ethnicity"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "eal",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "eal"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "disability_status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "disability_status"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "care_experience",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "care_experience"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "funding_source",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "funding_source"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "interventions",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "interventions"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "disability_types",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "disability_types"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "aces",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "client_full",
+            "name": "aces"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "090aabfef826fd793a215969d4ea8db6f9011c4b7a099859db5168a0c62987c5"
+}
