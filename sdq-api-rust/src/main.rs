@@ -5,13 +5,15 @@ use axum::{Json, extract::State};
 use axum::{Router, routing::get};
 use chrono::NaiveDate;
 use dotenvy::dotenv;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::{AssertSqlSafe, PgPool};
 use std::collections::HashMap;
 use std::env;
+use std::fmt::Display;
 use std::str::FromStr;
+use strum::{Display, EnumIter, EnumString, IntoEnumIterator};
 use tower_http::services::ServeDir;
 use tracing_subscriber::{EnvFilter, fmt};
 use uuid::Uuid;
@@ -39,88 +41,62 @@ impl IntoResponse for AppError {
 #[derive(Debug, serde::Serialize)]
 pub struct EnumValue {
     pub value: String,
-    pub label: &'static str,
+    pub label: String,
 }
 
-pub trait EnumValues {
-    fn values() -> Vec<EnumValue>;
+pub fn enum_values<E>() -> Vec<EnumValue>
+where
+    E: IntoEnumIterator + Display,
+{
+    E::iter()
+        .map(|v| EnumValue {
+            value: v.to_string(),
+            label: v.to_string(),
+        })
+        .collect()
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum GoalType {
+    #[strum(serialize = "EMOTIONAL", to_string = "Emotional")]
     Emotional,
+    #[strum(serialize = "BEHAVIOURAL", to_string = "Behavioural")]
     Behavioural,
+    #[strum(serialize = "RELATIONAL", to_string = "Relational")]
     Relational,
+    #[strum(serialize = "REGULATORY_CAPACITY", to_string = "Regulatory Capacity")]
     RegulatoryCapacity,
+    #[strum(serialize = "TRAUMA_RECOVERY", to_string = "Trauma Recovery")]
     TraumaRecovery,
+    #[strum(
+        serialize = "SELF_ESTEEM_CONFIDENCE",
+        to_string = "Self Esteem/Confidence"
+    )]
     SelfEsteemConfidence,
+    #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
 }
 
 impl GoalType {
-    pub fn label(&self) -> &'static str {
-        match self {
-            GoalType::Emotional => "Emotional",
-            GoalType::Behavioural => "Behavioural",
-            GoalType::Relational => "Relational",
-            GoalType::RegulatoryCapacity => "Regulatory Capacity",
-            GoalType::TraumaRecovery => "Trauma Recovery",
-            GoalType::SelfEsteemConfidence => "Self Esteem/Confidence",
-            GoalType::Unknown => "Unknown",
-        }
-    }
-}
-
-impl EnumValues for GoalType {
-    fn values() -> Vec<EnumValue> {
-        use GoalType::*;
-        vec![
-            Emotional,
-            Behavioural,
-            Relational,
-            RegulatoryCapacity,
-            TraumaRecovery,
-            SelfEsteemConfidence,
-            Unknown,
-        ]
-        .into_iter()
-        .map(|v| EnumValue {
-            value: serde_json::to_string(&v)
-                .unwrap()
-                .trim_matches('"')
-                .to_string(),
-            label: v.label(),
-        })
-        .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub enum Posture {
-    Internalising,
-    Externalising,
-    ProSocial,
-}
-
-impl EnumValues for Posture {
-    fn values() -> Vec<EnumValue> {
-        use Posture::*;
-        vec![Internalising, Externalising, ProSocial]
-            .into_iter()
+    pub fn values() -> Vec<EnumValue> {
+        GoalType::iter()
             .map(|v| EnumValue {
                 value: serde_json::to_string(&v)
                     .unwrap()
                     .trim_matches('"')
-                    .to_string(),
-                label: match v {
-                    Internalising => "Internalising",
-                    Externalising => "Externalising",
-                    ProSocial => "Pro-Social",
-                },
+                    .to_string(), // serialized form, e.g. "DAILY_GOAL"
+                label: v.to_string(), // pretty label
             })
             .collect()
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+pub enum Posture {
+    Internalising,
+    Externalising,
+    ProSocial,
 }
 
 #[derive(Debug, serde::Serialize)]
@@ -131,619 +107,206 @@ pub struct ReferenceInfoDTO {
     pub demographic_fields: HashMap<DemographicField, Vec<EnumValue>>,
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Gender {
+    #[strum(serialize = "MALE", to_string = "Male")]
     Male,
+
+    #[strum(serialize = "FEMALE", to_string = "Female")]
     Female,
+
+    #[strum(serialize = "NON_BINARY", to_string = "Non-Binary")]
     NonBinary,
+
+    #[strum(serialize = "OTHER", to_string = "Other")]
     Other,
+
+    #[strum(serialize = "PREFER_NOT_TO_SAY", to_string = "Prefer Not To Say")]
     PreferNotToSay,
 }
 
-impl EnumValues for Gender {
-    fn values() -> Vec<EnumValue> {
-        use Gender::*;
-        vec![Male, Female, NonBinary, Other, PreferNotToSay]
-            .into_iter()
-            .map(|v| EnumValue {
-                value: serde_json::to_string(&v)
-                    .unwrap()
-                    .trim_matches('"')
-                    .to_string(),
-                label: v.display(),
-            })
-            .collect()
-    }
-}
-
-impl Gender {
-    pub fn display(&self) -> &'static str {
-        match self {
-            Gender::Male => "Male",
-            Gender::Female => "Female",
-            Gender::NonBinary => "Non-Binary",
-            Gender::Other => "Other",
-            Gender::PreferNotToSay => "Prefer Not To Say",
-        }
-    }
-}
-
-impl FromStr for Gender {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "MALE" => Ok(Gender::Male),
-            "FEMALE" => Ok(Gender::Female),
-            "NON_BINARY" => Ok(Gender::NonBinary),
-            "OTHER" => Ok(Gender::Other),
-            _ => Ok(Gender::PreferNotToSay),
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Council {
+    #[strum(serialize = "CHELTENHAM", to_string = "Cheltenham")]
     Cheltenham,
+    #[strum(serialize = "GLOUCESTER_CITY", to_string = "Gloucester City")]
     GloucesterCity,
+    #[strum(serialize = "STROUD", to_string = "Stroud")]
     Stroud,
+    #[strum(serialize = "TEWKESBURY", to_string = "Tewksbury")]
     Tewksbury,
+    #[strum(serialize = "FOREST_OF_DEAN", to_string = "Forest of Dean")]
     ForestOfDean,
+    #[strum(serialize = "NORTH_COTSWOLDS", to_string = "North Cotswolds")]
     NorthCotswolds,
+    #[strum(serialize = "OUT_OF_COUNTY", to_string = "Out of County")]
     OutOfCounty,
+    #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
 }
 
-impl Council {
-    pub fn display(&self) -> &'static str {
-        match self {
-            Council::Cheltenham => "Cheltenham",
-            Council::GloucesterCity => "Gloucester City",
-            Council::Stroud => "Stroud",
-            Council::Tewksbury => "Tewksbury",
-            Council::ForestOfDean => "Forest of Dean",
-            Council::NorthCotswolds => "North Cotswolds",
-            Council::OutOfCounty => "Out of County",
-            Council::Unknown => "Unknown",
-        }
-    }
-}
-
-impl FromStr for Council {
-    type Err = ();
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "CHELTENHAM" => Ok(Council::Cheltenham),
-            "GLOUCESTER_CITY" => Ok(Council::GloucesterCity),
-            "STROUD" => Ok(Council::Stroud),
-            "TEWKESBURY" => Ok(Council::Tewksbury),
-            "FOREST_OF_DEAN" => Ok(Council::ForestOfDean),
-            "NORTH_COTSWOLDS" => Ok(Council::NorthCotswolds),
-            "OUT_OF_COUNTY" => Ok(Council::OutOfCounty),
-            _ => Ok(Council::Unknown),
-        }
-    }
-}
-
-impl EnumValues for Council {
-    fn values() -> Vec<EnumValue> {
-        use Council::*;
-        vec![
-            Cheltenham,
-            GloucesterCity,
-            Stroud,
-            Tewksbury,
-            ForestOfDean,
-            NorthCotswolds,
-            OutOfCounty,
-        ]
-        .into_iter()
-        .map(|v| EnumValue {
-            value: serde_json::to_string(&v)
-                .unwrap()
-                .trim_matches('"')
-                .to_string(),
-            label: v.display(),
-        })
-        .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Ethnicity {
+    #[strum(serialize = "WHITE_BRITISH", to_string = "White British")]
     WhiteBritish,
+    #[strum(serialize = "WHITE_EUROPEAN", to_string = "White European")]
     WhiteEuropean,
+    #[strum(serialize = "MIXED", to_string = "Mixed")]
     Mixed,
+    #[strum(serialize = "ASIAN", to_string = "Asian/Asian British")]
     Asian,
+    #[strum(
+        serialize = "BLACK",
+        to_string = "Black/African/Caribbean/Black British"
+    )]
     Black,
+    #[strum(serialize = "TRAVELLER", to_string = "Traveller")]
     Traveller,
+    #[strum(serialize = "OTHER", to_string = "Other")]
     Other,
 }
 
-impl Ethnicity {
-    pub fn display(&self) -> &'static str {
-        match self {
-            Ethnicity::WhiteBritish => "White British",
-            Ethnicity::WhiteEuropean => "White European",
-            Ethnicity::Mixed => "Mixed",
-            Ethnicity::Asian => "Asian/Asian British",
-            Ethnicity::Black => "Black/African/Caribbean/Black British",
-            Ethnicity::Traveller => "Traveller",
-            Ethnicity::Other => "Other",
-        }
-    }
-}
-
-impl FromStr for Ethnicity {
-    type Err = ();
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "WHITE_BRITISH" => Ok(Ethnicity::WhiteBritish),
-            "WHITE_EUROPEAN" => Ok(Ethnicity::WhiteEuropean),
-            "MIXED" => Ok(Ethnicity::Mixed),
-            "ASIAN" => Ok(Ethnicity::Asian),
-            "BLACK" => Ok(Ethnicity::Black),
-            "TRAVELLER" => Ok(Ethnicity::Traveller),
-            _ => Ok(Ethnicity::Other),
-        }
-    }
-}
-
-impl EnumValues for Ethnicity {
-    fn values() -> Vec<EnumValue> {
-        use Ethnicity::*;
-        vec![
-            WhiteBritish,
-            WhiteEuropean,
-            Mixed,
-            Asian,
-            Black,
-            Traveller,
-            Other,
-        ]
-        .into_iter()
-        .map(|v| EnumValue {
-            value: serde_json::to_string(&v)
-                .unwrap()
-                .trim_matches('"')
-                .to_string(),
-            label: v.display(),
-        })
-        .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum DisabilityStatus {
+    #[strum(serialize = "DISABILITY", to_string = "Disability")]
     Disability,
+    #[strum(serialize = "NO_DISABILITY", to_string = "No Disability")]
     NoDisability,
+    #[strum(serialize = "PREFER_NOT_TO_SAY", to_string = "Prefer Not To Say")]
     PreferNotToSay,
 }
-impl DisabilityStatus {
-    pub fn display(&self) -> &'static str {
-        match self {
-            DisabilityStatus::Disability => "Disability",
-            DisabilityStatus::NoDisability => "No Disability",
-            DisabilityStatus::PreferNotToSay => "Prefer Not To Say",
-        }
-    }
-}
-impl std::str::FromStr for DisabilityStatus {
-    type Err = ();
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "DISABILITY" => Ok(DisabilityStatus::Disability),
-            "NO_DISABILITY" => Ok(DisabilityStatus::NoDisability),
-            "PREFER_NOT_TO_SAY" => Ok(DisabilityStatus::PreferNotToSay),
-            _ => Err(()),
-        }
-    }
-}
-impl EnumValues for DisabilityStatus {
-    fn values() -> Vec<EnumValue> {
-        use DisabilityStatus::*;
-        vec![Disability, NoDisability, PreferNotToSay]
-            .into_iter()
-            .map(|v| {
-                let value = serde_json::to_string(&v).unwrap();
-                let value = value.trim_matches('"').to_string();
-
-                EnumValue {
-                    value,
-                    label: v.display(),
-                }
-            })
-            .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum DisabilityType {
+    #[strum(serialize = "PHYSICAL", to_string = "Physical")]
     Physical,
+    #[strum(
+        serialize = "SENSORY",
+        to_string = "Sensory Impairment (e.g. hearing or visual)"
+    )]
     Sensory,
+    #[strum(serialize = "LEARNING", to_string = "Learning")]
     Learning,
+    #[strum(
+        serialize = "NEURODIVERSE",
+        to_string = "Neurodivergence (e.g. ASD or ADHD)"
+    )]
     Neurodiverse,
+    #[strum(
+        serialize = "MENTAL_HEALTH_CONDITION",
+        to_string = "Mental Health Condition"
+    )]
     MentalHealthCondition,
+    #[strum(serialize = "CHRONIC", to_string = "Long Term or Chronic Illness")]
     Chronic,
+    #[strum(
+        serialize = "SPEECH_OR_COMMUNICATION",
+        to_string = "Speech or Communication"
+    )]
     SpeechOrCommunication,
+    #[strum(
+        serialize = "COGNITIVE_OR_MEMORY",
+        to_string = "Cognitive or Memory Impairment"
+    )]
     CognitiveOrMemory,
+    #[strum(serialize = "OTHER", to_string = "Other")]
     Other,
+    #[strum(serialize = "NOT_APPLICABLE", to_string = "N/A")]
     NotApplicable,
 }
 
-impl DisabilityType {
-    pub fn display(&self) -> &'static str {
-        match self {
-            DisabilityType::Physical => "Physical",
-            DisabilityType::Sensory => "Sensory Impairment (e.g. hearing or visual)",
-            DisabilityType::Learning => "Learning",
-            DisabilityType::Neurodiverse => "Neurodivergence (e.g. ASD or ADHD)",
-            DisabilityType::MentalHealthCondition => "Mental Health Condition",
-            DisabilityType::Chronic => "Long Term or Chronic Illness",
-            DisabilityType::SpeechOrCommunication => "Speech or Communication",
-            DisabilityType::CognitiveOrMemory => "Cognitive or Memory Impairment",
-            DisabilityType::Other => "Other",
-            DisabilityType::NotApplicable => "N/A",
-        }
-    }
-}
-
-impl std::str::FromStr for DisabilityType {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "PHYSICAL" => Ok(DisabilityType::Physical),
-            "SENSORY" => Ok(DisabilityType::Sensory),
-            "LEARNING" => Ok(DisabilityType::Learning),
-            "NEURODIVERSE" => Ok(DisabilityType::Neurodiverse),
-            "MENTAL_HEALTH_CONDITION" => Ok(DisabilityType::MentalHealthCondition),
-            "CHRONIC" => Ok(DisabilityType::Chronic),
-            "SPEECH_OR_COMMUNICATION" => Ok(DisabilityType::SpeechOrCommunication),
-            "COGNITIVE_OR_MEMORY" => Ok(DisabilityType::CognitiveOrMemory),
-            "OTHER" => Ok(DisabilityType::Other),
-            "NOT_APPLICABLE" => Ok(DisabilityType::NotApplicable),
-            _ => Err(()),
-        }
-    }
-}
-
-impl EnumValues for DisabilityType {
-    fn values() -> Vec<EnumValue> {
-        use DisabilityType::*;
-        vec![
-            Physical,
-            Sensory,
-            Learning,
-            Neurodiverse,
-            MentalHealthCondition,
-            Chronic,
-            SpeechOrCommunication,
-            CognitiveOrMemory,
-            Other,
-            NotApplicable,
-        ]
-        .into_iter()
-        .map(|v| {
-            let value = serde_json::to_string(&v).unwrap();
-            let value = value.trim_matches('"').to_string();
-
-            EnumValue {
-                value,
-                label: v.display(),
-            }
-        })
-        .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum CareExperience {
+    #[strum(serialize = "NO", to_string = "No")]
     No,
+    #[strum(serialize = "YES_ADOPTED", to_string = "Yes - Adopted")]
     YesAdopted,
+    #[strum(serialize = "YES_CHILD_IN_CARE", to_string = "Yes - Child in Care")]
     YesChildInCare,
-    Sgo,
+    SGO,
+    #[strum(serialize = "KINSHIP", to_string = "Kinship")]
     Kinship,
+    #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
 }
 
-impl CareExperience {
-    pub fn display(&self) -> &'static str {
-        match self {
-            CareExperience::No => "No",
-            CareExperience::YesAdopted => "Yes - Adopted",
-            CareExperience::YesChildInCare => "Yes - Child in Care",
-            CareExperience::Sgo => "SGO",
-            CareExperience::Kinship => "Kinship",
-            CareExperience::Unknown => "Unknown",
-        }
-    }
-}
-impl std::str::FromStr for CareExperience {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "NO" => Ok(CareExperience::No),
-            "YES_ADOPTED" => Ok(CareExperience::YesAdopted),
-            "YES_CHILD_IN_CARE" => Ok(CareExperience::YesChildInCare),
-            "SGO" => Ok(CareExperience::Sgo),
-            "KINSHIP" => Ok(CareExperience::Kinship),
-            "UNKNOWN" => Ok(CareExperience::Unknown),
-            _ => Err(()),
-        }
-    }
-}
-impl EnumValues for CareExperience {
-    fn values() -> Vec<EnumValue> {
-        use CareExperience::*;
-        vec![No, YesAdopted, YesChildInCare, Sgo, Kinship, Unknown]
-            .into_iter()
-            .map(|v| {
-                let value = serde_json::to_string(&v).unwrap();
-                let value = value.trim_matches('"').to_string();
-
-                EnumValue {
-                    value,
-                    label: v.display(),
-                }
-            })
-            .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum FundingSource {
-    Ehcp,
-    Pep,
-    Asgsf,
+    EHCP,
+    PEP,
+    ASGSF,
+    #[strum(serialize = "PRIVATE", to_string = "Private")]
     Private,
     OtherCharitable,
+    #[strum(
+        serialize = "SUBSIDISED_SESSION_FUND",
+        to_string = "Subsidised Session Fund"
+    )]
     SubsidisedSessionFund,
+    #[strum(serialize = "PROJECT", to_string = "Project")]
     Project,
+    #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
 }
-impl FundingSource {
-    pub fn display(&self) -> &'static str {
-        match self {
-            FundingSource::Ehcp => "EHCP",
-            FundingSource::Pep => "PEP",
-            FundingSource::Asgsf => "ASGSF",
-            FundingSource::Private => "Private",
-            FundingSource::OtherCharitable => "Other Charitable",
-            FundingSource::SubsidisedSessionFund => "Subsidised Session Fund",
-            FundingSource::Project => "Project",
-            FundingSource::Unknown => "Unknown",
-        }
-    }
-}
-impl std::str::FromStr for FundingSource {
-    type Err = ();
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "EHCP" => Ok(FundingSource::Ehcp),
-            "PEP" => Ok(FundingSource::Pep),
-            "ASGSF" => Ok(FundingSource::Asgsf),
-            "PRIVATE" => Ok(FundingSource::Private),
-            "OTHER_CHARITABLE" => Ok(FundingSource::OtherCharitable),
-            "SUBSIDISED_SESSION_FUND" => Ok(FundingSource::SubsidisedSessionFund),
-            "PROJECT" => Ok(FundingSource::Project),
-            "UNKNOWN" => Ok(FundingSource::Unknown),
-            _ => Err(()),
-        }
-    }
-}
-impl EnumValues for FundingSource {
-    fn values() -> Vec<EnumValue> {
-        use FundingSource::*;
-        vec![
-            Ehcp,
-            Pep,
-            Asgsf,
-            Private,
-            OtherCharitable,
-            SubsidisedSessionFund,
-            Project,
-            Unknown,
-        ]
-        .into_iter()
-        .map(|v| {
-            let value = serde_json::to_string(&v).unwrap();
-            let value = value.trim_matches('"').to_string();
-
-            EnumValue {
-                value,
-                label: v.display(),
-            }
-        })
-        .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum InterventionType {
-    Ccpt,
-    Cprt,
-    Ptp,
-    Ia,
+    CCPT,
+    CPRT,
+    PTP,
+    IA,
+    #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
 }
-impl InterventionType {
-    pub fn display(&self) -> &'static str {
-        match self {
-            InterventionType::Ccpt => "CCPT",
-            InterventionType::Cprt => "CPRT",
-            InterventionType::Ptp => "PTP",
-            InterventionType::Ia => "IA",
-            InterventionType::Unknown => "UKKNOWN",
-        }
-    }
-}
-impl std::str::FromStr for InterventionType {
-    type Err = ();
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "CCPT" => Ok(InterventionType::Ccpt),
-            "CPRT" => Ok(InterventionType::Cprt),
-            "PTP" => Ok(InterventionType::Ptp),
-            "IA" => Ok(InterventionType::Ia),
-            "UKKNOWN" => Ok(InterventionType::Unknown),
-            _ => Err(()),
-        }
-    }
-}
-impl EnumValues for InterventionType {
-    fn values() -> Vec<EnumValue> {
-        use InterventionType::*;
-        vec![Ccpt, Cprt, Ptp, Ia, Unknown]
-            .into_iter()
-            .map(|v| {
-                let value = serde_json::to_string(&v).unwrap();
-                let value = value.trim_matches('"').to_string();
-
-                EnumValue {
-                    value,
-                    label: v.display(),
-                }
-            })
-            .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum AceType {
+    #[strum(serialize = "COMMUNITY", to_string = "Community")]
     Community,
+    #[strum(serialize = "SOCIO_ECONOMIC", to_string = "Socio-economic")]
     SocioEconomic,
+    #[strum(
+        serialize = "DISCRIMINATION",
+        to_string = "Discrimination & Social Exclusion"
+    )]
     Discrimination,
+    #[strum(serialize = "HEALTH", to_string = "Health")]
     Health,
+    #[strum(serialize = "EDUCATION", to_string = "Education")]
     Education,
+    #[strum(serialize = "BEREAVEMENT", to_string = "Bereavement & Loss")]
     Bereavement,
+    #[strum(serialize = "DIGITAL_ONLINE", to_string = "Digital/Online Adversities")]
     DigitalOnline,
+    #[strum(serialize = "ENVIRONMENTAL", to_string = "Environment Adversities")]
     Environmental,
+    #[strum(
+        serialize = "CHILD_WELFARE",
+        to_string = "Child Welfare or Statutory Intervention Experiences"
+    )]
     ChildWelfare,
+    #[strum(serialize = "GENERIC", to_string = "Generic")]
     Generic,
 }
 
-impl AceType {
-    pub fn display(&self) -> &'static str {
-        match self {
-            AceType::Community => "Community",
-            AceType::SocioEconomic => "Socio-economic",
-            AceType::Discrimination => "Discrimination & Social Exclusion",
-            AceType::Health => "Health",
-            AceType::Education => "Education",
-            AceType::Bereavement => "Bereavement & Loss",
-            AceType::DigitalOnline => "Digital/Online Adversities",
-            AceType::Environmental => "Environment Adversities",
-            AceType::ChildWelfare => "Child Welfare or Statutory Intervention Experiences",
-            AceType::Generic => "Generic",
-        }
-    }
-}
-impl std::str::FromStr for AceType {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "COMMUNITY" => Ok(AceType::Community),
-            "SOCIO_ECONOMIC" => Ok(AceType::SocioEconomic),
-            "DISCRIMINATION" => Ok(AceType::Discrimination),
-            "HEALTH" => Ok(AceType::Health),
-            "EDUCATION" => Ok(AceType::Education),
-            "BEREAVEMENT" => Ok(AceType::Bereavement),
-            "DIGITAL_ONLINE" => Ok(AceType::DigitalOnline),
-            "ENVIRONMENTAL" => Ok(AceType::Environmental),
-            "CHILD_WELFARE" => Ok(AceType::ChildWelfare),
-            "GENERIC" => Ok(AceType::Generic),
-            _ => Err(()),
-        }
-    }
-}
-impl EnumValues for AceType {
-    fn values() -> Vec<EnumValue> {
-        use AceType::*;
-        vec![
-            Community,
-            SocioEconomic,
-            Discrimination,
-            Health,
-            Education,
-            Bereavement,
-            DigitalOnline,
-            Environmental,
-            ChildWelfare,
-            Generic,
-        ]
-        .into_iter()
-        .map(|v| {
-            let value = serde_json::to_string(&v).unwrap();
-            let value = value.trim_matches('"').to_string();
-
-            EnumValue {
-                value,
-                label: v.display(),
-            }
-        })
-        .collect()
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum EnglishAsAdditionalLanguage {
+    #[strum(serialize = "YES", to_string = "Yes")]
     Yes,
+    #[strum(serialize = "NO", to_string = "No")]
     No,
+    #[strum(serialize = "PREFER_NOT_TO_SAY", to_string = "Prefer Not To Say")]
     PreferNotToSay,
-}
-impl EnglishAsAdditionalLanguage {
-    pub fn display(&self) -> &'static str {
-        match self {
-            EnglishAsAdditionalLanguage::Yes => "Yes",
-            EnglishAsAdditionalLanguage::No => "No",
-            EnglishAsAdditionalLanguage::PreferNotToSay => "Prefer Not To Say",
-        }
-    }
-}
-impl std::str::FromStr for EnglishAsAdditionalLanguage {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "YES" => Ok(EnglishAsAdditionalLanguage::Yes),
-            "NO" => Ok(EnglishAsAdditionalLanguage::No),
-            "PREFER_NOT_TO_SAY" => Ok(EnglishAsAdditionalLanguage::PreferNotToSay),
-            _ => Err(()),
-        }
-    }
-}
-impl EnumValues for EnglishAsAdditionalLanguage {
-    fn values() -> Vec<EnumValue> {
-        use EnglishAsAdditionalLanguage::*;
-        vec![Yes, No, PreferNotToSay]
-            .into_iter()
-            .map(|v| {
-                let value = serde_json::to_string(&v).unwrap();
-                let value = value.trim_matches('"').to_string();
-
-                EnumValue {
-                    value,
-                    label: v.display(),
-                }
-            })
-            .collect()
-    }
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -841,17 +404,29 @@ pub struct DemographicFilter {
     pub values: Vec<String>,
 }
 
-#[derive(Eq, PartialEq, Hash, Debug, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Eq, Hash, PartialEq, Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display,
+)]
 pub enum DemographicField {
+    #[strum(serialize = "GENDER", to_string = "Gender")]
     Gender,
+    #[strum(serialize = "COUNCIL", to_string = "Council")]
     Council,
+    #[strum(serialize = "ETHNICITY", to_string = "Ethnicity")]
     Ethnicity,
+    #[strum(serialize = "EAL")]
     EAL,
+    #[strum(serialize = "DISABILITY_STATUS", to_string = "Disability Status")]
     DisabilityStatus,
+    #[strum(serialize = "DISABILITY_TYPE", to_string = "Disability Type")]
     DisabilityType,
+    #[strum(serialize = "CARE_EXPERIENCE", to_string = "Care Experience")]
     CareExperience,
+    #[strum(serialize = "ACES")]
     ACES,
+    #[strum(serialize = "INTERVENTION_TYPE", to_string = "Intervention Type")]
     InterventionType,
+    #[strum(serialize = "FUNDING_SOURCE", to_string = "Funding Source")]
     FundingSource,
 }
 
@@ -875,26 +450,38 @@ impl DemographicField {
 pub async fn reference_info_handler() -> Json<ReferenceInfoDTO> {
     let mut demographic_fields = HashMap::new();
 
-    demographic_fields.insert(DemographicField::Gender, Gender::values());
-    demographic_fields.insert(DemographicField::Council, Council::values());
-    demographic_fields.insert(DemographicField::Ethnicity, Ethnicity::values());
+    demographic_fields.insert(DemographicField::Gender, enum_values::<Gender>());
+    demographic_fields.insert(DemographicField::Council, enum_values::<Council>());
+    demographic_fields.insert(DemographicField::Ethnicity, enum_values::<Ethnicity>());
     demographic_fields.insert(
         DemographicField::DisabilityStatus,
-        DisabilityStatus::values(),
+        enum_values::<DisabilityStatus>(),
     );
-    demographic_fields.insert(DemographicField::EAL, EnglishAsAdditionalLanguage::values());
-    demographic_fields.insert(DemographicField::DisabilityType, DisabilityType::values());
-    demographic_fields.insert(DemographicField::CareExperience, CareExperience::values());
-    demographic_fields.insert(DemographicField::FundingSource, FundingSource::values());
+    demographic_fields.insert(
+        DemographicField::EAL,
+        enum_values::<EnglishAsAdditionalLanguage>(),
+    );
+    demographic_fields.insert(
+        DemographicField::DisabilityType,
+        enum_values::<DisabilityType>(),
+    );
+    demographic_fields.insert(
+        DemographicField::CareExperience,
+        enum_values::<CareExperience>(),
+    );
+    demographic_fields.insert(
+        DemographicField::FundingSource,
+        enum_values::<FundingSource>(),
+    );
     demographic_fields.insert(
         DemographicField::InterventionType,
-        InterventionType::values(),
+        enum_values::<InterventionType>(),
     );
-    demographic_fields.insert(DemographicField::ACES, AceType::values());
+    demographic_fields.insert(DemographicField::ACES, enum_values::<AceType>());
 
     Json(ReferenceInfoDTO {
         goal_types: GoalType::values(),
-        postures: Posture::values(),
+        postures: enum_values::<Posture>(),
         demographic_fields,
     })
 }
