@@ -46,11 +46,14 @@ pub struct EnumValue {
 
 pub fn enum_values<E>() -> Vec<EnumValue>
 where
-    E: IntoEnumIterator + Display,
+    E: IntoEnumIterator + Display + Serialize,
 {
     E::iter()
         .map(|v| EnumValue {
-            value: v.to_string(),
+            value: serde_json::to_string(&v)
+                .unwrap()
+                .trim_matches('"')
+                .to_string(), // serialized form, e.g. "DAILY_GOAL"
             label: v.to_string(),
         })
         .collect()
@@ -76,20 +79,6 @@ pub enum GoalType {
     SelfEsteemConfidence,
     #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
-}
-
-impl GoalType {
-    pub fn values() -> Vec<EnumValue> {
-        GoalType::iter()
-            .map(|v| EnumValue {
-                value: serde_json::to_string(&v)
-                    .unwrap()
-                    .trim_matches('"')
-                    .to_string(), // serialized form, e.g. "DAILY_GOAL"
-                label: v.to_string(), // pretty label
-            })
-            .collect()
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
@@ -408,25 +397,20 @@ pub struct DemographicFilter {
     Eq, Hash, PartialEq, Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display,
 )]
 pub enum DemographicField {
-    #[strum(serialize = "GENDER", to_string = "Gender")]
     Gender,
-    #[strum(serialize = "COUNCIL", to_string = "Council")]
     Council,
-    #[strum(serialize = "ETHNICITY", to_string = "Ethnicity")]
     Ethnicity,
-    #[strum(serialize = "EAL")]
     EAL,
-    #[strum(serialize = "DISABILITY_STATUS", to_string = "Disability Status")]
+    #[strum(serialize = "DisabilityStatus", to_string = "Disability Status")]
     DisabilityStatus,
-    #[strum(serialize = "DISABILITY_TYPE", to_string = "Disability Type")]
+    #[strum(serialize = "DisabilityType", to_string = "Disability Type")]
     DisabilityType,
-    #[strum(serialize = "CARE_EXPERIENCE", to_string = "Care Experience")]
+    #[strum(serialize = "CareExperience", to_string = "Care Experience")]
     CareExperience,
-    #[strum(serialize = "ACES")]
     ACES,
-    #[strum(serialize = "INTERVENTION_TYPE", to_string = "Intervention Type")]
+    #[strum(serialize = "InterventionType", to_string = "Intervention Type")]
     InterventionType,
-    #[strum(serialize = "FUNDING_SOURCE", to_string = "Funding Source")]
+    #[strum(serialize = "FundingSource", to_string = "Funding Source")]
     FundingSource,
 }
 
@@ -480,7 +464,7 @@ pub async fn reference_info_handler() -> Json<ReferenceInfoDTO> {
     demographic_fields.insert(DemographicField::ACES, enum_values::<AceType>());
 
     Json(ReferenceInfoDTO {
-        goal_types: GoalType::values(),
+        goal_types: enum_values::<GoalType>(),
         postures: enum_values::<Posture>(),
         demographic_fields,
     })
@@ -521,7 +505,12 @@ pub async fn search_clients(
             conditions.push(format!("{} IN ({})", column, placeholders.join(", ")));
         }
 
-        if request.partial_name.is_some() {
+        if request
+            .partial_name
+            .as_ref()
+            .filter(|s| !s.trim().is_empty())
+            .is_some()
+        {
             conditions.push(format!("code_name ILIKE ${}", placeholder.next_index()));
         }
 
@@ -539,17 +528,23 @@ pub async fn search_clients(
     let mut query = sqlx::query_as::<_, RawSdqClient>(safe_sql);
 
     // 3. Bind values
+    tracing::info!("Running Query {:?}", sql);
     for filter in &request.filters {
+        tracing::info!("Binding values for filter {:?}", filter);
         for value in &filter.values {
             query = query.bind(value);
         }
     }
 
-    if let Some(name) = request.partial_name {
+    if let Some(name) = request
+        .partial_name
+        .as_ref()
+        .filter(|s| !s.trim().is_empty())
+    {
+        tracing::info!("Binding value for partial_name {:?}", name);
         query = query.bind(format!("%{}%", name));
     }
 
-    tracing::info!("Running Query {:?}", sql);
     // 4. Execute
     query.fetch_all(pool).await.map_err(|e| {
         tracing::error!("Search query failed: {:?}", e);
