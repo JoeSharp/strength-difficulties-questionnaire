@@ -7,9 +7,9 @@ services:
     networks:
       - sdq-test
     environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: testPassword123
-      POSTGRES_DB: sdq
+      POSTGRES_USER: ${SDQ_TEST_DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${SDQ_TEST_DATABASE_PASSWORD}
+      POSTGRES_DB: ${SDQ_TEST_DATABASE_NAME}
     ports:
       - "5435:5432"
     volumes:
@@ -29,9 +29,9 @@ services:
       - sdq-test
     environment:
       LIQUIBASE_DRIVER: org.postgresql.Driver
-      LIQUIBASE_COMMAND_URL: jdbc:postgresql://sdq-test-db:5432/sdq
-      LIQUIBASE_COMMAND_USERNAME: test
-      LIQUIBASE_COMMAND_PASSWORD: testPassword123
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://sdq-test-db:5435/${SDQ_TEST_DATABASE_NAME}
+      LIQUIBASE_COMMAND_USERNAME: ${SDQ_TEST_DATABASE_USERNAME}
+      LIQUIBASE_COMMAND_PASSWORD: ${SDQ_TEST_DATABASE_PASSWORD}
     depends_on:
       sdq-test-db:
         condition: service_healthy

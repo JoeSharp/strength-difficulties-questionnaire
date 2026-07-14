@@ -57,8 +57,11 @@ run-ui-dev: install-ui
     npm run dev --prefix {{UI_MODULE}}
 
 # Run the backend unit tests
-gradle-run-tests:
+test-service-java:
     ./gradlew test --info
+
+test-service-rust:
+    cargo test --manifest-path sdq-api-rust/db/Cargo.toml
 
 # Run the dependencies required by unit tests
 # Always clean them out first
@@ -67,7 +70,7 @@ docker-run-test-deps:
     docker compose -f local/docker-compose.test.yaml up --build --wait
 
 # Run the unit tests, which depends on us running containers
-run-tests: docker-run-test-deps gradle-run-tests
+run-tests: docker-run-test-deps test-service-java
 
 # Run the app images as they are
 docker-run-app-no-build:
