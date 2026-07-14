@@ -1,8 +1,12 @@
 use async_trait::async_trait;
-use sdq_model::{DemographicFilter, SdqClient, SdqError};
+use sdq_model::{DemographicField, DemographicFilter, DemographicReport, SdqClient, SdqError};
 
 #[async_trait]
 pub trait ClientService {
+    async fn get_demographic_report(
+        &self,
+        field: DemographicField,
+    ) -> Result<DemographicReport, SdqError>;
     async fn get_clients(&self) -> Result<Vec<SdqClient>, SdqError>;
     async fn search_clients(
         &self,

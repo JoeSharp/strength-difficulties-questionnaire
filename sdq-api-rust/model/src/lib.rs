@@ -11,6 +11,18 @@ pub enum SdqError {
     InternalError(String),
 }
 
+#[derive(Serialize)]
+pub struct DemographicCount {
+    pub option: String,
+    pub count: i64,
+    pub percentage: f64,
+}
+
+#[derive(Serialize)]
+pub struct DemographicReport {
+    pub counts: Vec<DemographicCount>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum GoalType {

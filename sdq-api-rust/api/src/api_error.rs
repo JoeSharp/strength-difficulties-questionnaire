@@ -5,6 +5,7 @@ use sdq_model::SdqError;
 pub enum AppError {
     Sdq(SdqError),
     Json(serde_json::Error),
+    Value(String),
 }
 
 impl From<SdqError> for AppError {
@@ -22,6 +23,7 @@ impl IntoResponse for AppError {
             AppError::Sdq(SdqError::InvalidInput(msg)) => {
                 (StatusCode::BAD_REQUEST, msg).into_response()
             }
+            AppError::Value(msg) => (StatusCode::BAD_REQUEST, msg).into_response(),
             AppError::Json(e) => (StatusCode::BAD_REQUEST, e.to_string()).into_response(),
         }
     }

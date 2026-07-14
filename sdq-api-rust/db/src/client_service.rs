@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 use chrono::NaiveDate;
 use sdq_model::{
-    AceType, CareExperience, Council, DemographicField, DemographicFilter, DisabilityStatus,
-    DisabilityType, EnglishAsAdditionalLanguage, Ethnicity, FundingSource, Gender, Intervention,
-    SdqClient, SdqError,
+    AceType, CareExperience, Council, DemographicCount, DemographicField, DemographicFilter,
+    DemographicReport, DisabilityStatus, DisabilityType, EnglishAsAdditionalLanguage, Ethnicity,
+    FundingSource, Gender, Intervention, SdqClient, SdqError,
 };
 use sdq_service::ClientService;
 use serde_json::Value;
@@ -81,7 +81,14 @@ pub struct RawSdqClient {
     pub aces: Option<Value>,
 }
 
-fn column(field: &DemographicField) -> &'static str {
+#[derive(sqlx::FromRow)]
+pub struct RawDemographicCount {
+    pub option: String,
+    pub count: i64,
+    pub percentage: f64,
+}
+
+fn demographic_column(field: &DemographicField) -> &'static str {
     match field {
         DemographicField::Gender => "gender",
         DemographicField::Council => "council",
@@ -98,6 +105,36 @@ fn column(field: &DemographicField) -> &'static str {
 
 #[async_trait]
 impl ClientService for ClientServiceSqlxImpl {
+    async fn get_demographic_report(
+        &self,
+        field: DemographicField,
+    ) -> Result<DemographicReport, SdqError> {
+        let column = demographic_column(&field);
+        let sql = &format!(
+            "SELECT {} as option, count(*) AS count, (round(100 * count(*) / (select count(*) from client), 2))::FLOAT8 as percentage FROM client GROUP BY {};",
+            column, column
+        );
+        let safe_sql = AssertSqlSafe(sql.as_str());
+        sqlx::query_as::<_, RawDemographicCount>(safe_sql)
+            .fetch_all(&self.pool)
+            .await
+            .map_err(|e| {
+                tracing::error!("Demographic report query failed: {:?}", e);
+                SdqError::InternalError(e.to_string())
+            })
+            .map(|counts| {
+                counts
+                    .into_iter()
+                    .map(|raw| DemographicCount {
+                        option: raw.option,
+                        count: raw.count,
+                        percentage: raw.percentage,
+                    })
+                    .collect()
+            })
+            .map(|counts| DemographicReport { counts })
+    }
+
     async fn get_clients(&self) -> Result<Vec<SdqClient>, SdqError> {
         sqlx::query_as::<_, RawSdqClient>("SELECT * FROM client_full")
             .fetch_all(&self.pool)
@@ -121,7 +158,7 @@ impl ClientService for ClientServiceSqlxImpl {
             let mut placeholder = IncrementingIndex::create();
 
             for filter in &filters {
-                let column = column(&filter.field);
+                let column = demographic_column(&filter.field);
 
                 let placeholders: Vec<String> = (0..filter.values.len())
                     .map(|_| format!("${}", placeholder.next_index()))
