@@ -9,6 +9,7 @@ use uuid::Uuid;
 pub enum SdqError {
     InvalidInput(String),
     InternalError(String),
+    NotImplemented(String),
 }
 
 #[derive(Serialize)]
@@ -304,4 +305,40 @@ pub struct SdqClient {
     pub interventions: Vec<Intervention>,
     pub disability_types: Vec<DisabilityType>,
     pub aces: HashMap<AceType, i32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+pub enum Assessor {
+    Parent1,
+    Parent2,
+    School,
+    Child,
+    Unknown,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GboSubmission {
+    pub gbo_id: Option<Uuid>,
+    pub period: Option<NaiveDate>,
+    pub assessor: Option<Assessor>,
+    pub score: i32,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Goal {
+    client_id: Option<Uuid>,
+    goal_id: Option<Uuid>,
+    r#type: Option<GoalType>,
+    description: Option<String>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GoalProgress {
+    goal: Goal,
+    assessor: Assessor,
+    first_score: Option<i32>,
+    last_score: Option<i32>,
 }

@@ -23,6 +23,9 @@ impl IntoResponse for AppError {
             AppError::Sdq(SdqError::InvalidInput(msg)) => {
                 (StatusCode::BAD_REQUEST, msg).into_response()
             }
+            AppError::Sdq(SdqError::NotImplemented(msg)) => {
+                (StatusCode::NOT_IMPLEMENTED, msg).into_response()
+            }
             AppError::Value(msg) => (StatusCode::BAD_REQUEST, msg).into_response(),
             AppError::Json(e) => (StatusCode::BAD_REQUEST, e.to_string()).into_response(),
         }

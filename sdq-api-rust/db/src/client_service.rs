@@ -207,4 +207,30 @@ impl ClientService for ClientServiceSqlxImpl {
             })
             .map(|raw_vec| raw_vec.into_iter().map(SdqClient::from).collect())
     }
+
+    async fn get_client_by_id(&self, client_id: &str) -> Result<SdqClient, SdqError> {
+        Err(SdqError::NotImplemented(
+            "get_client_by_id is not implemented yet".to_string(),
+        ))
+    }
+    async fn create_client(&self, client: SdqClient) -> Result<SdqClient, SdqError> {
+        Err(SdqError::NotImplemented(
+            "create_client is not implemented yet".to_string(),
+        ))
+    }
+    async fn update_client(&self, client: SdqClient) -> Result<SdqClient, SdqError> {
+        Err(SdqError::NotImplemented(
+            "update_client is not implemented yet".to_string(),
+        ))
+    }
+    async fn delete_client(&self, client_id: &str) -> Result<(), SdqError> {
+        Err(SdqError::NotImplemented(
+            "delete_client is not implemented yet".to_string(),
+        ))
+    }
+    async fn delete_all_clients(&self) -> Result<(), SdqError> {
+        Err(SdqError::NotImplemented(
+            "delete_all_clients is not implemented yet".to_string(),
+        ))
+    }
 }

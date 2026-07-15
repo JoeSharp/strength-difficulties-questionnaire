@@ -7,3 +7,5 @@ edition = "2024"
 sdq-model = { path = "../model" }
 
 async-trait = "0.1"
+uuid = { version = "1.23.4", features = ["serde"] }
+chrono = { version = "0.4.45", features = ["serde"] }
