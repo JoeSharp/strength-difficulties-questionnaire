@@ -1,7 +1,11 @@
 use axum::Router;
 use dotenvy::dotenv;
 use sdq_api::build_api::{AppState, build_api};
-use sdq_db::client_service::ClientServiceSqlxImpl;
+use sdq_db::{
+    client_service::ClientServiceSqlxImpl, gbo_service::GboServiceSqlxImpl,
+    goal_service::GoalServiceSqlxImpl, reporting_period_service::ReportingPeriodServiceSqlxImpl,
+    sdq_service::SdqServiceSqlxImpl, statement_service::StatementServiceSqlxImpl,
+};
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 use std::sync::Arc;
@@ -74,7 +78,12 @@ async fn main() {
         .expect("Could not connect to Postgres");
 
     let state = AppState {
-        client_service: Arc::new(ClientServiceSqlxImpl::new(pool)),
+        client_service: Arc::new(ClientServiceSqlxImpl::new(pool.clone())),
+        gbo_service: Arc::new(GboServiceSqlxImpl::new(pool.clone())),
+        goal_service: Arc::new(GoalServiceSqlxImpl::new(pool.clone())),
+        reporting_period_service: Arc::new(ReportingPeriodServiceSqlxImpl::new(pool.clone())),
+        sdq_service: Arc::new(SdqServiceSqlxImpl::new(pool.clone())),
+        statement_service: Arc::new(StatementServiceSqlxImpl::new(pool.clone())),
     };
 
     let api = build_api(state);

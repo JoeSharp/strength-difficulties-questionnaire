@@ -1,8 +1,13 @@
+use std::iter::Map;
+
 use async_trait::async_trait;
+use chrono::NaiveDate;
 use sdq_model::{
-    Assessor, DemographicField, DemographicFilter, DemographicReport, GboSubmission, Goal,
-    GoalProgress, GoalType, SdqClient, SdqError,
+    Assessor, Category, DemographicField, DemographicFilter, DemographicReport, GboSubmission,
+    Goal, GoalProgress, GoalType, ReportingPeriod, SdqClient, SdqError, SdqProgressSummary,
+    SdqSubmission, SdqSubmissionSummary, Statement,
 };
+use uuid::Uuid;
 
 #[async_trait]
 pub trait ClientService {
@@ -55,4 +60,56 @@ pub trait GoalService {
     ) -> Result<GoalProgress, SdqError>;
     async fn update_goal(&self, goal: Goal) -> Result<Goal, SdqError>;
     async fn get_goal(&self, goal_id: &str) -> Result<Goal, SdqError>;
+}
+
+#[async_trait]
+pub trait ReportingPeriodService {
+    async fn save(&self, submission: ReportingPeriod) -> Result<(), SdqError>;
+    async fn get_for_client(&self, client_id: &str) -> Result<Vec<ReportingPeriod>, SdqError>;
+    async fn delete_all(&self) -> Result<(), SdqError>;
+}
+
+#[async_trait]
+pub trait StatementService {
+    async fn get_statement(&self, key: String) -> Result<Statement, SdqError>;
+    async fn get_statements(&self) -> Result<Vec<Statement>, SdqError>;
+    async fn get_categories(&self) -> Result<Vec<Category>, SdqError>;
+}
+
+#[async_trait]
+pub trait SdqService {
+    async fn record_response(&self, sdq: SdqSubmission) -> Result<(), SdqError>;
+    async fn get_submission(
+        &self,
+        period_id: Uuid,
+        assessor: Assessor,
+    ) -> Result<SdqSubmission, SdqError>;
+    async fn get_summary(
+        &self,
+        period_id: Uuid,
+        assessor: Assessor,
+    ) -> Result<SdqSubmissionSummary, SdqError>;
+    async fn get_reporting_periods(
+        &self,
+        client_id: Uuid,
+    ) -> Result<Vec<ReportingPeriod>, SdqError>;
+    async fn query_sdq_progress(
+        &self,
+        assessors: Vec<Assessor>,
+        filters: Vec<DemographicFilter>,
+        from: NaiveDate,
+        to: NaiveDate,
+    ) -> Result<Vec<SdqProgressSummary>, SdqError>;
+    async fn query_sdq_summaries(
+        &self,
+        assessors: Vec<Assessor>,
+        filters: Vec<DemographicFilter>,
+        from: NaiveDate,
+        to: NaiveDate,
+    ) -> Result<Map<Uuid, Map<NaiveDate, Vec<SdqSubmissionSummary>>>, SdqError>;
+    async fn get_sdq_progress_for_client(
+        &self,
+        client_id: Uuid,
+        assessor: Assessor,
+    ) -> Result<SdqProgressSummary, SdqError>;
 }

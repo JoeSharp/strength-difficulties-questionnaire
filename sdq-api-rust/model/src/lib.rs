@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
+use serde_json::Map;
 use strum::{Display, EnumIter, EnumString};
 use uuid::Uuid;
 
@@ -341,4 +342,73 @@ pub struct GoalProgress {
     assessor: Assessor,
     first_score: Option<i32>,
     last_score: Option<i32>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReportingPeriod {
+    pub client_id: Option<Uuid>,
+    pub period_id: Option<Uuid>,
+    pub period: Option<NaiveDate>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Category {
+    category: String,
+    posture: Posture,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Statement {
+    order: u64,
+    key: String,
+    category: Category,
+    description: Option<String>,
+    is_true_positive: bool,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SdqScore {
+    statement: Statement,
+    score: u64,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SdqSubmission {
+    period_id: Uuid,
+    assessor: Assessor,
+    scores: Vec<SdqScore>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SdqSubmissionSummary {
+    client_id: Uuid,
+    assessor: Assessor,
+    period: NaiveDate,
+    category_sub_totals: HashMap<String, u64>,
+    posture_sub_totals: HashMap<String, u64>,
+    total_difficulties: u64,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Progress {
+    last: u64,
+    delta: u64,
+    first: u64,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SdqProgressSummary {
+    client_id: Uuid,
+    assessor: Assessor,
+    category_progress: HashMap<String, Progress>,
+    posture_progress: HashMap<String, Progress>,
+    total_difficulties: Progress,
 }
