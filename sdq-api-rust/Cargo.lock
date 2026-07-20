@@ -1084,6 +1084,7 @@ name = "sdq-api"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "chrono",
  "sdq-model",
  "sdq-service",
  "serde",
@@ -1092,6 +1093,7 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

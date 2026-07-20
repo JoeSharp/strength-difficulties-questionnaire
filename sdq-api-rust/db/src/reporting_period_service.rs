@@ -2,6 +2,7 @@ use async_trait::async_trait;
 use sdq_model::{ReportingPeriod, SdqError};
 use sdq_service::ReportingPeriodService;
 use sqlx::PgPool;
+use uuid::Uuid;
 
 pub struct ReportingPeriodServiceSqlxImpl {
     pub pool: PgPool,
@@ -20,7 +21,7 @@ impl ReportingPeriodService for ReportingPeriodServiceSqlxImpl {
             "delete_client is not implemented yet".to_string(),
         ))
     }
-    async fn get_for_client(&self, client_id: &str) -> Result<Vec<ReportingPeriod>, SdqError> {
+    async fn get_for_client(&self, client_id: &Uuid) -> Result<Vec<ReportingPeriod>, SdqError> {
         Err(SdqError::NotImplemented(
             "delete_client is not implemented yet".to_string(),
         ))

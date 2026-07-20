@@ -6,12 +6,8 @@ use sdq_service::{
 };
 
 use crate::{
-    admin_api::build_admin_api,
-    client_api::build_client_api,
-    goal_api::build_goal_api,
-    reference_api::build_reference_api,
-    sdq_api::build_sdq_api,
-    upload_api::{self, build_upload_api},
+    admin_api::build_admin_api, client_api::build_client_api, goal_api::build_goal_api,
+    reference_api::build_reference_api, sdq_api::build_sdq_api, upload_api::build_upload_api,
 };
 
 #[derive(Clone)]

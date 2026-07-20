@@ -317,7 +317,7 @@ pub enum Assessor {
     Unknown,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GboSubmission {
     pub gbo_id: Option<Uuid>,
@@ -326,22 +326,22 @@ pub struct GboSubmission {
     pub score: i32,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Goal {
-    client_id: Option<Uuid>,
-    goal_id: Option<Uuid>,
-    r#type: Option<GoalType>,
-    description: Option<String>,
+    pub client_id: Option<Uuid>,
+    pub goal_id: Option<Uuid>,
+    pub r#type: Option<GoalType>,
+    pub description: Option<String>,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GoalProgress {
-    goal: Goal,
-    assessor: Assessor,
-    first_score: Option<i32>,
-    last_score: Option<i32>,
+    pub goal: Goal,
+    pub assessor: Assessor,
+    pub first_score: Option<i32>,
+    pub last_score: Option<i32>,
 }
 
 #[derive(Serialize)]
@@ -355,60 +355,60 @@ pub struct ReportingPeriod {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Category {
-    category: String,
-    posture: Posture,
+    pub category: String,
+    pub posture: Posture,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Statement {
-    order: u64,
-    key: String,
-    category: Category,
-    description: Option<String>,
-    is_true_positive: bool,
+    pub order: u64,
+    pub key: String,
+    pub category: Category,
+    pub description: Option<String>,
+    pub is_true_positive: bool,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SdqScore {
-    statement: Statement,
-    score: u64,
+    pub statement: Statement,
+    pub score: u64,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SdqSubmission {
-    period_id: Uuid,
-    assessor: Assessor,
-    scores: Vec<SdqScore>,
+    pub period_id: Uuid,
+    pub assessor: Assessor,
+    pub scores: Vec<SdqScore>,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SdqSubmissionSummary {
-    client_id: Uuid,
-    assessor: Assessor,
-    period: NaiveDate,
-    category_sub_totals: HashMap<String, u64>,
-    posture_sub_totals: HashMap<String, u64>,
-    total_difficulties: u64,
+    pub client_id: Uuid,
+    pub assessor: Assessor,
+    pub period: NaiveDate,
+    pub category_sub_totals: HashMap<String, u64>,
+    pub posture_sub_totals: HashMap<String, u64>,
+    pub total_difficulties: u64,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
-    last: u64,
-    delta: u64,
-    first: u64,
+    pub last: u64,
+    pub delta: u64,
+    pub first: u64,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SdqProgressSummary {
-    client_id: Uuid,
-    assessor: Assessor,
-    category_progress: HashMap<String, Progress>,
-    posture_progress: HashMap<String, Progress>,
-    total_difficulties: Progress,
+    pub client_id: Uuid,
+    pub assessor: Assessor,
+    pub category_progress: HashMap<String, Progress>,
+    pub posture_progress: HashMap<String, Progress>,
+    pub total_difficulties: Progress,
 }

@@ -6,7 +6,7 @@ use sdq_model::{
 };
 use sdq_service::SdqService;
 use sqlx::PgPool;
-use std::iter::Map;
+use std::collections::HashMap;
 use uuid::Uuid;
 
 pub struct SdqServiceSqlxImpl {
@@ -28,8 +28,8 @@ impl SdqService for SdqServiceSqlxImpl {
     }
     async fn get_submission(
         &self,
-        period_id: Uuid,
-        assessor: Assessor,
+        period_id: &Uuid,
+        assessor: &Assessor,
     ) -> Result<SdqSubmission, SdqError> {
         Err(SdqError::NotImplemented(
             "delete_client is not implemented yet".to_string(),
@@ -37,8 +37,8 @@ impl SdqService for SdqServiceSqlxImpl {
     }
     async fn get_summary(
         &self,
-        period_id: Uuid,
-        assessor: Assessor,
+        period_id: &Uuid,
+        assessor: &Assessor,
     ) -> Result<SdqSubmissionSummary, SdqError> {
         Err(SdqError::NotImplemented(
             "delete_client is not implemented yet".to_string(),
@@ -46,7 +46,7 @@ impl SdqService for SdqServiceSqlxImpl {
     }
     async fn get_reporting_periods(
         &self,
-        client_id: Uuid,
+        client_id: &Uuid,
     ) -> Result<Vec<ReportingPeriod>, SdqError> {
         Err(SdqError::NotImplemented(
             "delete_client is not implemented yet".to_string(),
@@ -54,10 +54,10 @@ impl SdqService for SdqServiceSqlxImpl {
     }
     async fn query_sdq_progress(
         &self,
-        assessors: Vec<Assessor>,
-        filters: Vec<DemographicFilter>,
-        from: NaiveDate,
-        to: NaiveDate,
+        assessors: &Vec<Assessor>,
+        filters: &Vec<DemographicFilter>,
+        from: &NaiveDate,
+        to: &NaiveDate,
     ) -> Result<Vec<SdqProgressSummary>, SdqError> {
         Err(SdqError::NotImplemented(
             "delete_client is not implemented yet".to_string(),
@@ -66,11 +66,11 @@ impl SdqService for SdqServiceSqlxImpl {
 
     async fn query_sdq_summaries(
         &self,
-        assessors: Vec<Assessor>,
-        filters: Vec<DemographicFilter>,
-        from: NaiveDate,
-        to: NaiveDate,
-    ) -> Result<Map<Uuid, Map<NaiveDate, Vec<SdqSubmissionSummary>>>, SdqError> {
+        assessors: &Vec<Assessor>,
+        filters: &Vec<DemographicFilter>,
+        from: &NaiveDate,
+        to: &NaiveDate,
+    ) -> Result<HashMap<Uuid, HashMap<NaiveDate, Vec<SdqSubmissionSummary>>>, SdqError> {
         Err(SdqError::NotImplemented(
             "delete_client is not implemented yet".to_string(),
         ))
@@ -78,8 +78,8 @@ impl SdqService for SdqServiceSqlxImpl {
 
     async fn get_sdq_progress_for_client(
         &self,
-        client_id: Uuid,
-        assessor: Assessor,
+        client_id: &Uuid,
+        assessor: &Assessor,
     ) -> Result<SdqProgressSummary, SdqError> {
         Err(SdqError::NotImplemented(
             "delete_client is not implemented yet".to_string(),

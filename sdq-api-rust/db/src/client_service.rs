@@ -149,7 +149,7 @@ impl ClientService for ClientServiceSqlxImpl {
     async fn search_clients(
         &self,
         partial_name: Option<String>,
-        filters: Vec<DemographicFilter>,
+        filters: &Vec<DemographicFilter>,
     ) -> Result<Vec<SdqClient>, SdqError> {
         let (sql, values) = {
             let mut sql = String::from("SELECT * FROM client_full");
@@ -157,7 +157,7 @@ impl ClientService for ClientServiceSqlxImpl {
             let mut conditions = Vec::new();
             let mut placeholder = IncrementingIndex::create();
 
-            for filter in &filters {
+            for filter in filters {
                 let column = demographic_column(&filter.field);
 
                 let placeholders: Vec<String> = (0..filter.values.len())
@@ -208,7 +208,7 @@ impl ClientService for ClientServiceSqlxImpl {
             .map(|raw_vec| raw_vec.into_iter().map(SdqClient::from).collect())
     }
 
-    async fn get_client_by_id(&self, client_id: &str) -> Result<SdqClient, SdqError> {
+    async fn get_client_by_id(&self, client_id: &Uuid) -> Result<SdqClient, SdqError> {
         Err(SdqError::NotImplemented(
             "get_client_by_id is not implemented yet".to_string(),
         ))
@@ -223,7 +223,7 @@ impl ClientService for ClientServiceSqlxImpl {
             "update_client is not implemented yet".to_string(),
         ))
     }
-    async fn delete_client(&self, client_id: &str) -> Result<(), SdqError> {
+    async fn delete_client(&self, client_id: &Uuid) -> Result<(), SdqError> {
         Err(SdqError::NotImplemented(
             "delete_client is not implemented yet".to_string(),
         ))
