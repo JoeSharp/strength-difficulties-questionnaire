@@ -61,7 +61,7 @@ test-service-java:
     ./gradlew test --info
 
 test-service-rust:
-    cargo test --manifest-path sdq-api-rust/db/Cargo.toml
+    cargo test --manifest-path sdq-api-rust/app/Cargo.toml
 
 # Run the dependencies required by unit tests
 # Always clean them out first

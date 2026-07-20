@@ -29,7 +29,7 @@ services:
       - sdq-test
     environment:
       LIQUIBASE_DRIVER: org.postgresql.Driver
-      LIQUIBASE_COMMAND_URL: jdbc:postgresql://sdq-test-db:5435/${SDQ_TEST_DATABASE_NAME}
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://sdq-test-db:5432/${SDQ_TEST_DATABASE_NAME}
       LIQUIBASE_COMMAND_USERNAME: ${SDQ_TEST_DATABASE_USERNAME}
       LIQUIBASE_COMMAND_PASSWORD: ${SDQ_TEST_DATABASE_PASSWORD}
     depends_on:
