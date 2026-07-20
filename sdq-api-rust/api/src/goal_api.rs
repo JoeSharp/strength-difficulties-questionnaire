@@ -122,7 +122,7 @@ pub fn build_goal_api() -> Router<AppState> {
             get(get_goals_progress_for_client),
         )
         .route("/{goal_id}", get(get_goal))
-        .route("/{goal_id/progress/{assessor}", get(get_goal_progress))
+        .route("/{goal_id}/progress/{assessor}", get(get_goal_progress))
         .route("/", put(update_goal))
         .route("/score", post(submit_gbo));
 }
