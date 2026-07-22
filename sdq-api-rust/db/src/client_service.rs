@@ -5,7 +5,7 @@ use sdq_model::{
     DemographicReport, DisabilityStatus, DisabilityType, EnglishAsAdditionalLanguage, Ethnicity,
     FundingSource, Gender, Intervention, SdqClient, SdqError,
 };
-use sdq_service::ClientService;
+use sdq_service::client::ClientService;
 use serde_json::Value;
 use sqlx::{AssertSqlSafe, PgPool};
 use std::collections::HashMap;
@@ -209,28 +209,18 @@ impl ClientService for ClientServiceSqlxImpl {
     }
 
     async fn get_client_by_id(&self, client_id: &Uuid) -> Result<SdqClient, SdqError> {
-        Err(SdqError::NotImplemented(
-            "get_client_by_id is not implemented yet".to_string(),
-        ))
+        Err(SdqError::NotImplemented)
     }
     async fn create_client(&self, client: SdqClient) -> Result<SdqClient, SdqError> {
-        Err(SdqError::NotImplemented(
-            "create_client is not implemented yet".to_string(),
-        ))
+        Err(SdqError::NotImplemented)
     }
     async fn update_client(&self, client: SdqClient) -> Result<SdqClient, SdqError> {
-        Err(SdqError::NotImplemented(
-            "update_client is not implemented yet".to_string(),
-        ))
+        Err(SdqError::NotImplemented)
     }
     async fn delete_client(&self, client_id: &Uuid) -> Result<(), SdqError> {
-        Err(SdqError::NotImplemented(
-            "delete_client is not implemented yet".to_string(),
-        ))
+        Err(SdqError::NotImplemented)
     }
     async fn delete_all_clients(&self) -> Result<(), SdqError> {
-        Err(SdqError::NotImplemented(
-            "delete_all_clients is not implemented yet".to_string(),
-        ))
+        Err(SdqError::NotImplemented)
     }
 }

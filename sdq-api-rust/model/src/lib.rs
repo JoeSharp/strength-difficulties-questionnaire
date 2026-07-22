@@ -9,7 +9,7 @@ use uuid::Uuid;
 pub enum SdqError {
     InvalidInput(String),
     InternalError(String),
-    NotImplemented(String),
+    NotImplemented,
 }
 
 #[derive(Serialize)]
@@ -410,4 +410,19 @@ pub struct SdqProgressSummary {
     pub category_progress: HashMap<String, Progress>,
     pub posture_progress: HashMap<String, Progress>,
     pub total_difficulties: Progress,
+}
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SdqReportingPeriod {
+    period: ReportingPeriod,
+    sdq: HashMap<Assessor, SdqSubmission>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ParsedFile {
+    client: SdqClient,
+    goals: Vec<Goal>,
+    sdq: Vec<SdqReportingPeriod>,
+    gbo: Vec<GboSubmission>,
 }

@@ -1,6 +1,6 @@
 use sdq_db::client_service::ClientServiceSqlxImpl;
 use sdq_model::DemographicField;
-use sdq_service::ClientService;
+use sdq_service::client::ClientService;
 
 mod common;
 

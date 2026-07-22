@@ -5,6 +5,7 @@ use sdq_db::{
     client_service::ClientServiceSqlxImpl, gbo_service::GboServiceSqlxImpl,
     goal_service::GoalServiceSqlxImpl, reporting_period_service::ReportingPeriodServiceSqlxImpl,
     sdq_service::SdqServiceSqlxImpl, statement_service::StatementServiceSqlxImpl,
+    upload_service::UploadServiceSqlxImpl,
 };
 use sqlx::postgres::PgPoolOptions;
 use std::env;
@@ -84,6 +85,7 @@ async fn main() {
         reporting_period_service: Arc::new(ReportingPeriodServiceSqlxImpl::new(pool.clone())),
         sdq_service: Arc::new(SdqServiceSqlxImpl::new(pool.clone())),
         statement_service: Arc::new(StatementServiceSqlxImpl::new(pool.clone())),
+        upload_service: Arc::new(UploadServiceSqlxImpl::new(pool.clone())),
     };
 
     let api = build_api(state);

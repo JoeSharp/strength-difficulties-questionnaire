@@ -2,7 +2,9 @@ use std::sync::Arc;
 
 use axum::Router;
 use sdq_service::{
-    ClientService, GboService, GoalService, ReportingPeriodService, SdqService, StatementService,
+    client::ClientService, gbo::GboService, goal::GoalService,
+    reporting_period::ReportingPeriodService, sdq::SdqService, statement::StatementService,
+    upload::UploadService,
 };
 
 use crate::{
@@ -18,6 +20,7 @@ pub struct AppState {
     pub reporting_period_service: Arc<dyn ReportingPeriodService + Send + Sync>,
     pub sdq_service: Arc<dyn SdqService + Send + Sync>,
     pub statement_service: Arc<dyn StatementService + Send + Sync>,
+    pub upload_service: Arc<dyn UploadService + Send + Sync>,
 }
 
 pub fn build_api(state: AppState) -> Router {

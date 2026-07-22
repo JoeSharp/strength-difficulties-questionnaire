@@ -3,8 +3,9 @@ use axum::response::IntoResponse;
 use sdq_model::SdqError;
 
 pub enum AppError {
-    Sdq(SdqError),
+    Sdq(sdq_model::SdqError),
     Value(String),
+    Multipart(axum::extract::multipart::MultipartError),
 }
 
 impl From<SdqError> for AppError {
@@ -22,8 +23,11 @@ impl IntoResponse for AppError {
             AppError::Sdq(SdqError::InvalidInput(msg)) => {
                 (StatusCode::BAD_REQUEST, msg).into_response()
             }
-            AppError::Sdq(SdqError::NotImplemented(msg)) => {
-                (StatusCode::NOT_IMPLEMENTED, msg).into_response()
+            AppError::Sdq(SdqError::NotImplemented) => {
+                (StatusCode::NOT_IMPLEMENTED, "Not implemented").into_response()
+            }
+            AppError::Multipart(e) => {
+                (StatusCode::BAD_REQUEST, format!("Multipart error: {}", e)).into_response()
             }
             AppError::Value(msg) => (StatusCode::BAD_REQUEST, msg).into_response(),
         }
