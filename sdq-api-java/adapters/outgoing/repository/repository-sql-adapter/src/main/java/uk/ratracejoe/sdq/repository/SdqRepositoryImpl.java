@@ -1,17 +1,18 @@
 package uk.ratracejoe.sdq.repository;
 
-import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
-import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.whereClause;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-import java.time.LocalDate;
-import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import uk.ratracejoe.sdq.exception.SdqException;
 import uk.ratracejoe.sdq.model.Assessor;
 import uk.ratracejoe.sdq.model.demographics.DemographicFilter;
 import uk.ratracejoe.sdq.model.sdq.*;
+
+import java.time.LocalDate;
+import java.util.*;
+
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.parseJson;
+import static uk.ratracejoe.sdq.repository.RepositoryJsonUtils.whereClause;
 
 @RequiredArgsConstructor
 public class SdqRepositoryImpl implements SdqRepository {

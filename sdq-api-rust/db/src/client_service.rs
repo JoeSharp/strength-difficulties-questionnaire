@@ -12,8 +12,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use uuid::Uuid;
 
-impl From<RawSdqClient> for SdqClient {
-    fn from(raw: RawSdqClient) -> Self {
+impl From<SdqClientSqlRow> for SdqClient {
+    fn from(raw: SdqClientSqlRow) -> Self {
         let disability_types: Vec<DisabilityType> = raw
             .disability_types
             .and_then(|v| serde_json::from_value(v).ok())
@@ -65,7 +65,7 @@ impl ClientServiceSqlxImpl {
 }
 
 #[derive(sqlx::FromRow)]
-pub struct RawSdqClient {
+pub struct SdqClientSqlRow {
     pub client_id: Option<Uuid>,
     pub code_name: Option<String>,
     pub date_of_birth: Option<NaiveDate>,
@@ -136,7 +136,7 @@ impl ClientService for ClientServiceSqlxImpl {
     }
 
     async fn get_clients(&self) -> Result<Vec<SdqClient>, SdqError> {
-        sqlx::query_as::<_, RawSdqClient>("SELECT * FROM client_full")
+        sqlx::query_as::<_, SdqClientSqlRow>("SELECT * FROM client_full")
             .fetch_all(&self.pool)
             .await
             .map_err(|e| {
@@ -187,7 +187,7 @@ impl ClientService for ClientServiceSqlxImpl {
 
         let query = {
             let safe_sql = AssertSqlSafe(sql.as_str());
-            let mut q = sqlx::query_as::<_, RawSdqClient>(safe_sql);
+            let mut q = sqlx::query_as::<_, SdqClientSqlRow>(safe_sql);
 
             tracing::info!("Running Query {:?}", sql);
             for (i, value) in values.iter().enumerate() {

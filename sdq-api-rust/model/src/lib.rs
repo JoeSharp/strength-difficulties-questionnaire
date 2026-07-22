@@ -10,6 +10,7 @@ pub enum SdqError {
     InvalidInput(String),
     InternalError(String),
     NotImplemented,
+    Db(String),
 }
 
 #[derive(Serialize)]
@@ -50,6 +51,7 @@ pub enum Posture {
     Internalising,
     Externalising,
     ProSocial,
+    Unknown,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
@@ -346,9 +348,9 @@ pub struct GoalProgress {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportingPeriod {
-    pub client_id: Option<Uuid>,
-    pub period_id: Option<Uuid>,
-    pub period: Option<NaiveDate>,
+    pub client_id: Uuid,
+    pub period_id: Uuid,
+    pub period: NaiveDate,
 }
 
 #[derive(Serialize)]
@@ -361,7 +363,7 @@ pub struct Category {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Statement {
-    pub order: u64,
+    pub order: i64,
     pub key: String,
     pub category: Category,
     pub description: Option<String>,
@@ -372,7 +374,7 @@ pub struct Statement {
 #[serde(rename_all = "camelCase")]
 pub struct SdqScore {
     pub statement: Statement,
-    pub score: u64,
+    pub score: i64,
 }
 
 #[derive(Serialize)]

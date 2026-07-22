@@ -23,6 +23,9 @@ impl IntoResponse for AppError {
             AppError::Sdq(SdqError::InvalidInput(msg)) => {
                 (StatusCode::BAD_REQUEST, msg).into_response()
             }
+            AppError::Sdq(SdqError::Db(msg)) => {
+                (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
+            }
             AppError::Sdq(SdqError::NotImplemented) => {
                 (StatusCode::NOT_IMPLEMENTED, "Not implemented").into_response()
             }
