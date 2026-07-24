@@ -1134,6 +1134,7 @@ dependencies = [
  "sdq-db",
  "sdq-model",
  "sdq-service",
+ "sdq-xslx",
  "serde",
  "serde_json",
  "sqlx",
@@ -1181,6 +1182,14 @@ dependencies = [
  "chrono",
  "sdq-model",
  "uuid",
+]
+
+[[package]]
+name = "sdq-xslx"
+version = "0.1.0"
+dependencies = [
+ "sdq-model",
+ "sdq-service",
 ]
 
 [[package]]

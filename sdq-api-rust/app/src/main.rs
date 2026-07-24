@@ -7,6 +7,7 @@ use sdq_db::{
     sdq_service::SdqServiceSqlxImpl, statement_service::StatementServiceSqlxImpl,
     upload_service::UploadServiceSqlxImpl,
 };
+use sdq_xslx::parser_service::ParserServiceXslxImpl;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 use std::sync::Arc;
@@ -86,6 +87,7 @@ async fn main() {
         sdq_service: Arc::new(SdqServiceSqlxImpl::new(pool.clone())),
         statement_service: Arc::new(StatementServiceSqlxImpl::new(pool.clone())),
         upload_service: Arc::new(UploadServiceSqlxImpl::new(pool.clone())),
+        parse_service: Arc::new(ParserServiceXslxImpl::new()),
     };
 
     let api = build_api(state);

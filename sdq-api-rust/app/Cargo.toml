@@ -9,6 +9,7 @@ sdq-model = { path = "../model" }
 sdq-service = { path = "../service" }
 sdq-db = { path = "../db" }
 sdq-api = { path = "../api" }
+sdq-xslx = { path = "../xslx" }
 
 # External
 axum = "0.8"

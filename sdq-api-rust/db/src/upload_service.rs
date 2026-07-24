@@ -15,7 +15,7 @@ impl UploadServiceSqlxImpl {
 
 #[async_trait]
 impl UploadService for UploadServiceSqlxImpl {
-    async fn ingest_file(&self, filename: String, data: Vec<u8>) -> Result<ParsedFile, SdqError> {
+    async fn ingest_file(&self, file: ParsedFile) -> Result<ParsedFile, SdqError> {
         Err(SdqError::NotImplemented)
     }
 }

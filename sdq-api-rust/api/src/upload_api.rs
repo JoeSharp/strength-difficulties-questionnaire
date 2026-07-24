@@ -23,9 +23,17 @@ pub async fn upload_files(
         let data = field.bytes().await.map_err(AppError::Multipart)?;
 
         let parsed = state
-            .upload_service
-            .ingest_file(filename, data.to_vec())
-            .await
+            .parse_service
+            .parse_file(filename, data.to_vec())
+            /*
+            .map(async |f| {
+                state
+                    .upload_service
+                    .ingest_file(f)
+                    .await
+                    .map_err(AppError::Sdq)
+            })
+            */
             .map_err(AppError::Sdq)?;
 
         results.push(parsed);
