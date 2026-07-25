@@ -26,12 +26,18 @@ WORKDIR /app
 # Install host build dependencies.
 RUN apk add --no-cache clang lld musl-dev git
 
+RUN mkdir -p /app/target \
+    && mkdir -p /usr/local/cargo/git/db \
+    && mkdir -p /usr/local/cargo/registry
+
 # Build the application.
-RUN --mount=type=bind,source=sdq-api-rust,target=/app \
+RUN --mount=type=bind,source=sdq-api-rust,target=/src \
     --mount=type=cache,target=/app/target \
     --mount=type=cache,target=/usr/local/cargo/git/db \
     --mount=type=cache,target=/usr/local/cargo/registry \
-    cd /app && cargo build --locked --release && \
+    cd /src && \
+    export CARGO_TARGET_DIR=/app/target && \
+    cargo build --locked --release && \
     cp /app/target/release/$APP_NAME /bin/server
 
 ################################################################################
