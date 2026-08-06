@@ -38,7 +38,7 @@ impl ParserService for ParserServiceXslxImpl {
             .map_err(|e| SdqError::Parse(format!("Failed to open workbook: {}", e)))?;
 
         let client = self.parse_client(filename, &mut workbook)?;
-        let gbo = self.parse_gbo(&mut workbook)?;
+        let gbo_parsed = self.parse_gbo(&mut workbook)?;
         let sdq = self.parse_sdq(&mut workbook)?;
 
         let mut parsed = ParsedFile {
@@ -55,7 +55,7 @@ impl ParserService for ParserServiceXslxImpl {
 impl ParserServiceXslxImpl {
     fn parse_gbo(
         &self,
-        workbook: &mut Xlsx<Cursor<Vec<u8>>>,
+        _workbook: &mut Xlsx<Cursor<Vec<u8>>>,
     ) -> Result<Vec<GboParsedPeriod>, SdqError> {
         // Implement GBO parsing logic here
         Ok(Vec::new())
@@ -65,7 +65,7 @@ impl ParserServiceXslxImpl {
 impl ParserServiceXslxImpl {
     fn parse_sdq(
         &self,
-        workbook: &mut Xlsx<Cursor<Vec<u8>>>,
+        _workbook: &mut Xlsx<Cursor<Vec<u8>>>,
     ) -> Result<Vec<SdqReportingPeriod>, SdqError> {
         // Implement SDQ parsing logic here
         Ok(Vec::new())
@@ -216,8 +216,7 @@ impl ParserServiceXslxImpl {
                                 .as_ref()
                                 .ok()
                                 .and_then(|row| row.get(intervention_cell_num))
-                                .and_then(|cell| cell.get_int())
-                                .map(|f| f as i32)
+                                .and_then(Self::get_cell_number)
                                 .unwrap_or(0),
                         };
                         interventions.push(sdq_model::Intervention {
@@ -232,12 +231,7 @@ impl ParserServiceXslxImpl {
         let mut aces: HashMap<AceType, i32> = HashMap::new();
         let aces_generic = answers_row
             .get(cell_num.fetch_add(1, Ordering::SeqCst))
-            .and_then(|cell| match cell {
-                DataType::Float(f) => Some(*f as i32),
-                DataType::Int(i) => Some(*i as i32),
-                DataType::String(s) => s.parse::<i32>().ok(),
-                _ => None,
-            })
+            .and_then(Self::get_cell_number)
             .unwrap_or(0);
         aces.insert(AceType::Generic, aces_generic);
 
@@ -250,11 +244,10 @@ impl ParserServiceXslxImpl {
                     ))
                 })?;
             for _ in 0..Self::NUMBER_EXTENDED_ACES {
-                if let Some(column) = answers_row.get(cell_num.fetch_add(1, Ordering::SeqCst)) {
-                    if let Some(ace_score) = column.get_int() {
-                        if let Some(ace_type_str) =
-                            extended_ace_headings_row.get(cell_num.load(Ordering::SeqCst))
-                        {
+                let ace_cell_num = cell_num.fetch_add(1, Ordering::SeqCst);
+                if let Some(column) = answers_row.get(ace_cell_num) {
+                    if let Some(ace_score) = Self::get_cell_number(column) {
+                        if let Some(ace_type_str) = extended_ace_headings_row.get(ace_cell_num) {
                             if let Some(ace_type_str) = ace_type_str.get_string() {
                                 let ace_type = ace_type_str
                                     .parse::<AceType>()
@@ -290,6 +283,17 @@ impl ParserServiceXslxImpl {
             interventions,
             aces,
         })
+    }
+}
+
+impl ParserServiceXslxImpl {
+    fn get_cell_number(cell: &DataType) -> Option<i32> {
+        match cell {
+            DataType::Float(f) => Some(*f as i32),
+            DataType::Int(i) => Some(*i as i32),
+            DataType::String(s) => s.parse::<i32>().ok(),
+            _ => None,
+        }
     }
 
     fn excel_cell_to_date(cell: &DataType) -> Option<NaiveDate> {
