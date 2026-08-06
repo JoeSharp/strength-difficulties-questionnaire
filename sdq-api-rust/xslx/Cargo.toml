@@ -7,3 +7,7 @@ edition = "2024"
 # Internal
 sdq-model = { path = "../model" }
 sdq-service = { path = "../service" }
+
+# External
+calamine = "0.22"
+chrono = { version = "0.4.45", features = ["serde"] }

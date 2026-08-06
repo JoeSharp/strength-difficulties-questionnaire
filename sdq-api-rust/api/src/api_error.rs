@@ -17,22 +17,16 @@ impl From<SdqError> for AppError {
 impl IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
         match self {
-            AppError::Sdq(SdqError::InternalError(msg)) => {
-                (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
-            }
-            AppError::Sdq(SdqError::InvalidInput(msg)) => {
-                (StatusCode::BAD_REQUEST, msg).into_response()
-            }
-            AppError::Sdq(SdqError::Db(msg)) => {
-                (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
-            }
+            AppError::Sdq(SdqError::InternalError(msg)) => (StatusCode::INTERNAL_SERVER_ERROR, msg),
+            AppError::Sdq(SdqError::InvalidInput(msg)) => (StatusCode::BAD_REQUEST, msg),
+            AppError::Sdq(SdqError::Parse(msg)) => (StatusCode::BAD_REQUEST, msg),
+            AppError::Sdq(SdqError::Db(msg)) => (StatusCode::INTERNAL_SERVER_ERROR, msg),
             AppError::Sdq(SdqError::NotImplemented) => {
-                (StatusCode::NOT_IMPLEMENTED, "Not implemented").into_response()
+                (StatusCode::NOT_IMPLEMENTED, "Not implemented".to_string())
             }
-            AppError::Multipart(e) => {
-                (StatusCode::BAD_REQUEST, format!("Multipart error: {}", e)).into_response()
-            }
-            AppError::Value(msg) => (StatusCode::BAD_REQUEST, msg).into_response(),
+            AppError::Multipart(e) => (StatusCode::BAD_REQUEST, format!("Multipart error: {}", e)),
+            AppError::Value(msg) => (StatusCode::BAD_REQUEST, msg),
         }
+        .into_response()
     }
 }

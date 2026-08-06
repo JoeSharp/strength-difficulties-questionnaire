@@ -10,6 +10,7 @@ pub enum SdqError {
     InvalidInput(String),
     InternalError(String),
     NotImplemented,
+    Parse(String),
     Db(String),
 }
 
@@ -416,15 +417,15 @@ pub struct SdqProgressSummary {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SdqReportingPeriod {
-    period: ReportingPeriod,
-    sdq: HashMap<Assessor, SdqSubmission>,
+    pub period: ReportingPeriod,
+    pub sdq: HashMap<Assessor, SdqSubmission>,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ParsedFile {
-    client: SdqClient,
-    goals: Vec<Goal>,
-    sdq: Vec<SdqReportingPeriod>,
-    gbo: Vec<GboSubmission>,
+    pub client: SdqClient,
+    pub goals: Vec<Goal>,
+    pub sdq: Vec<SdqReportingPeriod>,
+    pub gbo: Vec<GboSubmission>,
 }
