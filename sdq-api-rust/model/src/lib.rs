@@ -26,7 +26,7 @@ pub struct DemographicReport {
     pub counts: Vec<DemographicCount>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum GoalType {
     #[strum(serialize = "EMOTIONAL", to_string = "Emotional")]
@@ -47,7 +47,14 @@ pub enum GoalType {
     #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
 }
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+
+impl GoalType {
+    pub fn default_value() -> GoalType {
+        GoalType::Unknown
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 pub enum Posture {
     Internalising,
     Externalising,
@@ -55,7 +62,13 @@ pub enum Posture {
     Unknown,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+impl Posture {
+    pub fn default_value() -> Posture {
+        Posture::Unknown
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Gender {
     #[strum(serialize = "MALE", to_string = "Male")]
@@ -74,7 +87,13 @@ pub enum Gender {
     PreferNotToSay,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+impl Gender {
+    pub fn default_value() -> Gender {
+        Gender::PreferNotToSay
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Council {
     #[strum(serialize = "CHELTENHAM", to_string = "Cheltenham")]
@@ -94,8 +113,13 @@ pub enum Council {
     #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
 }
+impl Council {
+    pub fn default_value() -> Council {
+        Council::Unknown
+    }
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Ethnicity {
     #[strum(serialize = "WHITE_BRITISH", to_string = "White British")]
@@ -117,7 +141,13 @@ pub enum Ethnicity {
     Other,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+impl Ethnicity {
+    pub fn default_value() -> Ethnicity {
+        Ethnicity::Other
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum DisabilityStatus {
     #[strum(serialize = "DISABILITY", to_string = "Disability")]
@@ -128,7 +158,13 @@ pub enum DisabilityStatus {
     PreferNotToSay,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+impl DisabilityStatus {
+    pub fn default_value() -> DisabilityStatus {
+        DisabilityStatus::PreferNotToSay
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum DisabilityType {
     #[strum(serialize = "PHYSICAL", to_string = "Physical")]
@@ -168,7 +204,13 @@ pub enum DisabilityType {
     NotApplicable,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+impl DisabilityType {
+    pub fn default_value() -> DisabilityType {
+        DisabilityType::NotApplicable
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum CareExperience {
     #[strum(serialize = "NO", to_string = "No")]
@@ -184,7 +226,13 @@ pub enum CareExperience {
     Unknown,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+impl CareExperience {
+    pub fn default_value() -> CareExperience {
+        CareExperience::Unknown
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum FundingSource {
     EHCP,
@@ -204,7 +252,13 @@ pub enum FundingSource {
     Unknown,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+impl FundingSource {
+    pub fn default_value() -> FundingSource {
+        FundingSource::Unknown
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum InterventionType {
     CCPT,
@@ -213,6 +267,12 @@ pub enum InterventionType {
     IA,
     #[strum(serialize = "UNKNOWN", to_string = "Unknown")]
     Unknown,
+}
+
+impl InterventionType {
+    pub fn default_value() -> InterventionType {
+        InterventionType::Unknown
+    }
 }
 
 #[derive(
@@ -248,7 +308,13 @@ pub enum AceType {
     Generic,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, EnumString, Display)]
+impl AceType {
+    pub fn default_value() -> AceType {
+        AceType::Generic
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter, EnumString, Display)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum EnglishAsAdditionalLanguage {
     #[strum(serialize = "YES", to_string = "Yes")]
@@ -259,7 +325,13 @@ pub enum EnglishAsAdditionalLanguage {
     PreferNotToSay,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+impl EnglishAsAdditionalLanguage {
+    pub fn default_value() -> EnglishAsAdditionalLanguage {
+        EnglishAsAdditionalLanguage::PreferNotToSay
+    }
+}
+
+#[derive(PartialEq, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Intervention {
     pub r#type: String,
     pub sessions: i32,
@@ -295,7 +367,7 @@ pub struct DemographicFilter {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SdqClient {
-    pub client_id: Option<Uuid>,
+    pub client_id: Uuid,
     pub code_name: Option<String>,
     pub date_of_birth: Option<NaiveDate>,
     pub gender: Option<Gender>,

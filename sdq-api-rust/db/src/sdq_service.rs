@@ -49,7 +49,7 @@ impl From<SdqSubmissionRow> for SdqScore {
 
 #[async_trait]
 impl SdqService for SdqServiceSqlxImpl {
-    async fn record_response(&self, sdq: SdqSubmission) -> Result<(), SdqError> {
+    async fn record_response(&self, _sdq: SdqSubmission) -> Result<(), SdqError> {
         Err(SdqError::NotImplemented)
     }
     async fn get_submission(
@@ -90,41 +90,41 @@ impl SdqService for SdqServiceSqlxImpl {
     }
     async fn get_summary(
         &self,
-        period_id: &Uuid,
-        assessor: &Assessor,
+        _period_id: &Uuid,
+        _assessor: &Assessor,
     ) -> Result<SdqSubmissionSummary, SdqError> {
         Err(SdqError::NotImplemented)
     }
     async fn get_reporting_periods(
         &self,
-        client_id: &Uuid,
+        _client_id: &Uuid,
     ) -> Result<Vec<ReportingPeriod>, SdqError> {
         Err(SdqError::NotImplemented)
     }
     async fn query_sdq_progress(
         &self,
-        assessors: &Vec<Assessor>,
-        filters: &Vec<DemographicFilter>,
-        from: &NaiveDate,
-        to: &NaiveDate,
+        _assessors: &Vec<Assessor>,
+        _filters: &Vec<DemographicFilter>,
+        _from: &NaiveDate,
+        _to: &NaiveDate,
     ) -> Result<Vec<SdqProgressSummary>, SdqError> {
         Err(SdqError::NotImplemented)
     }
 
     async fn query_sdq_summaries(
         &self,
-        assessors: &Vec<Assessor>,
-        filters: &Vec<DemographicFilter>,
-        from: &NaiveDate,
-        to: &NaiveDate,
+        _assessors: &Vec<Assessor>,
+        _filters: &Vec<DemographicFilter>,
+        _from: &NaiveDate,
+        _to: &NaiveDate,
     ) -> Result<HashMap<Uuid, HashMap<NaiveDate, Vec<SdqSubmissionSummary>>>, SdqError> {
         Err(SdqError::NotImplemented)
     }
 
     async fn get_sdq_progress_for_client(
         &self,
-        client_id: &Uuid,
-        assessor: &Assessor,
+        _client_id: &Uuid,
+        _assessor: &Assessor,
     ) -> Result<SdqProgressSummary, SdqError> {
         Err(SdqError::NotImplemented)
     }

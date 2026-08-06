@@ -18,10 +18,10 @@ impl GoalServiceSqlxImpl {
 
 #[async_trait]
 impl GoalService for GoalServiceSqlxImpl {
-    async fn save_goal(&self, goal: Goal) -> Result<(), SdqError> {
+    async fn save_goal(&self, _goal: Goal) -> Result<(), SdqError> {
         Err(SdqError::NotImplemented)
     }
-    async fn get_for_client(&self, client_id: &Uuid) -> Result<Vec<Goal>, SdqError> {
+    async fn get_for_client(&self, _client_id: &Uuid) -> Result<Vec<Goal>, SdqError> {
         Err(SdqError::NotImplemented)
     }
     async fn delete_all_goals(&self) -> Result<(), SdqError> {
@@ -29,36 +29,36 @@ impl GoalService for GoalServiceSqlxImpl {
     }
     async fn get_goals_with_progress(
         &self,
-        assessors: &Vec<Assessor>,
-        filters: &Vec<DemographicFilter>,
-        min_progress: u64,
-        goal_types: &Vec<GoalType>,
-        from: &chrono::NaiveDate,
-        to: &chrono::NaiveDate,
+        _assessors: &Vec<Assessor>,
+        _filters: &Vec<DemographicFilter>,
+        _min_progress: u64,
+        _goal_types: &Vec<GoalType>,
+        _from: &chrono::NaiveDate,
+        _to: &chrono::NaiveDate,
     ) -> Result<Vec<GoalProgress>, SdqError> {
         Err(SdqError::NotImplemented)
     }
     async fn get_goals_with_progress_for_client(
         &self,
-        client_id: &Uuid,
-        assessors: Assessor,
+        _client_id: &Uuid,
+        _assessors: Assessor,
     ) -> Result<Vec<GoalProgress>, SdqError> {
         Err(SdqError::NotImplemented)
     }
     async fn get_goal_progress(
         &self,
-        goal_id: &Uuid,
-        assessor: Assessor,
+        _goal_id: &Uuid,
+        _assessor: Assessor,
     ) -> Result<GoalProgress, SdqError> {
         Err(SdqError::NotImplemented)
     }
-    async fn update_goal(&self, goal: Goal) -> Result<Goal, SdqError> {
+    async fn update_goal(&self, _goal: Goal) -> Result<Goal, SdqError> {
         Err(SdqError::NotImplemented)
     }
-    async fn get_goal(&self, goal_id: &Uuid) -> Result<Goal, SdqError> {
+    async fn get_goal(&self, _goal_id: &Uuid) -> Result<Goal, SdqError> {
         Err(SdqError::NotImplemented)
     }
-    async fn submit_gbo(&self, submission: GboSubmission) -> Result<(), SdqError> {
+    async fn submit_gbo(&self, _submission: GboSubmission) -> Result<(), SdqError> {
         Err(SdqError::NotImplemented)
     }
 }

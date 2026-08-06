@@ -15,7 +15,7 @@ impl StatementServiceSqlxImpl {
 
 #[async_trait]
 impl StatementService for StatementServiceSqlxImpl {
-    async fn get_statement(&self, key: String) -> Result<Statement, SdqError> {
+    async fn get_statement(&self, _key: String) -> Result<Statement, SdqError> {
         Err(SdqError::NotImplemented)
     }
 

@@ -66,7 +66,7 @@ impl ClientServiceSqlxImpl {
 
 #[derive(sqlx::FromRow)]
 pub struct SdqClientSqlRow {
-    pub client_id: Option<Uuid>,
+    pub client_id: Uuid,
     pub code_name: Option<String>,
     pub date_of_birth: Option<NaiveDate>,
     pub gender: Option<String>,
@@ -208,16 +208,16 @@ impl ClientService for ClientServiceSqlxImpl {
             .map(|raw_vec| raw_vec.into_iter().map(SdqClient::from).collect())
     }
 
-    async fn get_client_by_id(&self, client_id: &Uuid) -> Result<SdqClient, SdqError> {
+    async fn get_client_by_id(&self, _client_id: &Uuid) -> Result<SdqClient, SdqError> {
         Err(SdqError::NotImplemented)
     }
-    async fn create_client(&self, client: SdqClient) -> Result<SdqClient, SdqError> {
+    async fn create_client(&self, _client: SdqClient) -> Result<SdqClient, SdqError> {
         Err(SdqError::NotImplemented)
     }
-    async fn update_client(&self, client: SdqClient) -> Result<SdqClient, SdqError> {
+    async fn update_client(&self, _client: SdqClient) -> Result<SdqClient, SdqError> {
         Err(SdqError::NotImplemented)
     }
-    async fn delete_client(&self, client_id: &Uuid) -> Result<(), SdqError> {
+    async fn delete_client(&self, _client_id: &Uuid) -> Result<(), SdqError> {
         Err(SdqError::NotImplemented)
     }
     async fn delete_all_clients(&self) -> Result<(), SdqError> {
