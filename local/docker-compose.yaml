@@ -22,12 +22,12 @@ services:
       sdq-db-migration:
         condition: service_completed_successfully
 
-  sdq-service:
+  sdq-api-java:
     build:
       context: ..
       dockerfile: Dockerfile.java
-    image: sdq-app
-    container_name: sdq-app
+    image: sdq-api-java
+    container_name: sdq-api-java
     networks:
       - sdq
     profiles:

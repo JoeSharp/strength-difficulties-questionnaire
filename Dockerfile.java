@@ -1,14 +1,14 @@
 # Stage 1: Build UI
 FROM node:24-alpine AS ui-builder
-ARG UI_MODULE=sdq-ui
+ARG UI_MODULE=sdq-analysis-ui
 WORKDIR /ui
 
 # Copy only package files first for caching
-COPY ${UI_MODULE}/package.json sdq-ui/package-lock.json ./
+COPY ${UI_MODULE}/package.json sdq-analysis-ui/package-lock.json ./
 RUN npm install
 
 # Copy the rest of the UI source
-COPY sdq-ui/ .
+COPY sdq-analysis-ui/ .
 
 # Build the UI (produces /ui/dist)
 RUN npm run build

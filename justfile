@@ -22,18 +22,18 @@ install-ui:
     npm install --prefix {{UI_MODULE}}
 
 # Build the user interface
-build-ui: install-ui
+build-analysis-ui: install-ui
     npm run build --prefix {{UI_MODULE}}
 
 # Copy the static resources of the UI into the public backend folder.
-copy-ui: build-ui
+copy-analysis-ui: build-analysis-ui
     rm -rf {{API_MODULE_JAVA}}/src/main/resources/static
-    cp -R sdq-ui/dist {{API_MODULE_JAVA}}/src/main/resources/static
+    cp -R sdq-analysis-ui/dist {{API_MODULE_JAVA}}/src/main/resources/static
 
 run-service-dev-rust: 
     cargo run --manifest-path sdq-api-rust/app/Cargo.toml
 
-run-dev-rust: copy-ui run-service-dev-rust
+run-dev-rust: copy-analysis-ui run-service-dev-rust
 
 build-api-rust:
     cargo build --manifest-path sdq-api-rust/app/Cargo.toml
@@ -43,14 +43,14 @@ run-service-dev-java:
     ./gradlew :spring-app:bootRun
 
 # Build the UI and Run the service via gradle
-run-dev-java: copy-ui run-service-dev-java
+run-dev-java: copy-analysis-ui run-service-dev-java
 
 # Build the JAR file
 build-api-java:
     ./gradlew :spring-app:bootJar
 
 # Build the UI and bundle into application JAR file
-build-java: copy-ui build-api-java
+build-java: copy-analysis-ui build-api-java
 
 # Runs the user interface in hot reloading mode.
 run-ui-dev: install-ui
@@ -101,7 +101,7 @@ docker-build-rust-api:
 
 # Build the Docker image for the application
 docker-build-java-api:
-    docker build -t sdq-app -f Dockerfile.java .
+    docker build -t sdq-api-java -f Dockerfile.java .
 
 # Build the Docker image for the database migration
 docker-build-db-migration:

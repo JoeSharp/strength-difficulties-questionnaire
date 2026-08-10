@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use sdq_model::{ParsedFile, SdqError};
 
 pub trait ParserService {
