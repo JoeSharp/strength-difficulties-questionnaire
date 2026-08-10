@@ -38,6 +38,7 @@ RUN test -f /app/${APP_MODULE}/build/libs/${APP_MODULE}-0.0.1-SNAPSHOT.jar
 
 # Stage: Runtime
 FROM amazoncorretto:21-alpine-jdk
+ARG APP_MODULE=spring-app
 LABEL authors="ratracejoe.co.uk"
 
 # Install curl
