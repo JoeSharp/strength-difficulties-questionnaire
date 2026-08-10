@@ -33,8 +33,8 @@ RUN rm -rf ${APP_MODULE}/src/main/resources/static
 COPY --from=ui-builder /ui/dist ${APP_MODULE}/src/main/resources/static
 COPY ${API_MODULE_JAVA}/entrypoint.sh /entrypoint.sh
 
-RUN ./gradlew build :spring-app:bootJar --no-daemon -x test
-RUN test -f /app/spring-app/build/libs/spring-app-0.0.1-SNAPSHOT.jar
+RUN ./gradlew build :${APP_MODULE}:bootJar --no-daemon -x test
+RUN test -f /app/${APP_MODULE}/build/libs/${APP_MODULE}-0.0.1-SNAPSHOT.jar
 
 # Stage: Runtime
 FROM amazoncorretto:21-alpine-jdk
@@ -43,7 +43,7 @@ LABEL authors="ratracejoe.co.uk"
 # Install curl
 RUN apk --no-cache add curl
 
-COPY --from=backend-builder /app/spring-app/build/libs/spring-app-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=backend-builder /app/${APP_MODULE}/build/libs/${APP_MODULE}-0.0.1-SNAPSHOT.jar app.jar
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 CMD curl -f http://localhost:8080/api/actuator/health || exit 1
 
