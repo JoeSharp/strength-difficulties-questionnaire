@@ -105,7 +105,7 @@ docker-build-java-api:
 
 # Build the Docker image for the database migration
 docker-build-db-migration:
-    docker build -t sdq-db-migration {{DB_MODULE}}/.
+    docker build -t {{DB_MODULE}} {{DB_MODULE}}/.
 
 build: build-analysis-ui \
     docker-build-db-migration \

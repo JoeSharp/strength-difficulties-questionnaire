@@ -5,8 +5,8 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile.rust
-    image: sdq-api-rust
-    container_name: sdq-api-rust
+    image: ${API_MODULE_RUST}
+    container_name: ${API_MODULE_RUST}
     networks:
       - sdq
     profiles:
@@ -27,8 +27,8 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile.java
-    image: sdq-api-java
-    container_name: sdq-api-java
+    image: ${API_MODULE_JAVA}
+    container_name: ${API_MODULE_JAVA}
     networks:
       - sdq
     profiles:
@@ -46,9 +46,9 @@ services:
 
   sdq-db-migration:
     build:
-      context: ../sdq-database
-    image: sdq-db-migration
-    container_name: sdq-db-migration
+      context: ../${DB_MODULE}
+    image: ${DB_MODULE}
+    container_name: ${DB_MODULE}
     networks:
       - sdq
     environment:

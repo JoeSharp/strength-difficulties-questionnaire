@@ -22,9 +22,9 @@ services:
 
   sdq-test-db-migration:
     build:
-      context: ../sdq-database
-    image: sdq-db-migration
-    container_name: sdq-test-db-migration
+      context: ../${DB_MODULE}
+    image: ${DB_MODULE}
+    container_name: ${DB_MODULE}-test
     networks:
       - sdq-test
     environment:
