@@ -107,9 +107,14 @@ docker-build-java-api:
 docker-build-db-migration:
     docker build -t sdq-db-migration {{DB_MODULE}}/.
 
+build: build-analysis-ui \
+    docker-build-db-migration \
+    docker-build-rust-api \
+    docker-build-java-api 
+
 # Run the migration on its own
-docker-db-migrate:
-    docker compose -f local/docker-compose.yaml sdq-db-migration
+database-migrate:
+    docker compose -f local/docker-compose.yaml up --wait --build
 
 # take down the docker stack, but also remove volumes
 docker-clean:
@@ -117,11 +122,11 @@ docker-clean:
     docker compose -f local/docker-compose.test.yaml down --volumes
 
 # Connect a shell to the database.
-connect-db:
+database-connect:
     echo "Connecting to database"
     docker exec -it {{APPLICATION_NAME}}-db psql -d {{SDQ_DATABASE_NAME}} -U {{SDQ_DATABASE_USERNAME}}
 
-connect-test-db:
+test-database-connect:
     echo "Connecting to test database"
     docker exec -it {{APPLICATION_NAME}}-test-db psql -d {{SDQ_DATABASE_NAME}} -U test
 
