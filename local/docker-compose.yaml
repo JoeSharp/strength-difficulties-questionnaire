@@ -1,6 +1,20 @@
 name: sdq
 services:
 
+  sdq-api-go:
+    build: 
+      context: ..
+      dockerfile: Dockerfile.go
+    image: ${API_MODULE_GO}
+    container_name: ${API_MODULE_GO}
+    networks:
+      - sdq
+    profiles:
+      - api-go
+    ports:
+      # Required when running the UI in dev mode on top of the service in docker
+      - "8082:3000"
+
   sdq-api-rust:
     build:
       context: ..

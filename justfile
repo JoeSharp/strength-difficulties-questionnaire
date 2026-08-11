@@ -1,6 +1,7 @@
 set dotenv-load := true
 
 DB_MODULE := env_var("DB_MODULE")
+API_MODULE_GO := env_var("API_MODULE_GO")
 API_MODULE_JAVA := env_var("API_MODULE_JAVA")
 API_MODULE_RUST := env_var("API_MODULE_RUST")
 UI_MODULE := env_var("UI_MODULE")
@@ -79,6 +80,9 @@ docker-run-app-no-build:
 # Run the entire system up within Docker
 docker-run-app:
     docker compose -f local/docker-compose.yaml --profile api-rust --profile api-java up --build -d --wait
+
+docker-run-go:
+    docker compose -f local/docker-compose.yaml up --build sdq-api-go --wait
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev-java for that
