@@ -15,23 +15,23 @@ RUN npm run build
 
 # Stage: Build Backend
 FROM eclipse-temurin:21-jdk AS backend-builder
-ARG API_MODULE_JAVA=sdq-api-java
+ARG ANALYSIS_API_MODULE_JAVA=sdq-analysis-api-java
 ARG APP_MODULE=spring-app
 WORKDIR /app
 
 # Copy and build just gradle itself for caching
-COPY ${API_MODULE_JAVA}/gradlew ${API_MODULE_JAVA}/gradlew.bat ./
-COPY ${API_MODULE_JAVA}/gradle ./gradle
-COPY ${API_MODULE_JAVA}/build.gradle ${API_MODULE_JAVA}/settings.gradle ./
+COPY ${ANALYSIS_API_MODULE_JAVA}/gradlew ${ANALYSIS_API_MODULE_JAVA}/gradlew.bat ./
+COPY ${ANALYSIS_API_MODULE_JAVA}/gradle ./gradle
+COPY ${ANALYSIS_API_MODULE_JAVA}/build.gradle ${ANALYSIS_API_MODULE_JAVA}/settings.gradle ./
 RUN ./gradlew dependencies
 
 # Copy the backend source
-COPY ${API_MODULE_JAVA} .
+COPY ${ANALYSIS_API_MODULE_JAVA} .
 
 # Copy UI build output into Spring Boot static resources
 RUN rm -rf ${APP_MODULE}/src/main/resources/static
 COPY --from=ui-builder /ui/dist ${APP_MODULE}/src/main/resources/static
-COPY ${API_MODULE_JAVA}/entrypoint.sh /entrypoint.sh
+COPY ${ANALYSIS_API_MODULE_JAVA}/entrypoint.sh /entrypoint.sh
 
 RUN ./gradlew build :${APP_MODULE}:bootJar --no-daemon -x test
 RUN test -f /app/${APP_MODULE}/build/libs/${APP_MODULE}-0.0.1-SNAPSHOT.jar

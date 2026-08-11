@@ -5,10 +5,10 @@ FROM golang:1.26.3 AS build-stage
 
 WORKDIR /src
 
-COPY sdq-api-go/ .
+COPY sdq-submission-api-go/ .
 RUN go work sync
 
-RUN cd app && CGO_ENABLED=0 GOOS=linux go build -o /sdq-api-go
+RUN cd app && CGO_ENABLED=0 GOOS=linux go build -o /sdq-submission-api-go
 
 # Run the tests in the container
 #FROM build-stage AS run-test-stage
@@ -19,10 +19,10 @@ FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
 WORKDIR /
 
-COPY --from=build-stage /sdq-api-go /sdq-api-go
+COPY --from=build-stage /sdq-submission-api-go /sdq-submission-api-go
 
 EXPOSE 8080
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/sdq-api-go"]
+ENTRYPOINT ["/sdq-submission-api-go"]

@@ -1193,7 +1193,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sdq-api-rust"
+name = "sdq-analysis-api-rust"
 version = "0.1.0"
 dependencies = [
  "axum",

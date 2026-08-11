@@ -1,12 +1,12 @@
 name: sdq
 services:
 
-  sdq-api-go:
+  sdq-submission-api-go:
     build: 
       context: ..
       dockerfile: Dockerfile.go
-    image: ${API_MODULE_GO}
-    container_name: ${API_MODULE_GO}
+    image: ${SUBMISSION_API_MODULE_GO}
+    container_name: ${SUBMISSION_API_MODULE_GO}
     networks:
       - sdq
     profiles:
@@ -15,12 +15,12 @@ services:
       # Required when running the UI in dev mode on top of the service in docker
       - "8082:3000"
 
-  sdq-api-rust:
+  sdq-analysis-api-rust:
     build:
       context: ..
       dockerfile: Dockerfile.rust
-    image: ${API_MODULE_RUST}
-    container_name: ${API_MODULE_RUST}
+    image: ${ANALYSIS_API_MODULE_RUST}
+    container_name: ${ANALYSIS_API_MODULE_RUST}
     networks:
       - sdq
     profiles:
@@ -37,12 +37,12 @@ services:
       sdq-db-migration:
         condition: service_completed_successfully
 
-  sdq-api-java:
+  sdq-analysis-api-java:
     build:
       context: ..
       dockerfile: Dockerfile.java
-    image: ${API_MODULE_JAVA}
-    container_name: ${API_MODULE_JAVA}
+    image: ${ANALYSIS_API_MODULE_JAVA}
+    container_name: ${ANALYSIS_API_MODULE_JAVA}
     networks:
       - sdq
     profiles:

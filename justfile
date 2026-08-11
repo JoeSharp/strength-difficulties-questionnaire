@@ -1,9 +1,9 @@
 set dotenv-load := true
 
 DB_MODULE := env_var("DB_MODULE")
-API_MODULE_GO := env_var("API_MODULE_GO")
-API_MODULE_JAVA := env_var("API_MODULE_JAVA")
-API_MODULE_RUST := env_var("API_MODULE_RUST")
+SUBMISSION_API_MODULE_GO := env_var("SUBMISSION_API_MODULE_GO")
+ANALYSIS_API_MODULE_JAVA := env_var("ANALYSIS_API_MODULE_JAVA")
+ANALYSIS_API_MODULE_RUST := env_var("ANALYSIS_API_MODULE_RUST")
 UI_MODULE := env_var("UI_MODULE")
 APPLICATION_NAME := env_var("APPLICATION_NAME")
 SDQ_DATABASE_NAME := env_var("SDQ_DATABASE_NAME")
@@ -13,6 +13,7 @@ SDQ_DATABASE_USERNAME := env_var("SDQ_DATABASE_USERNAME")
 default: docker-run-app
 
 # Run the whole application locally in Docker
+run: docker-run-app
 start: docker-run-app
 
 # Stop the application
@@ -28,16 +29,16 @@ build-analysis-ui: install-ui
 
 # Copy the static resources of the UI into the public backend folder.
 copy-analysis-ui: build-analysis-ui
-    rm -rf {{API_MODULE_JAVA}}/src/main/resources/static
-    cp -R sdq-analysis-ui/dist {{API_MODULE_JAVA}}/src/main/resources/static
+    rm -rf {{ANALYSIS_API_MODULE_JAVA}}/src/main/resources/static
+    cp -R sdq-analysis-ui/dist {{ANALYSIS_API_MODULE_JAVA}}/src/main/resources/static
 
 run-service-dev-rust: 
-    cargo run --manifest-path sdq-api-rust/app/Cargo.toml
+    cargo run --manifest-path sdq-analysis-api-rust/app/Cargo.toml
 
 run-dev-rust: copy-analysis-ui run-service-dev-rust
 
 build-api-rust:
-    cargo build --manifest-path sdq-api-rust/app/Cargo.toml
+    cargo build --manifest-path sdq-analysis-api-rust/app/Cargo.toml
 
 # Run the service via gradle
 run-service-dev-java:
@@ -62,7 +63,7 @@ test-service-java:
     ./gradlew test --info
 
 test-service-rust:
-    cargo test --manifest-path sdq-api-rust/app/Cargo.toml
+    cargo test --manifest-path sdq-analysis-api-rust/app/Cargo.toml
 
 # Run the dependencies required by unit tests
 # Always clean them out first
@@ -82,7 +83,7 @@ docker-run-app:
     docker compose -f local/docker-compose.yaml --profile api-rust --profile api-java up --build -d --wait
 
 docker-run-go:
-    docker compose -f local/docker-compose.yaml up --build sdq-api-go --wait
+    docker compose -f local/docker-compose.yaml up --build sdq-submission-api-go --wait
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev-java for that
@@ -101,11 +102,11 @@ docker-stop-test:
 docker-stop-all: docker-stop docker-stop-test
 
 docker-build-rust-api:
-    docker build -t sdq-api-rust -f Dockerfile.rust .
+    docker build -t sdq-analysis-api-rust -f Dockerfile.rust .
 
 # Build the Docker image for the application
 docker-build-java-api:
-    docker build -t sdq-api-java -f Dockerfile.java .
+    docker build -t sdq-analysis-api-java -f Dockerfile.java .
 
 # Build the Docker image for the database migration
 docker-build-db-migration:
