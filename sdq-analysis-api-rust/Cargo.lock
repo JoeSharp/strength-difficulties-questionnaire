@@ -1176,23 +1176,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
-name = "sdq-api"
-version = "0.1.0"
-dependencies = [
- "axum",
- "chrono",
- "sdq-model",
- "sdq-service",
- "serde",
- "serde_json",
- "strum",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
 name = "sdq-analysis-api-rust"
 version = "0.1.0"
 dependencies = [
@@ -1210,6 +1193,23 @@ dependencies = [
  "strum",
  "tokio",
  "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
+name = "sdq-api"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "chrono",
+ "sdq-model",
+ "sdq-service",
+ "serde",
+ "serde_json",
+ "strum",
+ "tokio",
  "tracing",
  "tracing-subscriber",
  "uuid",
