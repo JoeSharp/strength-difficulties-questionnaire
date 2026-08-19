@@ -1,4 +1,4 @@
-rootProject.name = 'sdq-analysis'
+rootProject.name = 'sdq-analysis-api-java'
 
 include 'spring-app'
 include 'domain:utils'
