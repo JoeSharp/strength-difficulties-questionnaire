@@ -4,7 +4,7 @@ services:
   sdq-submission-api-go:
     build: 
       context: ..
-      dockerfile: Dockerfile.go
+      dockerfile: Dockerfile.golang
     image: ${SUBMISSION_API_MODULE_GO}
     container_name: ${SUBMISSION_API_MODULE_GO}
     networks:

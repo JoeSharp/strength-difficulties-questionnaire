@@ -56,9 +56,9 @@ fn read_db_config_from_env() -> DbConfig {
 }
 
 fn get_static_resource_service() -> ServeDir {
-    let static_resources_dir =
-        env::var("STATIC_RESOURCES_DIR").expect("STATIC_RESOURCES_DIR not in env");
-    ServeDir::new(static_resources_dir)
+    ServeDir::new(
+        env::var("ANALYSIS_UI_RESOURCES_DIR").expect("ANALYSIS_UI_RESOURCES_DIR not in env"),
+    )
 }
 
 #[tokio::main]

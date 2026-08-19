@@ -1,11 +1,12 @@
 set dotenv-load := true
 
+APPLICATION_NAME := env_var("APPLICATION_NAME")
 DB_MODULE := env_var("DB_MODULE")
 SUBMISSION_API_MODULE_GO := env_var("SUBMISSION_API_MODULE_GO")
 ANALYSIS_API_MODULE_JAVA := env_var("ANALYSIS_API_MODULE_JAVA")
 ANALYSIS_API_MODULE_RUST := env_var("ANALYSIS_API_MODULE_RUST")
-UI_MODULE := env_var("UI_MODULE")
-APPLICATION_NAME := env_var("APPLICATION_NAME")
+ANALYSIS_UI_MODULE := env_var("ANALYSIS_UI_MODULE")
+SUBMISSION_UI_MODULE := env_var("SUBMISSION_UI_MODULE")
 SDQ_DATABASE_NAME := env_var("SDQ_DATABASE_NAME")
 SDQ_DATABASE_USERNAME := env_var("SDQ_DATABASE_USERNAME")
 
@@ -19,13 +20,21 @@ start: docker-run-app
 # Stop the application
 stop: docker-stop-all
 
-# Install UI dependencies
-install-ui:
-    npm install --prefix {{UI_MODULE}}
+# Install Analysis UI dependencies
+install-analysis-ui:
+    npm install --prefix {{ANALYSIS_UI_MODULE}}
 
-# Build the user interface
-build-analysis-ui: install-ui
-    npm run build --prefix {{UI_MODULE}}
+# Build the Analysis user interface
+build-analysis-ui: install-analysis-ui
+    npm run build --prefix {{ANALYSIS_UI_MODULE}}
+
+# Install Submission UI dependencies
+install-submission-ui:
+    npm install --prefix {{SUBMISSION_UI_MODULE}}
+
+# Build the Submission user interface
+build-submission-ui: install-submission-ui
+    npm run build --prefix {{SUBMISSION_UI_MODULE}}
 
 # Copy the static resources of the UI into the public backend folder.
 copy-analysis-ui: build-analysis-ui
@@ -35,9 +44,14 @@ copy-analysis-ui: build-analysis-ui
 run-service-dev-rust: 
     cargo run --manifest-path sdq-analysis-api-rust/app/Cargo.toml
 
-run-dev-rust: copy-analysis-ui run-service-dev-rust
+run-dev-rust: build-analysis-ui run-service-dev-rust
 
-build-api-rust:
+run-service-dev-go:
+    cd sdq-submission-api-go && go run ./app
+
+run-dev-go: build-submission-ui run-service-dev-go
+
+build-analysis-api-rust:
     cargo build --manifest-path sdq-analysis-api-rust/app/Cargo.toml
 
 # Run the service via gradle
@@ -55,8 +69,8 @@ build-api-java:
 build-java: copy-analysis-ui build-api-java
 
 # Runs the user interface in hot reloading mode.
-run-ui-dev: install-ui
-    npm run dev --prefix {{UI_MODULE}}
+run-analysis-ui-dev: install-analysis-ui
+    npm run dev --prefix {{ANALYSIS_UI_MODULE}}
 
 # Run the backend unit tests
 test-service-java:
@@ -103,6 +117,9 @@ docker-stop-all: docker-stop docker-stop-test
 
 docker-build-rust-api:
     docker build -t sdq-analysis-api-rust -f Dockerfile.rust .
+
+docker-build-go-api:
+    docker build -t sdq-submission-api-go -f Dockerfile.golang .
 
 # Build the Docker image for the application
 docker-build-java-api:

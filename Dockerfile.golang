@@ -1,0 +1,45 @@
+################################################################################
+# Stage 1: Build UI
+FROM node:24-alpine AS ui-builder
+ARG ANALYSIS_UI_MODULE=sdq-submission-ui
+WORKDIR /ui
+
+# Copy only package files first for caching
+COPY ${ANALYSIS_UI_MODULE}/package.json ${ANALYSIS_UI_MODULE}/package-lock.json ./
+RUN npm install
+
+# Copy the rest of the UI source
+COPY ../sdq-submission-ui/ .
+
+# Build the UI (produces /ui/dist)
+RUN npm run build
+
+# Backend Build Stage
+FROM golang:1.26.3 AS backend-builder
+
+WORKDIR /src
+
+COPY sdq-submission-api-go/ .
+RUN go work sync
+
+RUN cd app && CGO_ENABLED=0 GOOS=linux go build -o /sdq-submission-api-go
+
+# Run the tests in the container
+#FROM build-stage AS run-test-stage
+#RUN go test -v ./...
+
+# Deploy the application binary into a lean image
+FROM gcr.io/distroless/base-debian11 AS build-release-stage
+
+WORKDIR /
+
+COPY --from=backend-builder /sdq-submission-api-go /sdq-submission-api-go
+COPY --from=ui-builder /ui/dist /dist
+
+ENV SUBMISSION_UI_RESOURCES_DIR=/dist
+
+EXPOSE 3000
+
+USER nonroot:nonroot
+
+ENTRYPOINT ["/sdq-submission-api-go"]

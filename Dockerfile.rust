@@ -5,11 +5,11 @@ ARG APP_NAME=sdq-analysis-api-rust
 ################################################################################
 # Stage 1: Build UI
 FROM node:24-alpine AS ui-builder
-ARG UI_MODULE=sdq-analysis-ui
+ARG ANALYSIS_UI_MODULE=sdq-analysis-ui
 WORKDIR /ui
 
 # Copy only package files first for caching
-COPY ${UI_MODULE}/package.json ${UI_MODULE}/package-lock.json ./
+COPY ${ANALYSIS_UI_MODULE}/package.json ${ANALYSIS_UI_MODULE}/package-lock.json ./
 RUN npm install
 
 # Copy the rest of the UI source
@@ -53,7 +53,7 @@ COPY --from=ui-builder /ui/dist /dist
 
 # Configure rocket to listen on all interfaces.
 ENV ROCKET_ADDRESS=0.0.0.0
-ENV STATIC_RESOURCES_DIR=/dist
+ENV ANALYSIS_UI_RESOURCES_DIR=/dist
 
 # Expose the port that the application listens on.
 EXPOSE 3000
