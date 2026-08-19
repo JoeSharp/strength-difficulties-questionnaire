@@ -115,7 +115,7 @@ docker-run-deps:
 
 # Stop the application stack
 docker-stop:
-    docker compose -f local/docker-compose.yaml --profile api-java --profile api-rust down
+    docker compose -f local/docker-compose.yaml --profile api-java --profile api-rust --profile api-go down
 
 # Stop the test dependencies
 docker-stop-test:
