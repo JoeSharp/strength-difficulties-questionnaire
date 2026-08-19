@@ -39,7 +39,7 @@ build-submission-ui: install-submission-ui
 # Copy the static resources of the UI into the public backend folder.
 copy-analysis-ui: build-analysis-ui
     rm -rf {{ANALYSIS_API_MODULE_JAVA}}/src/main/resources/static
-    cp -R sdq-analysis-ui/dist {{ANALYSIS_API_MODULE_JAVA}}/src/main/resources/static
+    cp -R {{ANALYSIS_UI_MODULE}}/dist {{ANALYSIS_API_MODULE_JAVA}}/spring-app/src/main/resources/static
 
 run-service-dev-rust: 
     cargo run --manifest-path sdq-analysis-api-rust/app/Cargo.toml
@@ -47,26 +47,32 @@ run-service-dev-rust:
 run-dev-rust: build-analysis-ui run-service-dev-rust
 
 run-service-dev-go:
-    cd sdq-submission-api-go && go run ./app
+    cd {{SUBMISSION_API_MODULE_GO}} && go run ./app
 
 run-dev-go: build-submission-ui run-service-dev-go
 
 build-analysis-api-rust:
-    cargo build --manifest-path sdq-analysis-api-rust/app/Cargo.toml
+    cargo build --manifest-path {{ANALYSIS_API_MODULE_RUST}}/app/Cargo.toml
 
 # Run the service via gradle
 run-service-dev-java:
-    ./gradlew :spring-app:bootRun
+    cd {{ANALYSIS_API_MODULE_JAVA}} && ./gradlew :spring-app:bootRun
 
 # Build the UI and Run the service via gradle
 run-dev-java: copy-analysis-ui run-service-dev-java
 
 # Build the JAR file
 build-api-java:
-    ./gradlew :spring-app:bootJar
+    cd {{ANALYSIS_API_MODULE_JAVA}} && ./gradlew :spring-app:bootJar
 
 # Build the UI and bundle into application JAR file
 build-java: copy-analysis-ui build-api-java
+
+build-rust:
+    cargo build --manifest-path sdq-analysis-api-rust/app/Cargo.toml
+
+build-go:
+    cd {{SUBMISSION_API_MODULE_GO}} && go build -o dist/sdq-submission-api-go ./app
 
 # Runs the user interface in hot reloading mode.
 run-analysis-ui-dev: install-analysis-ui
@@ -74,7 +80,7 @@ run-analysis-ui-dev: install-analysis-ui
 
 # Run the backend unit tests
 test-service-java:
-    ./gradlew test --info
+    cd {{ANALYSIS_API_MODULE_JAVA}} && ./gradlew test --info
 
 test-service-rust:
     cargo test --manifest-path sdq-analysis-api-rust/app/Cargo.toml
@@ -130,9 +136,14 @@ docker-build-db-migration:
     docker build -t {{DB_MODULE}} {{DB_MODULE}}/.
 
 build: build-analysis-ui \
+    build-submission-ui \
+    build-java \
+    build-rust \
+    build-go \
     docker-build-db-migration \
     docker-build-rust-api \
-    docker-build-java-api 
+    docker-build-java-api \
+    docker-build-go-api
 
 # Run the migration on its own
 database-migrate:
