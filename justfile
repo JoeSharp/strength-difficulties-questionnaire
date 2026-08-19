@@ -42,12 +42,15 @@ copy-analysis-ui: build-analysis-ui
     cp -R {{ANALYSIS_UI_MODULE}}/dist {{ANALYSIS_API_MODULE_JAVA}}/spring-app/src/main/resources/static
 
 run-service-dev-rust: 
+    ANALYSIS_UI_RESOURCES_DIR="{{ANALYSIS_UI_MODULE}}/dist" \
     cargo run --manifest-path sdq-analysis-api-rust/app/Cargo.toml
 
 run-dev-rust: build-analysis-ui run-service-dev-rust
 
 run-service-dev-go:
-    cd {{SUBMISSION_API_MODULE_GO}} && go run ./app
+    cd {{SUBMISSION_API_MODULE_GO}} && \
+        SUBMISSION_UI_RESOURCES_DIR="../{{SUBMISSION_UI_MODULE}}/dist" \
+         go run ./app
 
 run-dev-go: build-submission-ui run-service-dev-go
 
@@ -103,7 +106,7 @@ docker-run-app:
     docker compose -f local/docker-compose.yaml --profile api-rust --profile api-java up --build -d --wait
 
 docker-run-go:
-    docker compose -f local/docker-compose.yaml up --build sdq-submission-api-go --wait
+    docker compose -f local/docker-compose.yaml --profile api-go up --build --wait
 
 # Run the app dependencies in docker, but not the app itself
 # Use run-service-dev-java for that
@@ -122,14 +125,14 @@ docker-stop-test:
 docker-stop-all: docker-stop docker-stop-test
 
 docker-build-rust-api:
-    docker build -t sdq-analysis-api-rust -f Dockerfile.rust .
+    docker build -t {{ANALYSIS_API_MODULE_RUST}} -f Dockerfile.rust .
 
 docker-build-go-api:
-    docker build -t sdq-submission-api-go -f Dockerfile.golang .
+    docker build -t {{SUBMISSION_API_MODULE_GO}} -f Dockerfile.golang .
 
 # Build the Docker image for the application
 docker-build-java-api:
-    docker build -t sdq-analysis-api-java -f Dockerfile.java .
+    docker build -t {{ANALYSIS_API_MODULE_JAVA}} -f Dockerfile.java .
 
 # Build the Docker image for the database migration
 docker-build-db-migration:
