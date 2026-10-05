@@ -103,7 +103,7 @@ docker-run-app-no-build:
 
 # Run the entire system up within Docker
 docker-run-app:
-    docker compose -f local/docker-compose.yaml --profile api-rust --profile api-java up --build -d --wait
+    docker compose -f local/docker-compose.yaml --profile api-rust --profile api-java --profile api-go up --build -d --wait
 
 docker-run-go:
     docker compose -f local/docker-compose.yaml --profile api-go up --build --wait
