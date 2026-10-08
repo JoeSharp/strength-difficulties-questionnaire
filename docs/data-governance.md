@@ -8,6 +8,65 @@ The system will be running on a small machine (Raspberry Pi) within Docker.
 
 This small machine will live inside the Every Cloud office, physical access restricted to that office.
 
+This machine will be connected to the private office WiFi, which means other machines on that same password protected network will be able to access it directly.
+
+```mermaid
+flowchart TB
+
+    Internet[🌍 Internet]
+
+    subgraph Office["🏢 Office Private WiFi Network"]
+        Laptop[💻 Laptop]
+        Desktop[🖥️ Desktop]
+        Phone[📱 Mobile]
+
+        subgraph Pi["🍓 Raspberry Pi"]
+            Docker[🐳 Docker Engine]
+
+            Volume["(💾 Docker Volume)"]
+            DB["(🗄️ Database Container)"]
+
+            Docker --> DB
+            DB --> Volume
+        end
+
+        Laptop -->|HTTP/HTTPS| Pi
+        Desktop -->|HTTP/HTTPS| Pi
+        Phone -->|HTTP/HTTPS| Pi
+    end
+
+    Internet -.->|No access| Pi
+```
+
+```mermaid
+flowchart LR
+
+    subgraph Internet["🌍 Public Internet"]
+        Hacker[External User]
+    end
+
+    subgraph LAN["🔒 Private Office WiFi"]
+        User1[Laptop]
+        User2[Desktop]
+        User3[Mobile]
+
+        Pi[🍓 Raspberry Pi]
+        App[🌐 Web Application]
+        DB["(🗄️ Database)"]
+        Volume["(💾 Docker Volume)"]
+
+        Pi --> App
+        App --> DB
+        DB --> Volume
+    end
+
+    User1 --> App
+    User2 --> App
+    User3 --> App
+
+    Hacker -. Blocked .-> App
+```
+
 ## Web Access
 
 The web interface will only be accessible on the local network. So only those on the private WiFi will be able to reach it.
