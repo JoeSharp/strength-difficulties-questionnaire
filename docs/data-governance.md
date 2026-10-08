@@ -38,35 +38,6 @@ flowchart TB
     Internet -.->|No access| Pi
 ```
 
-```mermaid
-flowchart LR
-
-    subgraph Internet["🌍 Public Internet"]
-        Hacker[External User]
-    end
-
-    subgraph LAN["🔒 Private Office WiFi"]
-        User1[Laptop]
-        User2[Desktop]
-        User3[Mobile]
-
-        Pi[🍓 Raspberry Pi]
-        App[🌐 Web Application]
-        DB["(🗄️ Database)"]
-        Volume["(💾 Docker Volume)"]
-
-        Pi --> App
-        App --> DB
-        DB --> Volume
-    end
-
-    User1 --> App
-    User2 --> App
-    User3 --> App
-
-    Hacker -. Blocked .-> App
-```
-
 ## Web Access
 
 The web interface will only be accessible on the local network. So only those on the private WiFi will be able to reach it.
