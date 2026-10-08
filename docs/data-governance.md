@@ -15,27 +15,31 @@ flowchart TB
 
     Internet[🌍 Internet]
 
-    subgraph Office["🏢 Office Private WiFi Network"]
-        Laptop[💻 Laptop]
-        Desktop[🖥️ Desktop]
-        Phone[📱 Mobile]
+    subgraph Office["🏢 Private Office WiFi"]
+        Laptop[💻 Office Laptop]
+        Desktop[🖥️ Office Desktop]
+        Phone[📱 Mobile Device]
 
         subgraph Pi["🍓 Raspberry Pi"]
             Docker[🐳 Docker Engine]
 
-            Volume["(💾 Docker Volume)"]
-            DB["(🗄️ Database Container)"]
+            Web[🌐 Web Application]
+            DB[(🗄️ Database)]
+            Volume[(💾 Docker Volume)]
 
+            Docker --> Web
             Docker --> DB
             DB --> Volume
         end
 
-        Laptop -->|HTTP/HTTPS| Pi
-        Desktop -->|HTTP/HTTPS| Pi
-        Phone -->|HTTP/HTTPS| Pi
+        Laptop -->|HTTP/HTTPS| Web
+        Desktop -->|HTTP/HTTPS| Web
+        Phone -->|HTTP/HTTPS| Web
     end
 
-    Internet -.->|No access| Pi
+    Internet -.->|❌ No public web access| Web
+
+    Admin[🔑 Administrator] -->|SSH Key Authentication| Pi
 ```
 
 ## Web Access
