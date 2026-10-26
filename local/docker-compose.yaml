@@ -66,13 +66,13 @@ services:
     networks:
       - sdq
     environment:
-      LIQUIBASE_DRIVER: org.postgresql.Driver
-      LIQUIBASE_COMMAND_URL: jdbc:postgresql://sdq-db:5432/${SDQ_DATABASE_NAME}
-      LIQUIBASE_COMMAND_USERNAME: ${SDQ_DATABASE_USERNAME}
-      LIQUIBASE_COMMAND_PASSWORD: ${SDQ_DATABASE_PASSWORD}
+      FLYWAY_URL: jdbc:postgresql://sdq-db:5432/${SDQ_DATABASE_NAME}
+      FLYWAY_USER: ${SDQ_DATABASE_USERNAME}
+      FLYWAY_PASSWORD: ${SDQ_DATABASE_PASSWORD}
     depends_on:
       sdq-db:
         condition: service_healthy
+    command: migrate
 
   sdq-db:
     image: postgres:17
