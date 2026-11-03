@@ -14,9 +14,12 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8080",
+        target: process.env.ANALYSIS_API_PROXY_TARGET ?? "http://localhost:8080",
         changeOrigin: true,
       },
+    },
+    watch: {
+      usePolling: process.env.VITE_USE_POLLING === "true",
     },
   },
 });

@@ -42,29 +42,33 @@ copy-analysis-ui: build-analysis-ui
     rm -rf {{ANALYSIS_API_MODULE_JAVA}}/spring-app/src/main/resources/static
     cp -R {{ANALYSIS_UI_MODULE}}/dist {{ANALYSIS_API_MODULE_JAVA}}/spring-app/src/main/resources/static
 
-run-analysis-api-rust: 
-    ANALYSIS_UI_RESOURCES_DIR="{{ANALYSIS_UI_MODULE}}/dist" \
-    cargo run --manifest-path sdq-analysis-api-rust/app/Cargo.toml
+run-analysis-api-rust:
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-analysis-rust up --build sdq-analysis-api-rust-dev
 
-run-dev-rust: build-analysis-ui run-analysis-api-rust
+run-dev-analysis-rust:
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-analysis-rust up --build
+
+run-dev-rust: run-dev-analysis-rust
 
 run-submission-api:
-    cd {{SUBMISSION_API_MODULE_GO}} && \
-        DATABASE_URL="postgres://{{SDQ_DATABASE_USERNAME}}:{{SDQ_DATABASE_PASSWORD}}@localhost:5432/{{SDQ_DATABASE_NAME}}?sslmode=disable" \
-        SUBMISSION_UI_RESOURCES_DIR="../{{SUBMISSION_UI_MODULE}}/dist" \
-         go run ./app
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-submission-go up --build sdq-submission-api-go-dev
 
-run-submission-api-build-ui: build-submission-ui run-submission-api
+run-dev-submission:
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-submission-go up --build
+
+run-submission-api-build-ui: run-dev-submission
 
 build-analysis-api-rust:
     cargo build --manifest-path {{ANALYSIS_API_MODULE_RUST}}/app/Cargo.toml
 
-# Run the analysis api via gradle
+# Run the Java analysis API in Docker
 run-analysis-api-java:
-    cd {{ANALYSIS_API_MODULE_JAVA}} && ./gradlew :spring-app:bootRun
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-analysis-java up --build sdq-analysis-api-java-dev
 
-# Build the UI and Run the analysis API via gradle
-run-analysis-api-java-with-ui: copy-analysis-ui run-analysis-api-java
+run-dev-analysis-java:
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-analysis-java up --build
+
+run-analysis-api-java-with-ui: run-dev-analysis-java
 
 # Build the JAR file
 build-api-java:
@@ -80,12 +84,16 @@ build-go:
     cd {{SUBMISSION_API_MODULE_GO}} && go build -o dist/sdq-submission-api-go ./app
 
 # Runs the analysis UI in hot reloading mode.
-run-analysis-ui: install-analysis-ui
-    npm run dev --prefix {{ANALYSIS_UI_MODULE}}
+run-analysis-ui:
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-analysis-java up --build sdq-analysis-ui-java-dev
 
 # Runs the submission UI in hot reloading mode
-run-submission-ui: install-submission-ui
-    npm run dev --prefix {{SUBMISSION_UI_MODULE}}
+run-submission-ui:
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-submission-go up --build sdq-submission-ui-dev
+
+# Run all development services in containers
+run-dev:
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile dev-analysis-java --profile dev-analysis-rust --profile dev-submission-go up --build
 
 # Run the backend unit tests
 test-analysis-api-java:
@@ -121,7 +129,7 @@ docker-run-deps:
 
 # Stop the application stack
 docker-stop:
-    docker compose -f local/docker-compose.yaml --profile api-java --profile api-rust --profile api-go down
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml --profile api-java --profile api-rust --profile api-go down
 
 # Stop the test dependencies
 docker-stop-test:
@@ -160,7 +168,7 @@ database-migrate:
 
 # take down the docker stack, but also remove volumes
 docker-clean:
-    docker compose -f local/docker-compose.yaml down --volumes
+    docker compose -f local/docker-compose.yaml -f local/docker-compose.dev.yaml down --volumes
     docker compose -f local/docker-compose.test.yaml down --volumes
 
 # Connect a shell to the database.

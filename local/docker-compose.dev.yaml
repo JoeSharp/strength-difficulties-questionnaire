@@ -1,0 +1,170 @@
+name: sdq
+
+services:
+  sdq-analysis-api-java-dev:
+    build:
+      context: ..
+      dockerfile: Dockerfile.analysis
+      target: java-dev
+    image: sdq-analysis-api-java-dev
+    working_dir: /workspace
+    init: true
+    networks:
+      - sdq
+    profiles:
+      - dev-analysis-java
+    environment:
+      SDQ_DATABASE_URL: jdbc:postgresql://sdq-db:5432/${SDQ_DATABASE_NAME}
+      SDQ_DATABASE_USERNAME: ${SDQ_DATABASE_USERNAME}
+      SDQ_DATABASE_PASSWORD: ${SDQ_DATABASE_PASSWORD}
+    volumes:
+      - ../sdq-analysis-api-java:/workspace
+      - java_gradle_cache:/root/.gradle
+    command:
+      - sh
+      - -c
+      - find . -type f \( -name '*.java' -o -name '*.yaml' -o -name '*.yml' -o -name '*.gradle' -o -name 'gradle.properties' \) -not -path '*/build/*' -print | entr -r ./gradlew :spring-app:bootRun --no-daemon
+    ports:
+      - "8080:8080"
+    depends_on:
+      sdq-db-migration:
+        condition: service_completed_successfully
+
+  sdq-analysis-ui-java-dev:
+    image: node:24-alpine
+    working_dir: /workspace
+    init: true
+    networks:
+      - sdq
+    profiles:
+      - dev-analysis-java
+    environment:
+      ANALYSIS_API_PROXY_TARGET: http://sdq-analysis-api-java-dev:8080
+      VITE_USE_POLLING: "true"
+    volumes:
+      - ../sdq-analysis-ui:/workspace
+      - analysis_ui_node_modules:/workspace/node_modules
+      - npm_cache:/root/.npm
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - sdq-analysis-api-java-dev
+
+  sdq-analysis-api-rust-dev:
+    build:
+      context: ..
+      dockerfile: Dockerfile.analysis
+      target: rust-dev
+    image: sdq-analysis-api-rust-dev
+    working_dir: /workspace
+    init: true
+    networks:
+      - sdq
+    profiles:
+      - dev-analysis-rust
+    environment:
+      SDQ_DATABASE_HOST: sdq-db:5432
+      SDQ_DATABASE_NAME: ${SDQ_DATABASE_NAME}
+      SDQ_DATABASE_USERNAME: ${SDQ_DATABASE_USERNAME}
+      SDQ_DATABASE_PASSWORD: ${SDQ_DATABASE_PASSWORD}
+      ANALYSIS_UI_RESOURCES_DIR: /dist
+      CARGO_HOME: /cargo-cache
+    volumes:
+      - ../sdq-analysis-api-rust:/workspace
+      - rust_cargo_home:/cargo-cache
+      - rust_target:/workspace/target
+    command:
+      - sh
+      - -c
+      - find . -path ./target -prune -o -type f \( -name '*.rs' -o -name 'Cargo.toml' -o -name 'Cargo.lock' \) -print | entr -r cargo run --manifest-path app/Cargo.toml
+    ports:
+      - "8081:3000"
+    depends_on:
+      sdq-db-migration:
+        condition: service_completed_successfully
+
+  sdq-analysis-ui-rust-dev:
+    image: node:24-alpine
+    working_dir: /workspace
+    init: true
+    networks:
+      - sdq
+    profiles:
+      - dev-analysis-rust
+    environment:
+      ANALYSIS_API_PROXY_TARGET: http://sdq-analysis-api-rust-dev:3000
+      VITE_USE_POLLING: "true"
+    volumes:
+      - ../sdq-analysis-ui:/workspace
+      - analysis_ui_rust_node_modules:/workspace/node_modules
+      - npm_cache:/root/.npm
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5175"
+    ports:
+      - "5175:5175"
+    depends_on:
+      - sdq-analysis-api-rust-dev
+
+  sdq-submission-api-go-dev:
+    build:
+      context: ..
+      dockerfile: Dockerfile.submission
+      target: go-dev
+    image: sdq-submission-api-go-dev
+    working_dir: /workspace
+    init: true
+    networks:
+      - sdq
+    profiles:
+      - dev-submission-go
+    environment:
+      DATABASE_URL: postgres://${SDQ_DATABASE_USERNAME}:${SDQ_DATABASE_PASSWORD}@sdq-db:5432/${SDQ_DATABASE_NAME}?sslmode=disable
+      SUBMISSION_UI_RESOURCES_DIR: /dist
+    volumes:
+      - ../sdq-submission-api-go:/workspace
+      - go_module_cache:/go/pkg/mod
+      - go_build_cache:/root/.cache/go-build
+    command:
+      - sh
+      - -c
+      - find . -type f \( -name '*.go' -o -name 'go.mod' -o -name 'go.sum' -o -name 'go.work' \) -print | entr -r sh -c 'cd app && go run .'
+    ports:
+      - "8082:3000"
+    depends_on:
+      sdq-db-migration:
+        condition: service_completed_successfully
+
+  sdq-submission-ui-dev:
+    image: node:24-alpine
+    working_dir: /workspace
+    init: true
+    networks:
+      - sdq
+    profiles:
+      - dev-submission-go
+    environment:
+      SUBMISSION_API_PROXY_TARGET: http://sdq-submission-api-go-dev:3000
+      VITE_USE_POLLING: "true"
+    volumes:
+      - ../sdq-submission-ui:/workspace
+      - submission_ui_node_modules:/workspace/node_modules
+      - npm_cache:/root/.npm
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5174"
+    ports:
+      - "5174:5174"
+    depends_on:
+      - sdq-submission-api-go-dev
+
+networks:
+  sdq:
+
+volumes:
+  java_gradle_cache:
+  rust_cargo_home:
+  rust_target:
+  go_module_cache:
+  go_build_cache:
+  analysis_ui_node_modules:
+  analysis_ui_rust_node_modules:
+  submission_ui_node_modules:
+  npm_cache:

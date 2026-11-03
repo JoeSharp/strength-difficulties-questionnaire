@@ -2,6 +2,19 @@
 
 ARG RUST_VERSION=1.96.1
 
+# Development images contain the language toolchains and a file watcher.
+FROM eclipse-temurin:21-jdk AS java-dev
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends entr \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+
+FROM rust:${RUST_VERSION}-bookworm AS rust-dev
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends entr clang lld pkg-config libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+
 # Build the analysis UI once for either backend target.
 FROM node:24-alpine AS ui-builder
 ARG ANALYSIS_UI_MODULE=sdq-analysis-ui

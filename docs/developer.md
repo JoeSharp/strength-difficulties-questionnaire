@@ -10,37 +10,21 @@ I can make no garauntees about running it natively in Windows, just use WSL if y
 
 ## Tools
 
-The following tooling will be required
+The following tooling will be required:
 
 - A code editor
   - [VS Code](https://code.visualstudio.com/) was used for everthing except for Java
   - [IntelliJ](https://www.jetbrains.com/idea/) was used for the Java analysis backend
 
 - [Docker](https://www.docker.com/).
-  Used for building and running the application. Even in 'prod' I just use Docker compose
-
-- [Node JS](https://nodejs.org/)
-  I specifically recommend using Node Version Manager, it is not required but it makes it much easier to manage multiple versions of Node JS on the same machine.
-  - [Node Version Manager](https://github.com/nvm-sh/nvm)
-
-- [Rust](https://www.rust-lang.org/)
-  The new backend (which will replace the Java \_ Spring Boot one) is written in Rust
-
-- [Golang](https://go.dev/)
-  My current suggestion for the submission API is to write this in Go.
+  Docker Compose is used for the application and development environments. The dev containers include Node, Java, Rust, and Go toolchains.
 
 - [Just](https://github.com/casey/just)
-  I have written automation for local dev tasks in the justfile, so this will be very helpful to have on hand. You could survive without it, but you would just end up manually invoking the same commands.
+  The `justfile` provides shortcuts for common development tasks.
 
 ## Running the application
 
-Ensure that your node is setup. If you installed nvm run
-
-```bash
-nvm use
-```
-
-Then use the justfile to start the entire system locally
+Start the normal application stack with:
 
 ```bash
 just run
@@ -95,29 +79,28 @@ This contains the docker compose files required to run the system up. At the mom
 
 Potentially we could start messing with Kubernetes, but that's overkill at this stage, and I haven't ever tried building up a database in K8s so would recommend using AWS RDS for that.
 
-## I want to...
+## Development containers
 
-This section contains suggested workflows for working on isolated parts of the system. In general it will involve using `just run` to run the whole system, then using more specific commands to run the part of the system you are working on in a hot reloading, or dev mode.
+The dev workflows in `local/docker-compose.dev.yaml` extend the shared database services in `local/docker-compose.yaml`. They mount source code into containers and restart backend processes when files change; Vite serves the UIs with hot reload. The first run builds the dev images and downloads dependencies; no language toolchains need to be installed on the host. Each workflow starts the database and applies migrations as needed.
+
+| Workflow | Command | URL |
+| --- | --- | --- |
+| Java analysis API and UI | `just run-analysis-api-java-with-ui` | http://localhost:5173 |
+| Java analysis API only | `just run-analysis-api-java` | http://localhost:8080 |
+| Rust analysis API and UI | `just run-dev-rust` | http://localhost:5175 |
+| Rust analysis API only | `just run-analysis-api-rust` | http://localhost:8081 |
+| Go submission API and UI | `just run-submission-api-build-ui` | http://localhost:5174 |
+| Go submission API only | `just run-submission-api` | http://localhost:8082 |
+| All dev services | `just run-dev` | See URLs above |
 
 ### Develop the Submission UI
 
-With the submission UI, you can run the whole system with `just run`, then run the submission UI in dev mode with
+Start the submission UI and its Go API with:
 
 ```bash
 just run-submission-ui
 ```
 
-This will run the submission UI in hot reload mode, so you can make changes to the code and see them reflected in the browser immediately.
+Edit the UI or API source and the running dev services will reload.
 
-### Develop the Submission Backend
-
-With the submission backend, you can run the whole system with `just run`, then run the submission backend in dev mode with
-
-```bash
-just run-submission-api
-```
-
-This should then run the GO backend on port 3000 outside of docker. If you make changes to the 'Go' code, you can CTRL+C to kill the process and re-run.
-
-With this running try visiting the following to call the health endpoint.
-[http://localhost:3000/api/health](http://localhost:3000/api/health)
+The UIs can also be started on their own; their API service starts automatically. Press Ctrl+C to stop the selected dev stack. Run `just stop` to stop the application and test stacks.

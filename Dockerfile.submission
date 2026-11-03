@@ -1,4 +1,12 @@
 ################################################################################
+# Development image with a file watcher.
+FROM golang:1.26.3-bookworm AS go-dev
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends entr \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+
+################################################################################
 # Stage 1: Build UI
 FROM node:24-alpine AS ui-builder
 ARG ANALYSIS_UI_MODULE=sdq-submission-ui
