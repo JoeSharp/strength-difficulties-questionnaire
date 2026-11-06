@@ -8,6 +8,7 @@ import {
   DEFAULT_CLIENT_QUERY,
   type ClientQueryDTO,
 } from "@/api/ClientApi/clientApi";
+import ResponderComparison from "./ResponderComparison";
 
 function ClientListView() {
   const { data: clients, searchClients } = useSearchClients();
@@ -32,6 +33,7 @@ function ClientListView() {
         clients.map((client) => (
           <ClientCard key={client.clientId} client={client} />
         ))}
+      <ResponderComparison clients={clients ?? []} />
     </div>
   );
 }

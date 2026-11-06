@@ -15,7 +15,8 @@ public enum DisabilityType {
   SPEECH_OR_COMMUNICATION("Speech or Communication"),
   COGNITIVE_OR_MEMORY("Cognitive or Memory Impairment"),
   OTHER("Other"),
-  NOT_APPLICABLE("N/A");
+  NOT_APPLICABLE("N/A"),
+  PREFER_NOT_TO_SAY("Prefer Not To Say");
 
   final String display;
 

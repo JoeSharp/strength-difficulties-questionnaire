@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::NaiveDate;
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter, EnumString};
 use uuid::Uuid;
@@ -202,6 +202,8 @@ pub enum DisabilityType {
     Other,
     #[strum(serialize = "NOT_APPLICABLE", to_string = "N/A")]
     NotApplicable,
+    #[strum(serialize = "PREFER_NOT_TO_SAY", to_string = "Prefer Not To Say")]
+    PreferNotToSay,
 }
 
 impl DisabilityType {
@@ -370,6 +372,7 @@ pub struct SdqClient {
     pub client_id: Uuid,
     pub code_name: Option<String>,
     pub date_of_birth: Option<NaiveDate>,
+    pub submitted_at: Option<DateTime<Utc>>,
     pub gender: Option<Gender>,
     pub council: Option<Council>,
     pub ethnicity: Option<Ethnicity>,

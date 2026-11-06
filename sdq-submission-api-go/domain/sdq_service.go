@@ -1,17 +1,36 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
 type SdqClient struct {
-	ID       uuid.UUID `json:"id"`
-	CodeName string    `json:"codeName"`
+	ID                        uuid.UUID      `json:"id"`
+	CodeName                  string         `json:"codeName"`
+	DateOfBirth               string         `json:"dateOfBirth,omitempty"`
+	Gender                    *string        `json:"gender,omitempty"`
+	Council                   *string        `json:"council,omitempty"`
+	Ethnicity                 *string        `json:"ethnicity,omitempty"`
+	EnglishAdditionalLanguage *string        `json:"englishAdditionalLanguage,omitempty"`
+	DisabilityStatus          *string        `json:"disabilityStatus,omitempty"`
+	DisabilityTypes           []string       `json:"disabilityTypes,omitempty"`
+	CareExperience            *string        `json:"careExperience,omitempty"`
+	Interventions             []Intervention `json:"interventions,omitempty"`
+	Aces                      map[string]int `json:"aces,omitempty"`
+	FundingSource             *string        `json:"fundingSource,omitempty"`
+	SubmittedAt               *time.Time     `json:"submittedAt,omitempty"`
+}
+
+type Intervention struct {
+	Type     string `json:"type"`
+	Sessions int    `json:"sessions"`
 }
 
 type SdqClientRepository interface {
 	GetClients() ([]SdqClient, error)
-	CreateClient(codeName string) (SdqClient, error)
+	CreateClient(client SdqClient) (SdqClient, error)
 }
 
 type SdqApp struct {

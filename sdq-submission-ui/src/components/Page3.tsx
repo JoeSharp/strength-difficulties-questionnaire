@@ -11,7 +11,7 @@ function Page3() {
       {clients.map((client) => (
         <div key={client.id}>
           <p>Client ID: {client.id}</p>
-          <p>Client Name: {client.name}</p>
+          <p>Client Name: {client.codeName}</p>
         </div>
       ))}
     </div>

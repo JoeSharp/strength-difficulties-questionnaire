@@ -1,16 +1,45 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-type SdqClient = {
+export type SdqClient = {
   id: string;
-  name: string;
+  codeName: string;
+  dateOfBirth: string;
+  gender?: string;
+  council?: string;
+  ethnicity?: string;
+  englishAdditionalLanguage?: string;
+  disabilityStatus?: string;
+  disabilityTypes?: string[];
+  careExperience?: string;
+  interventions?: { type: string; sessions: number }[];
+  aces?: Record<string, number>;
+  fundingSource?: string;
+  submittedAt?: string;
 };
 type ClientApi = {
   clients: SdqClient[];
+  createClient: ReturnType<typeof useMutation<SdqClient, Error, NewClient>>;
 };
+
+export type NewClient = Omit<SdqClient, "id" | "submittedAt">;
 
 const EMPTY_CLIENTS: SdqClient[] = [];
 
+async function postClient(client: NewClient): Promise<SdqClient> {
+  const response = await fetch("/api/clients", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(client),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Failed to create client (${response.status})`);
+  }
+  return response.json() as Promise<SdqClient>;
+}
+
 const useClientApi = (): ClientApi => {
+  const queryClient = useQueryClient();
   const { data } = useQuery<SdqClient[]>({
     queryKey: ["clients"],
     queryFn: async () => {
@@ -21,9 +50,16 @@ const useClientApi = (): ClientApi => {
       return response.json() as Promise<SdqClient[]>;
     },
   });
+  const createClient = useMutation({
+    mutationFn: postClient,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["clients"] });
+    },
+  });
 
   return {
     clients: data || EMPTY_CLIENTS,
+    createClient,
   };
 };
 

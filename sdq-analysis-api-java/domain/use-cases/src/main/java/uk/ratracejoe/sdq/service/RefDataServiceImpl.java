@@ -38,6 +38,8 @@ public class RefDataServiceImpl implements RefDataService {
             .toList(),
         DemographicField.DisabilityStatus,
         Arrays.stream(DisabilityStatus.values()).map(DisabilityStatus::enumValue).toList(),
+        DemographicField.DisabilityType,
+        Arrays.stream(DisabilityType.values()).map(DisabilityType::enumValue).toList(),
         DemographicField.CareExperience,
         Arrays.stream(CareExperience.values()).map(CareExperience::enumValue).toList(),
         DemographicField.FundingSource,
