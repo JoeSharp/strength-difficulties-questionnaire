@@ -11,6 +11,8 @@ function Page1() {
         the response back out to the user.
       </p>
       <p>Health API Response: {healthMessage}</p>
+      <p> Sam was here</p>
+      <p> Sam was here again</p>
     </>
   );
 }

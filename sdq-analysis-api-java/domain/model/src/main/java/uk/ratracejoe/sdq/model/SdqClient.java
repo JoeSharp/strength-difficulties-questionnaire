@@ -1,6 +1,7 @@
 package uk.ratracejoe.sdq.model;
 
 import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -21,4 +22,5 @@ public record SdqClient(
     CareExperience careExperience,
     List<Intervention> interventions,
     Map<AceType, Integer> aces,
-    FundingSource fundingSource) {}
+    FundingSource fundingSource,
+    Instant submittedAt) {}

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
+	"path"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	db "joesharpcs.co.uk/sdq/db"
@@ -27,10 +30,31 @@ func main() {
 	http.ListenAndServe(":3000", r)
 }
 
-func fileServer(r chi.Router, path string, root http.FileSystem) {
-	fs := http.StripPrefix(path, http.FileServer(root))
+func fileServer(r chi.Router, prefix string, root http.FileSystem) {
+	fs := http.StripPrefix(prefix, http.FileServer(root))
 
-	r.Get(path+"/*", func(w http.ResponseWriter, r *http.Request) {
+	r.Get(prefix+"/*", func(w http.ResponseWriter, r *http.Request) {
+		requestPath := strings.TrimPrefix(r.URL.Path, prefix)
+		if requestPath == "" {
+			requestPath = "/"
+		}
+
+		file, err := root.Open(requestPath)
+		if err == nil {
+			file.Close()
+			fs.ServeHTTP(w, r)
+			return
+		}
+		if !errors.Is(err, os.ErrNotExist) {
+			http.Error(w, "Unable to serve requested resource", http.StatusInternalServerError)
+			return
+		}
+		if requestPath == "/api" || strings.HasPrefix(requestPath, "/api/") || path.Ext(requestPath) != "" {
+			http.NotFound(w, r)
+			return
+		}
+
+		r.URL.Path = prefix + "/"
 		fs.ServeHTTP(w, r)
 	})
 }

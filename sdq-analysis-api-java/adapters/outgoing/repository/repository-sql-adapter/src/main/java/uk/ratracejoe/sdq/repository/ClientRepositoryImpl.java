@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -172,6 +173,7 @@ public class ClientRepositoryImpl implements ClientRepository {
     String acesJson = rs.getString("aces");
     Map<AceType, Integer> aces =
         parseJson(acesJson, new TypeReference<>() {}, Collections::emptyMap);
+    Timestamp submittedAt = rs.getTimestamp("submitted_at");
 
     return new SdqClient(
         clientId,
@@ -186,7 +188,8 @@ public class ClientRepositoryImpl implements ClientRepository {
         careExperience,
         interventions,
         aces,
-        fundingSource);
+        fundingSource,
+        submittedAt == null ? null : submittedAt.toInstant());
   }
 
   public int deleteAll() {

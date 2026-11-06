@@ -203,6 +203,7 @@ pub fn parse_client(
         client_id: Uuid::new_v4(),
         code_name: Some(filename),
         date_of_birth,
+        submitted_at: None,
         care_experience,
         gender,
         ethnicity,
