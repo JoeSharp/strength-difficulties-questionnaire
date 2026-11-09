@@ -11,8 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	domain "joesharpcs.co.uk/sdq/domain"
-
-	"time"
 )
 
 type PgxClientRepository struct {
