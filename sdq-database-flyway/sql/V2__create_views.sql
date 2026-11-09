@@ -29,7 +29,20 @@ aces AS (
     GROUP BY a.client_id
 )
 SELECT
-    c.*,
+    c.client_id,
+    c.code_name,
+    c.date_of_birth,
+    c.gender,
+    c.council,
+    c.ethnicity,
+    c.eal,
+    c.disability_status,
+    c.care_experience,
+    c.funding_source,
+    c.submitted_at
+    it.interventions,
+    dt.disability_types,
+    a.aces,
     it.interventions,
     dt.disability_types,
     a.aces

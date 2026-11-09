@@ -21,6 +21,7 @@ export type ClientFile = {
   interventions: Intervention[];
   aces: Record<string, number>;
   fundingSource: string;
+  submittedAt: string | null;
 };
 
 export const EMPTY_CLIENT_FILE: ClientFile = {
@@ -37,6 +38,7 @@ export const EMPTY_CLIENT_FILE: ClientFile = {
   interventions: [],
   aces: {},
   fundingSource: "",
+  submittedAt: null,
 };
 
 export function parseFile(file: ClientFile): ClientFile {

@@ -139,7 +139,8 @@ public class WorkbookDemographicExtractor {
         careExperience,
         interventions,
         aces,
-        fundingSource);
+        fundingSource,
+        null);
   }
 
   private WorkbookFormat getFormat(Sheet demographicSheet) {
