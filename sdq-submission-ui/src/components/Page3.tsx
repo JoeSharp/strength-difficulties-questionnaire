@@ -1,24 +1,12 @@
-import useClientApi from "../api/clientApi";
 import "./Nav.scss";
+import useClientApi from "../api/clientApi";
 
 function Page3() {
   const { clients } = useClientApi();
 
   return (
-
     <div>
       <h2>Page 3</h2>
-      {/*
-      <p>This page demonstrates calling REST API for the simplest data</p>
-      <p>Clients: {clients.length}</p>
-      {clients.map((client) => (
-        <div key={client.id}>
-          <p>Client ID: {client.id}</p>
-          <p>Client Name: {client.codeName}</p>
-        </div>
-    ))}*/}
-
-        
       <div className="cltable">
         <table>
           <thead>
@@ -40,20 +28,19 @@ function Page3() {
               <tr>
                 <th>{client.id}</th>
                 <th>{client.codeName}</th>
-                <th>{client.dateofbirth}</th>
+                <th>{client.dateOfBirth}</th>
                 <th>{client.gender}</th>
                 <th>{client.council}</th>
                 <th>{client.ethnicity}</th>
-                <th>{client.eal}</th>
-                <th>{client.disability}</th>
-                <th>{client.careexp}</th>
-                <th>{client.fundsrc}</th>
+                <th>{client.englishAdditionalLanguage}</th>
+                <th>{client.disabilityStatus}</th>
+                <th>{client.careExperience}</th>
+                <th>{client.fundingSource}</th>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type React from "react";
 import useClientApi from "../api/clientApi";
-import "./Page4.scss";
+import "./CreateClient.scss";
 
 const OPTIONS = {
   gender: [
@@ -116,7 +116,7 @@ function parseAces(value: string): Record<string, number> {
   );
 }
 
-function Page4() {
+function CreateClient() {
   const { createClient } = useClientApi();
   const [formError, setFormError] = useState("");
   const [disabilityTypes, setDisabilityTypes] = useState<string[]>([]);
@@ -126,7 +126,7 @@ function Page4() {
 
   const updateValidationState = (form: HTMLFormElement) => {
     const formData = new FormData(form);
-    const fieldNames = new Set([...formData.keys(), "disabilityTypes"]);
+    const fieldNames = new Set([...Object.keys(formData), "disabilityTypes"]);
     setFieldHasData(
       Object.fromEntries(
         [...fieldNames].map((name) => [
@@ -159,7 +159,8 @@ function Page4() {
       }
       return [
         ...current.filter(
-          (value) => value !== "PREFER_NOT_TO_SAY" && value !== "NOT_APPLICABLE",
+          (value) =>
+            value !== "PREFER_NOT_TO_SAY" && value !== "NOT_APPLICABLE",
         ),
         type,
       ];
@@ -217,7 +218,10 @@ function Page4() {
       </header>
 
       {createClient.isSuccess && (
-        <div className="client-capture__notice client-capture__notice--success" role="status">
+        <div
+          className="client-capture__notice client-capture__notice--success"
+          role="status"
+        >
           <span className="client-capture__notice-icon" aria-hidden="true">
             &#10003;
           </span>
@@ -238,12 +242,18 @@ function Page4() {
         </div>
       )}
       {createClient.isError && (
-        <p className="client-capture__notice client-capture__notice--error" role="alert">
+        <p
+          className="client-capture__notice client-capture__notice--error"
+          role="alert"
+        >
           {createClient.error.message}
         </p>
       )}
       {formError && (
-        <p className="client-capture__notice client-capture__notice--error" role="alert">
+        <p
+          className="client-capture__notice client-capture__notice--error"
+          role="alert"
+        >
           {formError}
         </p>
       )}
@@ -271,7 +281,9 @@ function Page4() {
               required
             />
           </div>
-          <div className={`client-form-field ${validationClass("dateOfBirth")}`}>
+          <div
+            className={`client-form-field ${validationClass("dateOfBirth")}`}
+          >
             <label htmlFor="client-date-of-birth">Date of birth *</label>
             <input
               id="client-date-of-birth"
@@ -302,7 +314,9 @@ function Page4() {
                 name={name}
                 className="client-form-select"
                 required
-                value={name === "disabilityStatus" ? disabilityStatus : undefined}
+                value={
+                  name === "disabilityStatus" ? disabilityStatus : undefined
+                }
                 defaultValue={name === "disabilityStatus" ? undefined : ""}
                 onChange={
                   name === "disabilityStatus"
@@ -399,11 +413,7 @@ function Page4() {
           </div>
           <div className={`client-form-field ${validationClass("aces")}`}>
             <label htmlFor="client-aces">ACES</label>
-            <input
-              id="client-aces"
-              name="aces"
-              className="client-form-input"
-            />
+            <input id="client-aces" name="aces" className="client-form-input" />
           </div>
         </div>
 
@@ -425,4 +435,4 @@ function Page4() {
   );
 }
 
-export default Page4;
+export default CreateClient;

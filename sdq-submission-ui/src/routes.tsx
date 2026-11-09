@@ -1,10 +1,11 @@
 import { Outlet, type RouteObject } from "react-router";
 
+import App from "./App";
 import Page1 from "./components/Page1";
 import Page2 from "./components/Page2";
-import App from "./App";
 import Page3 from "./components/Page3";
-import Page4 from "./components/Page4";
+import CreateClient from "./components/CreateClient";
+import SubmitSDQ from "./components/SubmitSDQ";
 
 const ROUTES: RouteObject[] = [
   {
@@ -28,9 +29,14 @@ const ROUTES: RouteObject[] = [
         element: <Page3 />,
       },
       {
-        path: "/page4",
-        element: <Page4 />,
+        path: "/createClient",
+        element: <CreateClient />,
       },
+      {
+        path: "/sdq",
+        element: <SubmitSDQ />,
+      },
+      { path: "*", element: <h2>404 - Page Not Found</h2> },
     ],
   },
 ];
