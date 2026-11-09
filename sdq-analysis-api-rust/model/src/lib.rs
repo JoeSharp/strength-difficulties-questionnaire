@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::NaiveDate;
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter, EnumString};
 use uuid::Uuid;
@@ -370,6 +370,7 @@ pub struct SdqClient {
     pub client_id: Uuid,
     pub code_name: Option<String>,
     pub date_of_birth: Option<NaiveDate>,
+    pub submitted_at: Option<DateTime<Utc>>,
     pub gender: Option<Gender>,
     pub council: Option<Council>,
     pub ethnicity: Option<Ethnicity>,

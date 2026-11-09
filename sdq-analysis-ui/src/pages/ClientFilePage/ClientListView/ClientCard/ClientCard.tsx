@@ -28,6 +28,28 @@ const ClientCard: React.FC<Props> = ({ includeHeader = true, client }) => {
       )}
 
       <div className="client-card__grid">
+        <div className="client-card__field">
+          <dt>Form submitted</dt>
+          <dd>
+            {client.submittedAt ? (
+              <time dateTime={client.submittedAt}>
+                {new Date(client.submittedAt).toLocaleString()}
+              </time>
+            ) : (
+              "Not recorded"
+            )}
+          </dd>
+        </div>
+        <div className="client-card__field">
+          <dt>Date of birth</dt>
+          <dd>
+            <time dateTime={client.dateOfBirth.toISOString()}>
+              {client.dateOfBirth.toLocaleDateString(undefined, {
+                timeZone: "UTC",
+              })}
+            </time>
+          </dd>
+        </div>
         {DEMOGRAPHIC_FIELDS.map((field) => (
           <div className="client-card__field" key={field}>
             <dt>{field}</dt>

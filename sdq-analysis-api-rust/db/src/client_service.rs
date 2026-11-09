@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use chrono::NaiveDate;
+use chrono::{DateTime, NaiveDate, Utc};
 use sdq_model::{
     AceType, CareExperience, Council, DemographicCount, DemographicField, DemographicFilter,
     DemographicReport, DisabilityStatus, DisabilityType, EnglishAsAdditionalLanguage, Ethnicity,
@@ -30,6 +30,7 @@ impl From<SdqClientSqlRow> for SdqClient {
             client_id: raw.client_id,
             code_name: raw.code_name,
             date_of_birth: raw.date_of_birth,
+            submitted_at: raw.submitted_at,
             gender: raw.gender.and_then(|g| Gender::from_str(&g).ok()),
             council: raw.council.and_then(|g| Council::from_str(&g).ok()),
             ethnicity: raw.ethnicity.and_then(|e| Ethnicity::from_str(&e).ok()),
@@ -69,6 +70,7 @@ pub struct SdqClientSqlRow {
     pub client_id: Uuid,
     pub code_name: Option<String>,
     pub date_of_birth: Option<NaiveDate>,
+    pub submitted_at: Option<DateTime<Utc>>,
     pub gender: Option<String>,
     pub council: Option<String>,
     pub ethnicity: Option<String>,

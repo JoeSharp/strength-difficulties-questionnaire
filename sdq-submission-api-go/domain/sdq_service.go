@@ -6,32 +6,31 @@ import (
 	"github.com/google/uuid"
 )
 
-type SdqClient struct { //creates a structure to show what data types the variables will be shown as
-	ID        uuid.UUID `json:"id"`
-	CodeName  string    `json:"codeName"`
-	DoB       time.Time `json:"dateofbirth"`
-	Gender    string    `json:"gender"`
-	Council   string    `json:"council"`
-	Ethnicity string    `json:"ethnicity"`
-	EAL       string    `json:"eal"`
-	DisStat   string    `json:"disability"`
-	CareExp   string    `json:"careexp"`
-	FundSrc   string    `json:"fundsrc"`
+type SdqClient struct {
+	ID                        uuid.UUID      `json:"id"`
+	CodeName                  string         `json:"codeName"`
+	DateOfBirth               string         `json:"dateOfBirth,omitempty"`
+	Gender                    *string        `json:"gender,omitempty"`
+	Council                   *string        `json:"council,omitempty"`
+	Ethnicity                 *string        `json:"ethnicity,omitempty"`
+	EnglishAdditionalLanguage *string        `json:"englishAdditionalLanguage,omitempty"`
+	DisabilityStatus          *string        `json:"disabilityStatus,omitempty"`
+	DisabilityTypes           []string       `json:"disabilityTypes,omitempty"`
+	CareExperience            *string        `json:"careExperience,omitempty"`
+	Interventions             []Intervention `json:"interventions,omitempty"`
+	Aces                      map[string]int `json:"aces,omitempty"`
+	FundingSource             *string        `json:"fundingSource,omitempty"`
+	SubmittedAt               *time.Time     `json:"submittedAt,omitempty"`
+}
+
+type Intervention struct {
+	Type     string `json:"type"`
+	Sessions int    `json:"sessions"`
 }
 
 type SdqClientRepository interface { //creates the "interface" to be interacted with?
 	GetClients() ([]SdqClient, error)
-	CreateClient(
-		codeName string,
-		dateofbirth time.Time,
-		gender string,
-		council string,
-		ethnicity string,
-		eal string,
-		disability string,
-		careexp string,
-		fundsrc string,
-	) (SdqClient, error)
+	CreateClient(client SdqClient) (SdqClient, error)
 }
 
 type SdqApp struct {
