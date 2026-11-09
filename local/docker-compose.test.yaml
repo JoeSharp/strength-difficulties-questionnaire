@@ -1,6 +1,5 @@
 name: sdq-test
 services:
-
   sdq-test-db:
     image: postgres:17
     container_name: sdq-test-db
@@ -15,7 +14,7 @@ services:
     volumes:
       - sdq_test_data:/var/lib/postgresql/data
     healthcheck:
-      test: pg_isready -U test -d sdq
+      test: pg_isready -U ${SDQ_TEST_DATABASE_USERNAME} -d ${SDQ_TEST_DATABASE_NAME}
       interval: 10s
       timeout: 3s
       retries: 3

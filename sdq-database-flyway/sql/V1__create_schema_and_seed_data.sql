@@ -8,7 +8,8 @@ CREATE TABLE client (
     eal TEXT,
     disability_status TEXT,
     care_experience TEXT,
-    funding_source TEXT
+    funding_source TEXT,
+    submitted_at TIMESTAMP WITH TIME ZONE NULL
 );
 
 CREATE TABLE goal (

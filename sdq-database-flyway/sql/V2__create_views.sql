@@ -39,10 +39,7 @@ SELECT
     c.disability_status,
     c.care_experience,
     c.funding_source,
-    c.submitted_at
-    it.interventions,
-    dt.disability_types,
-    a.aces,
+    c.submitted_at,
     it.interventions,
     dt.disability_types,
     a.aces

@@ -10,6 +10,8 @@ SUBMISSION_UI_MODULE := env_var("SUBMISSION_UI_MODULE")
 SDQ_DATABASE_NAME := env_var("SDQ_DATABASE_NAME")
 SDQ_DATABASE_USERNAME := env_var("SDQ_DATABASE_USERNAME")
 SDQ_DATABASE_PASSWORD := env_var("SDQ_DATABASE_PASSWORD")
+SDQ_TEST_DATABASE_USERNAME := env_var("SDQ_TEST_DATABASE_USERNAME")
+SDQ_TEST_DATABASE_PASSWORD := env_var("SDQ_TEST_DATABASE_PASSWORD")
 
 # Default task
 default: docker-run-app
@@ -170,4 +172,4 @@ database-connect:
 
 test-database-connect:
     echo "Connecting to test database"
-    docker exec -it {{APPLICATION_NAME}}-test-db psql -d {{SDQ_DATABASE_NAME}} -U test
+    docker exec -it {{APPLICATION_NAME}}-test-db psql -d {{SDQ_DATABASE_NAME}} -U {{SDQ_TEST_DATABASE_USERNAME}}
