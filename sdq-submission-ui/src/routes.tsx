@@ -3,7 +3,7 @@ import { Outlet, type RouteObject } from "react-router";
 import App from "./App";
 import Page1 from "./components/Page1";
 import Page2 from "./components/Page2";
-import Page3 from "./components/Page3";
+import ClientList from "./components/ClientList";
 import CreateClient from "./components/CreateClient";
 import SubmitSDQ from "./components/SubmitSDQ";
 
@@ -25,8 +25,8 @@ const ROUTES: RouteObject[] = [
         element: <Page2 />,
       },
       {
-        path: "/page3",
-        element: <Page3 />,
+        path: "/clients",
+        element: <ClientList />,
       },
       {
         path: "/createClient",

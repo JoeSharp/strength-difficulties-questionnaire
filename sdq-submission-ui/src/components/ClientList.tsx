@@ -1,12 +1,12 @@
 import "./Nav.scss";
 import useClientApi from "../api/clientApi";
 
-function Page3() {
+function ClientList() {
   const { clients } = useClientApi();
 
   return (
     <div>
-      <h2>Page 3</h2>
+      <h2>Clients</h2>
       <div className="cltable">
         <table>
           <thead>
@@ -45,4 +45,4 @@ function Page3() {
   );
 }
 
-export default Page3;
+export default ClientList;
