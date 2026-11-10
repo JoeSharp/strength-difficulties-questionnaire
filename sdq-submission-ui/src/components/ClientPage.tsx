@@ -13,7 +13,7 @@ function ClientPage() {
   return (
     <div>
       <h2>
-        <Link to="/page3">Clients</Link> &gt; {client.codeName}
+        <Link to="/clients">Clients</Link> &gt; {client.codeName}
       </h2>
       <p>ID: {client.id}</p>
       <p>Date of birth: {client.dateOfBirth}</p>
