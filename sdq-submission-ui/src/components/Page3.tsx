@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router";
 import "./Nav.scss";
 import useClientApi from "../api/clientApi";
 
 function Page3() {
   const { clients } = useClientApi();
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -25,7 +27,10 @@ function Page3() {
           </thead>
           <tbody>
             {clients.map((client) => (
-              <tr>
+              <tr
+                key={client.id}
+                onClick={() => navigate(`/client/${client.id}`)}
+              >
                 <th>{client.id}</th>
                 <th>{client.codeName}</th>
                 <th>{client.dateOfBirth}</th>
