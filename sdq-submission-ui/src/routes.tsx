@@ -6,6 +6,7 @@ import Page2 from "./components/Page2";
 import ClientList from "./components/ClientList";
 import CreateClient from "./components/CreateClient";
 import SubmitSDQ from "./components/SubmitSDQ";
+import ClientPage from "./components/ClientPage";
 
 const ROUTES: RouteObject[] = [
   {
@@ -35,6 +36,10 @@ const ROUTES: RouteObject[] = [
       {
         path: "/sdq",
         element: <SubmitSDQ />,
+      },
+      {
+        path: "/client/:id",
+        element: <ClientPage />,
       },
       { path: "*", element: <h2>404 - Page Not Found</h2> },
     ],

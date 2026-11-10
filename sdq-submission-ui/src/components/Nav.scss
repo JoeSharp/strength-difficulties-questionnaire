@@ -57,4 +57,7 @@ $hover: #6b4b78;
   tr:nth-child(even){
     background-color: aquamarine;
   }
+  tbody tr{
+    cursor: pointer;
+  }
 }
