@@ -223,6 +223,20 @@ func CreateRestApi(clients domain.SdqClientRepository) *chi.Mux {
 					log.Printf("failed to encode created client: %v", err)
 				}
 			})
+
+			c.Get("/{clientId}/goals", func(w http.ResponseWriter, r *http.Request) {
+				goals, err := clients.GetGoals(chi.URLParam(r, "clientId"))
+				if err != nil {
+					log.Printf("failed to get goals: %v", err)
+					http.Error(w, "failed to retrieve goals", http.StatusInternalServerError)
+					return
+				}
+				if goals == nil {
+					goals = []domain.Goal{}
+				}
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(goals)
+			})
 		})
 	})
 

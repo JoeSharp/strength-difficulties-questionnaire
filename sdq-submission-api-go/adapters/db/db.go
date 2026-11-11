@@ -157,6 +157,29 @@ func (r *PgxClientRepository) CreateClient(client domain.SdqClient) (domain.SdqC
 	return client, nil
 }
 
+func (r *PgxClientRepository) GetGoals(clientId string) ([]domain.Goal, error) {
+	rows, err := r.DB.Query(context.Background(),
+		`SELECT goal_id, client_id, type, description FROM goal WHERE client_id = $1`,
+		clientId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []domain.Goal
+
+	for rows.Next() {
+		var g domain.Goal
+		if err := rows.Scan(&g.ID, &g.ClientID, &g.Type, &g.Description); err != nil {
+			return nil, err
+		}
+		out = append(out, g)
+	}
+
+	return out, rows.Err()
+}
+
 func CreateDb(db_url string) domain.SdqClientRepository {
 	pool, err := pgxpool.New(context.Background(), db_url)
 	if err != nil {

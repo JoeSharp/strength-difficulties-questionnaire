@@ -63,4 +63,26 @@ const useClientApi = (): ClientApi => {
   };
 };
 
+export type Goal = {
+  id: string;
+  clientId: string;
+  type?: string;
+  description?: string;
+};
+
+export const useGoals = (clientId?: string): Goal[] => {
+  const { data } = useQuery<Goal[]>({
+    queryKey: ["goals", clientId],
+    enabled: !!clientId,
+    queryFn: async () => {
+      const response = await fetch(`/api/clients/${clientId}/goals`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json() as Promise<Goal[]>;
+    },
+  });
+  return data || [];
+};
+
 export default useClientApi;
