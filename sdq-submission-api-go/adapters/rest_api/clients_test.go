@@ -22,6 +22,7 @@ type fakeRepo struct {
 }
 
 func (f fakeRepo) GetClients() ([]domain.SdqClient, error) { return f.clients, f.err }
+func (f fakeRepo) GetGoals(clientId string) ([]domain.Goal, error) { return nil, f.err }
 func (f fakeRepo) CreateClient(client domain.SdqClient) (domain.SdqClient, error) {
 	if f.err != nil {
 		return domain.SdqClient{}, f.err

@@ -28,9 +28,17 @@ type Intervention struct {
 	Sessions int    `json:"sessions"`
 }
 
+type Goal struct {
+	ID          uuid.UUID `json:"id"`
+	ClientID    uuid.UUID `json:"clientId"`
+	Type        *string   `json:"type,omitempty"`
+	Description *string   `json:"description,omitempty"`
+}
+
 type SdqClientRepository interface { //creates the "interface" to be interacted with?
 	GetClients() ([]SdqClient, error)
 	CreateClient(client SdqClient) (SdqClient, error)
+	GetGoals(clientId string) ([]Goal, error)
 }
 
 type SdqApp struct {
