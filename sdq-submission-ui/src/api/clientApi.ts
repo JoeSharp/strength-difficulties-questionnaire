@@ -85,4 +85,22 @@ export const useGoals = (clientId?: string): Goal[] => {
   return data || [];
 };
 
+export const useCreateGoal = (clientId?: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (goal: Omit<Goal, "id" | "clientId">) => {
+      const response = await fetch(`/api/clients/${clientId}/goals`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(goal),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to create goal");
+      }
+      return response.json() as Promise<Goal>;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["goals", clientId] }),
+  });
+};
+
 export default useClientApi;
