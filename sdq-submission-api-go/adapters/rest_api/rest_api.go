@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/uuid"
 	domain "joesharpcs.co.uk/sdq/domain"
 )
 
@@ -236,6 +237,25 @@ func CreateRestApi(clients domain.SdqClientRepository) *chi.Mux {
 				}
 				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(goals)
+			})
+
+			c.Post("/{clientId}/goals", func(w http.ResponseWriter, r *http.Request) {
+				var goal domain.Goal
+				clientId, err := uuid.Parse(chi.URLParam(r, "clientId"))
+				if err != nil || json.NewDecoder(r.Body).Decode(&goal) != nil {
+					http.Error(w, "invalid goal", http.StatusBadRequest)
+					return
+				}
+				goal.ClientID = clientId
+				goal, err = clients.CreateGoal(goal)
+				if err != nil {
+					log.Printf("failed to create goal: %v", err)
+					http.Error(w, "failed to create goal", http.StatusInternalServerError)
+					return
+				}
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusCreated)
+				json.NewEncoder(w).Encode(goal)
 			})
 		})
 	})

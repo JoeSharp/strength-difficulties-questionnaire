@@ -180,6 +180,15 @@ func (r *PgxClientRepository) GetGoals(clientId string) ([]domain.Goal, error) {
 	return out, rows.Err()
 }
 
+func (r *PgxClientRepository) CreateGoal(goal domain.Goal) (domain.Goal, error) {
+	goal.ID = uuid.New()
+	_, err := r.DB.Exec(context.Background(),
+		`INSERT INTO goal (goal_id, client_id, type, description) VALUES ($1, $2, $3, $4)`,
+		goal.ID, goal.ClientID, goal.Type, goal.Description,
+	)
+	return goal, err
+}
+
 func CreateDb(db_url string) domain.SdqClientRepository {
 	pool, err := pgxpool.New(context.Background(), db_url)
 	if err != nil {

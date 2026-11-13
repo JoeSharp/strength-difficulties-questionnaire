@@ -39,6 +39,7 @@ type SdqClientRepository interface { //creates the "interface" to be interacted 
 	GetClients() ([]SdqClient, error)
 	CreateClient(client SdqClient) (SdqClient, error)
 	GetGoals(clientId string) ([]Goal, error)
+	CreateGoal(goal Goal) (Goal, error)
 }
 
 type SdqApp struct {
